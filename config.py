@@ -2,7 +2,7 @@ import os
 
 # Google Gemini API Configuration
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "")
-GEMINI_MODEL = "gemini-pro"  # Use the most capable model available
+GEMINI_MODEL = "gemini-2.5-pro-preview-05-06"  # Use the most capable model available
 
 # Define the steps in the Working Backwards process
 WORKING_BACKWARDS_STEPS = [
