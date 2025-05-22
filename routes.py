@@ -16,22 +16,23 @@ logger.info("Creating LLMProcessor instance...")
 llm_processor = LLMProcessor()
 logger.info("LLMProcessor instance created successfully")
 
-# Development route - redirect to React frontend
-from flask import redirect
+# Serve React app directly from Flask
+from flask import send_from_directory
+import os
 
 @app.route('/')
-def redirect_to_frontend():
-    """Redirect root requests to the React frontend during development"""
-    # Get the host from the request and redirect to port 3000
-    host = request.host.split(':')[0]
-    return redirect(f'http://{host}:3000')
+def serve_react_app():
+    """Serve the React app's main page"""
+    return send_from_directory('static/react', 'index.html')
 
 @app.route('/<path:path>')
-def catch_all(path):
-    """Catch all other routes and redirect to React frontend"""
-    # Get the host from the request and redirect to port 3000
-    host = request.host.split(':')[0]
-    return redirect(f'http://{host}:3000/{path}')
+def serve_react_static_files(path):
+    """Serve React static files, or fallback to index.html for SPA routing"""
+    if os.path.exists(os.path.join('static/react', path)):
+        return send_from_directory('static/react', path)
+    else:
+        # For SPA routing, serve index.html for unknown paths
+        return send_from_directory('static/react', 'index.html')
 
 # API routes start here
 @app.route('/api/process', methods=['POST'])
