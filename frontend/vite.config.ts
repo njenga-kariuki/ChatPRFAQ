@@ -8,6 +8,7 @@ export default defineConfig({
     host: '0.0.0.0', // Allow connections from any IP address
     port: 3000, // You can choose another port if 3000 is taken
     strictPort: true, // Vite will exit if this port is taken
+    allowedHosts: 'all', // Allow all hosts for Replit environment
     proxy: {
       // Proxy API requests to your Flask backend
       '/api': {
