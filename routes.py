@@ -21,26 +21,16 @@ from flask import send_from_directory
 import os
 
 @app.route('/')
-def serve_main_app():
-    """Serve the main product evaluation interface"""
-    logger.info("=== Serving main product evaluation interface ===")
-    try:
-        from flask import render_template
-        return render_template('index.html')
-    except Exception as e:
-        logger.error(f"Error serving main app: {e}")
-        return f"Error loading app: {e}", 500
+def serve_react_app():
+    """Serve the React app's main page"""
+    return send_from_directory('static/react', 'index.html')
 
 @app.route('/<path:path>')
 def serve_react_static_files(path):
     """Serve React static files, or fallback to index.html for SPA routing"""
-    logger.info(f"=== Serving static file request: {path} ===")
-    full_path = os.path.join('static/react', path)
-    if os.path.exists(full_path):
-        logger.info(f"Found static file: {path}")
+    if os.path.exists(os.path.join('static/react', path)):
         return send_from_directory('static/react', path)
     else:
-        logger.info(f"File not found, serving index.html for SPA routing: {path}")
         # For SPA routing, serve index.html for unknown paths
         return send_from_directory('static/react', 'index.html')
 
