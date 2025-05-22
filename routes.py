@@ -21,13 +21,14 @@ from flask import send_from_directory
 import os
 
 @app.route('/')
-def serve_react_app():
-    """Serve the React app's main page"""
-    logger.info("=== Serving React app from static/react/index.html ===")
+def serve_main_app():
+    """Serve the main product evaluation interface"""
+    logger.info("=== Serving main product evaluation interface ===")
     try:
-        return send_from_directory('static/react', 'index.html')
+        from flask import render_template
+        return render_template('index.html')
     except Exception as e:
-        logger.error(f"Error serving React app: {e}")
+        logger.error(f"Error serving main app: {e}")
         return f"Error loading app: {e}", 500
 
 @app.route('/<path:path>')
