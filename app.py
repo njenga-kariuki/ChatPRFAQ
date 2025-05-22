@@ -10,8 +10,8 @@ logging.basicConfig(level=logging.DEBUG)
 app = Flask(__name__)
 app.secret_key = os.environ.get("SESSION_SECRET", "dev-secret-key")
 
-# Enable CORS
-CORS(app)
+# Enable CORS specifically for API routes, allowing all origins for now
+CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 # Import routes after app is created to avoid circular imports
 from routes import *

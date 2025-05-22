@@ -1,0 +1,41 @@
+  VITE v5.4.19  ready in 261 ms
+
+  ➜  Local:   http://localhost:3000/
+  ➜  Network: use --host to expose
+  ➜  press h + enter to show help
+INFO:llm_processor:Configuring Gemini API with model: gemini-2.5-pro-preview-05-06
+INFO:llm_processor:API Key configured: Yes
+INFO:routes:Creating LLMProcessor instance...
+INFO:llm_processor:LLMProcessor initialized with model: gemini-2.5-pro-preview-05-06
+INFO:llm_processor:Number of steps configured: 6
+INFO:llm_processor:GEMINI_API_KEY is properly configured
+INFO:routes:LLMProcessor instance created successfully
+🚀 Starting LLM-Powered Product Concept Evaluator (Development Mode)
+📝 This uses Flask's built-in server with no timeouts
+🌐 Access the application at: http://localhost:5000
+🔍 Watch the logs below for detailed debugging info
+============================================================
+ * Serving Flask app 'app'
+ * Debug mode: on
+INFO:werkzeug:WARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.31.128.80:5000
+INFO:werkzeug:Press CTRL+C to quit
+INFO:werkzeug: * Restarting with stat
+INFO:llm_processor:Configuring Gemini API with model: gemini-2.5-pro-preview-05-06
+INFO:llm_processor:API Key configured: Yes
+INFO:routes:Creating LLMProcessor instance...
+INFO:llm_processor:LLMProcessor initialized with model: gemini-2.5-pro-preview-05-06
+INFO:llm_processor:Number of steps configured: 6
+INFO:llm_processor:GEMINI_API_KEY is properly configured
+INFO:routes:LLMProcessor instance created successfully
+🚀 Starting LLM-Powered Product Concept Evaluator (Development Mode)
+📝 This uses Flask's built-in server with no timeouts
+🌐 Access the application at: http://localhost:5000
+🔍 Watch the logs below for detailed debugging info
+============================================================
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 951-656-625
+INFO:werkzeug:172.31.128.80 - - [22/May/2025 19:00:29] "GET / HTTP/1.1" 404 -
+INFO:werkzeug:172.31.128.80 - - [22/May/2025 19:00:31] "GET / HTTP/1.1" 404 -

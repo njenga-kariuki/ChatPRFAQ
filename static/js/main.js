@@ -36,6 +36,18 @@ document.addEventListener('DOMContentLoaded', function() {
     resetButton.addEventListener('click', resetApplication);
     exportButton.addEventListener('click', exportResults);
     
+    // Add Enter key support for form submission
+    productIdeaInput.addEventListener('keydown', function(event) {
+        if (event.key === 'Enter') {
+            // Submit form on Enter (unless Shift is held for new lines)
+            // Also submit on Ctrl+Enter or Cmd+Enter
+            if (!event.shiftKey) {
+                event.preventDefault();
+                handleFormSubmit(event);
+            }
+        }
+    });
+    
     // Variables to store results
     let currentResults = null;
     
@@ -65,11 +77,12 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     /**
-     * Process product idea through the API
+     * Process product idea through the streaming API
      */
     async function processProductIdea(productIdea) {
         try {
-            const response = await fetch('/api/process', {
+            // Start the streaming request
+            const response = await fetch('/api/process_stream', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -82,11 +95,32 @@ document.addEventListener('DOMContentLoaded', function() {
                 throw new Error(errorData.error || 'Failed to process product idea');
             }
             
-            const results = await response.json();
-            currentResults = results;
+            // Set up EventSource-like processing for the response stream
+            const reader = response.body.getReader();
+            const decoder = new TextDecoder();
             
-            // Display results
-            displayResults(results);
+            // Show steps container for real-time updates
+            stepsContainer.classList.remove('d-none');
+            
+            while (true) {
+                const { done, value } = await reader.read();
+                
+                if (done) break;
+                
+                const chunk = decoder.decode(value, { stream: true });
+                const lines = chunk.split('\n');
+                
+                for (const line of lines) {
+                    if (line.startsWith('data: ')) {
+                        try {
+                            const data = JSON.parse(line.slice(6));
+                            handleStreamUpdate(data);
+                        } catch (e) {
+                            console.warn('Failed to parse stream data:', line);
+                        }
+                    }
+                }
+            }
             
         } catch (error) {
             console.error('Error:', error);
@@ -96,7 +130,67 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     /**
-     * Display results from the API
+     * Handle streaming updates from the server
+     */
+    function handleStreamUpdate(data) {
+        if (data.error) {
+            showError(data.error);
+            resetUIState(true);
+            return;
+        }
+        
+        if (data.complete && data.result) {
+            // Final results received
+            currentResults = data.result;
+            displayFinalResults(data.result);
+            return;
+        }
+        
+        if (data.status === 'started') {
+            updateProgressBar(0);
+            currentStepText.textContent = data.message;
+            return;
+        }
+        
+        if (data.step && typeof data.step === 'number') {
+            // Step-specific update
+            updateProgressBar(Math.round(data.progress || 0));
+            
+            if (data.status === 'starting') {
+                currentStepText.textContent = data.message;
+            } else if (data.status === 'processing') {
+                currentStepText.textContent = data.message;
+            } else if (data.status === 'completed' && data.output) {
+                // Update the step with the completed output
+                updateStepElementRealtime(data.step, data.output);
+                currentStepText.textContent = data.message;
+            }
+        }
+        
+        if (data.status === 'finished') {
+            updateProgressBar(100);
+            currentStepText.textContent = data.message;
+        }
+    }
+    
+    /**
+     * Update a step element in real-time
+     */
+    function updateStepElementRealtime(stepId, output) {
+        if (stepElements.outputs[stepId]) {
+            stepElements.outputs[stepId].innerHTML = formatContent(output);
+            
+            // Also populate the input for this step based on the previous step
+            if (stepId > 1 && stepElements.inputs[stepId]) {
+                // This is a simplified approach - in a real app you'd track the actual inputs
+                const inputText = stepId === 5 ? "Combined inputs from steps 2, 3, and 4" : "Output from previous step";
+                stepElements.inputs[stepId].textContent = inputText;
+            }
+        }
+    }
+    
+    /**
+     * Display results from the API (legacy method for non-streaming)
      */
     function displayResults(results) {
         // Hide processing status
@@ -110,6 +204,39 @@ document.addEventListener('DOMContentLoaded', function() {
             updateStepElement(step.id, step.input, step.output);
             updateProgressBar(Math.round((step.id / 6) * 100));
         });
+        
+        // Display final results
+        updateResultContent(results.prfaq, results.mlp_plan);
+        
+        // Show results container
+        resultsContainer.classList.remove('d-none');
+        
+        // Reset button state
+        startButton.disabled = false;
+        startButton.innerHTML = '<i class="bi bi-play-circle me-2"></i>Start Evaluation';
+        
+        // Scroll to results
+        resultsContainer.scrollIntoView({ behavior: 'smooth' });
+    }
+    
+    /**
+     * Display final results after all processing is complete
+     */
+    function displayFinalResults(results) {
+        // Hide processing status
+        processingStatus.classList.add('d-none');
+        
+        // Ensure all step inputs are populated correctly
+        if (results.steps) {
+            results.steps.forEach(step => {
+                if (stepElements.inputs[step.id]) {
+                    stepElements.inputs[step.id].textContent = step.input;
+                }
+                if (stepElements.outputs[step.id]) {
+                    stepElements.outputs[step.id].innerHTML = formatContent(step.output);
+                }
+            });
+        }
         
         // Display final results
         updateResultContent(results.prfaq, results.mlp_plan);
