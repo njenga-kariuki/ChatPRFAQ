@@ -22,12 +22,16 @@ from flask import redirect
 @app.route('/')
 def redirect_to_frontend():
     """Redirect root requests to the React frontend during development"""
-    return redirect('http://localhost:3000')
+    # Get the host from the request and redirect to port 3000
+    host = request.host.split(':')[0]
+    return redirect(f'http://{host}:3000')
 
 @app.route('/<path:path>')
 def catch_all(path):
     """Catch all other routes and redirect to React frontend"""
-    return redirect(f'http://localhost:3000/{path}')
+    # Get the host from the request and redirect to port 3000
+    host = request.host.split(':')[0]
+    return redirect(f'http://{host}:3000/{path}')
 
 # API routes start here
 @app.route('/api/process', methods=['POST'])
