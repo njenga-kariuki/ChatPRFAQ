@@ -23,14 +23,23 @@ import os
 @app.route('/')
 def serve_react_app():
     """Serve the React app's main page"""
-    return send_from_directory('static/react', 'index.html')
+    logger.info("=== Serving React app from static/react/index.html ===")
+    try:
+        return send_from_directory('static/react', 'index.html')
+    except Exception as e:
+        logger.error(f"Error serving React app: {e}")
+        return f"Error loading app: {e}", 500
 
 @app.route('/<path:path>')
 def serve_react_static_files(path):
     """Serve React static files, or fallback to index.html for SPA routing"""
-    if os.path.exists(os.path.join('static/react', path)):
+    logger.info(f"=== Serving static file request: {path} ===")
+    full_path = os.path.join('static/react', path)
+    if os.path.exists(full_path):
+        logger.info(f"Found static file: {path}")
         return send_from_directory('static/react', path)
     else:
+        logger.info(f"File not found, serving index.html for SPA routing: {path}")
         # For SPA routing, serve index.html for unknown paths
         return send_from_directory('static/react', 'index.html')
 
