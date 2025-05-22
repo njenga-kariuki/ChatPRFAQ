@@ -8,6 +8,7 @@ export default defineConfig({
     host: true, // Allow external connections
     port: 3000,
     strictPort: true,
+    allowedHosts: ['all'], // Allow all hosts for Replit development
     proxy: {
       // Proxy API requests to your Flask backend
       '/api': {
