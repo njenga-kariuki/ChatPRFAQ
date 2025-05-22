@@ -16,16 +16,18 @@ logger.info("Creating LLMProcessor instance...")
 llm_processor = LLMProcessor()
 logger.info("LLMProcessor instance created successfully")
 
-# REMOVED React App serving routes for development. Vite will handle this.
-# @app.route('/')
-# def serve_react_app():
-#     return send_from_directory('static/react', 'index.html')
-# 
-# @app.route('/<path:path>')
-# def serve_react_static_files(path):
-#     if os.path.exists(os.path.join('static/react', path)):
-#         return send_from_directory('static/react', path)
-#     return "Not Found", 404
+# Development route - redirect to React frontend
+from flask import redirect
+
+@app.route('/')
+def redirect_to_frontend():
+    """Redirect root requests to the React frontend during development"""
+    return redirect('http://localhost:3000')
+
+@app.route('/<path:path>')
+def catch_all(path):
+    """Catch all other routes and redirect to React frontend"""
+    return redirect(f'http://localhost:3000/{path}')
 
 # API routes start here
 @app.route('/api/process', methods=['POST'])
