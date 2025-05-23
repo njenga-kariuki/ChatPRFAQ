@@ -3,10 +3,14 @@ module.exports = {
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
-  theme: {
-    extend: {},
-  },
-  plugins: [
-    require('@tailwindcss/typography'),
-  ],
+  // theme: { // Temporarily commented out
+  //   extend: {
+  //     colors: {
+  //       'custom-test-blue': '#0000FF',
+  //     },
+  //   },
+  // },
+  // plugins: [ // Temporarily commented out
+  //   require('@tailwindcss/typography'),
+  // ],
 } 

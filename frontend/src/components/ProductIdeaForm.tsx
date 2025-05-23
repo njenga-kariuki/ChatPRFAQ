@@ -20,9 +20,9 @@ const ProductIdeaForm: React.FC<ProductIdeaFormProps> = ({ onSubmit, isProcessin
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-6">
       <div>
-        <label htmlFor="productIdeaInput" className="block text-sm font-medium text-gray-300 mb-1">
+        <label htmlFor="productIdeaInput" className="block text-sm font-medium text-slate-300 mb-2">
           Describe your product idea:
         </label>
         <textarea
@@ -30,7 +30,7 @@ const ProductIdeaForm: React.FC<ProductIdeaFormProps> = ({ onSubmit, isProcessin
           value={productIdea}
           onChange={(e) => setProductIdea(e.target.value)}
           rows={6}
-          className="w-full p-3 bg-gray-700 border border-gray-600 rounded-md shadow-sm focus:ring-sky-500 focus:border-sky-500 placeholder-gray-400 text-white"
+          className="w-full h-32 px-4 py-3 bg-slate-800/50 border border-slate-600/50 rounded-xl text-white placeholder-slate-400 focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all shadow-sm"
           placeholder="What problem does it solve? Who is it for? What makes it unique? Example: A mobile app for Kenyan small businesses that integrates M-Pesa, WhatsApp, and inventory management..."
           disabled={isProcessing}
         />
@@ -39,7 +39,7 @@ const ProductIdeaForm: React.FC<ProductIdeaFormProps> = ({ onSubmit, isProcessin
       <button
         type="submit"
         disabled={isProcessing}
-        className="w-full flex items-center justify-center px-6 py-3 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-sky-600 hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-sky-500 disabled:opacity-50 disabled:cursor-not-allowed"
+        className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-semibold py-4 px-6 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 shadow-lg shadow-blue-500/25 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-950 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {isProcessing ? (
           <>

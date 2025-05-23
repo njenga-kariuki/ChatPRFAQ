@@ -5,6 +5,7 @@ import ProcessingStatus from './components/ProcessingStatus'; // Import Processi
 import StepsDisplay from './components/StepsDisplay'; // Import StepsDisplay
 import { StepData } from './types'; // Import StepData
 import Markdown from 'react-markdown'; // Import react-markdown
+import ModernResults from './components/ModernResults'; // Added import for ModernResults
 
 // Initial step definitions - will be updated by API stream
 const initialStepsData: StepData[] = [
@@ -217,13 +218,18 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white flex flex-col items-center p-4 md:p-8">
+    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-white flex flex-col items-center p-4 md:p-8">
       <header className="w-full max-w-4xl mb-8 text-center">
-        <h1 className="text-4xl font-bold text-sky-400">
-          <i className="bi bi-lightbulb-fill me-2"></i> LLM-Powered Product Concept Evaluator
+        {/* Enhanced title with gradient text */}
+        <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 bg-gradient-to-r from-white via-blue-100 to-purple-100 bg-clip-text text-transparent leading-tight">
+          <i className="bi bi-lightbulb-fill me-2"></i> 
+          Work Backwards
+          <br />
+          <span className="text-blue-400">Agent</span>
         </h1>
-        <p className="text-lg text-gray-400 mt-2">
-          Reimagined with React & Tailwind CSS
+        
+        <p className="text-xl text-slate-400 mt-2 max-w-2xl mx-auto leading-relaxed">
+          Transform product ideas into comprehensive PRFAQs using Amazon's proven Working Backwards methodology
         </p>
       </header>
 
@@ -241,71 +247,123 @@ function App() {
       )}
 
       <main className="w-full max-w-4xl space-y-8">
-        <section id="product-idea-section" className="bg-gray-800 p-6 rounded-lg shadow-xl">
-          <h2 className="text-2xl font-semibold mb-4 text-sky-300">1. Enter Your Product Idea</h2>
-          <ProductIdeaForm onSubmit={handleFormSubmit} isProcessing={isProcessing} />
+        <section id="product-idea-section" className="relative">
+          <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-purple-500/10 rounded-2xl blur-xl"></div>
+          <div className="relative bg-slate-900/50 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-8 shadow-xl">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="flex items-center justify-center w-10 h-10 bg-blue-500/20 rounded-xl">
+                <span className="text-blue-400 font-bold">1</span>
+              </div>
+              <h2 className="text-2xl font-semibold text-sky-300">Enter Your Product Idea</h2>
+            </div>
+            <ProductIdeaForm onSubmit={handleFormSubmit} isProcessing={isProcessing} />
+          </div>
         </section>
 
-        <section id="processing-status-section" className="bg-gray-800 p-6 rounded-lg shadow-xl">
-          <h2 className="text-2xl font-semibold mb-4 text-sky-300">2. Evaluation Progress</h2>
-          <ProcessingStatus 
-            progress={progress} 
-            currentStepText={currentStepText} 
-            isVisible={isProcessing || progress > 0 || stepsData.some(s => s.status !== 'pending') || !!generalError}
-          />
+        <section id="processing-status-section" className="relative">
+          <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-purple-500/10 rounded-2xl blur-xl"></div>
+          <div className="relative bg-slate-900/50 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-8 shadow-xl">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="flex items-center justify-center w-10 h-10 bg-blue-500/20 rounded-xl">
+                <span className="text-blue-400 font-bold">2</span>
+              </div>
+              <h2 className="text-2xl font-semibold text-sky-300">Evaluation Progress</h2>
+            </div>
+            <ProcessingStatus 
+              progress={progress} 
+              currentStepText={currentStepText} 
+              isVisible={isProcessing || progress > 0 || stepsData.some(s => s.status !== 'pending') || !!generalError}
+            />
+          </div>
         </section>
 
-        <section id="steps-display-section" className="bg-gray-800 p-6 rounded-lg shadow-xl">
-          <h2 className="text-2xl font-semibold mb-4 text-sky-300">3. Working Backwards Steps</h2>
-          <StepsDisplay 
-            steps={stepsData} 
-            onToggleStep={handleToggleStep} 
-            isVisible={stepsData.some(s => s.status !== 'pending') || isProcessing || !!generalError}
-          />
+        <section id="steps-display-section" className="relative">
+          <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-purple-500/10 rounded-2xl blur-xl"></div>
+          <div className="relative bg-slate-900/50 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-8 shadow-xl">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="flex items-center justify-center w-10 h-10 bg-blue-500/20 rounded-xl">
+                <span className="text-blue-400 font-bold">3</span>
+              </div>
+              <h2 className="text-2xl font-semibold text-sky-300">Working Backwards Steps</h2>
+            </div>
+            <StepsDisplay 
+              steps={stepsData} 
+              onToggleStep={handleToggleStep} 
+              isVisible={stepsData.some(s => s.status !== 'pending') || isProcessing || !!generalError}
+            />
+          </div>
         </section>
 
         {(finalPrfaq || finalMlpPlan) && !isProcessing && !generalError && (
-          <section id="results-section" className="bg-gray-800 p-6 rounded-lg shadow-xl">
-            <h2 className="text-2xl font-semibold mb-4 text-sky-300">4. Final Report</h2>
-            {finalPrfaq && (
-              <div className="mb-6">
-                <h3 className="text-xl font-semibold text-sky-400 mb-2">Press Release & FAQ (PRFAQ)</h3>
-                {/* Using react-markdown for proper rendering */}
-                <div className="prose prose-sm sm:prose lg:prose-lg xl:prose-xl prose-invert max-w-none p-4 bg-gray-900 rounded-md"><Markdown>{finalPrfaq}</Markdown></div>
+          <section id="results-section" className="relative">
+            <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-purple-500/10 rounded-2xl blur-xl"></div>
+            <div className="relative bg-slate-900/50 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-8 shadow-xl">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="flex items-center justify-center w-10 h-10 bg-blue-500/20 rounded-xl">
+                  <span className="text-blue-400 font-bold">4</span>
+                </div>
+                <h2 className="text-2xl font-semibold text-sky-300">Final Report</h2>
               </div>
-            )}
-            {finalMlpPlan && (
-              <div>
-                <h3 className="text-xl font-semibold text-sky-400 mb-2">Minimum Lovable Product (MLP) Plan</h3>
-                 {/* Using react-markdown for proper rendering */}
-                <div className="prose prose-sm sm:prose lg:prose-lg xl:prose-xl prose-invert max-w-none p-4 bg-gray-900 rounded-md"><Markdown>{finalMlpPlan}</Markdown></div>
-              </div>
-            )}
+              {finalPrfaq && (
+                <div className="mb-6">
+                  <h3 className="text-xl font-semibold text-sky-400 mb-2">Press Release & FAQ (PRFAQ)</h3>
+                  <div className="prose prose-sm sm:prose lg:prose-lg xl:prose-xl prose-invert max-w-none p-4 bg-slate-950 rounded-md"><Markdown>{finalPrfaq}</Markdown></div>
+                </div>
+              )}
+              {finalMlpPlan && (
+                <div>
+                  <h3 className="text-xl font-semibold text-sky-400 mb-2">Minimum Lovable Product (MLP) Plan</h3>
+                  <div className="prose prose-sm sm:prose lg:prose-lg xl:prose-xl prose-invert max-w-none p-4 bg-slate-950 rounded-md"><Markdown>{finalMlpPlan}</Markdown></div>
+                </div>
+              )}
+            </div>
           </section>
         )}
 
-        <section id="actions-section" className="bg-gray-800 p-6 rounded-lg shadow-xl">
-          <h2 className="text-2xl font-semibold mb-4 text-sky-300">Actions</h2>
-          <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4">
-            <button 
-              onClick={resetState} 
-              className="w-full sm:w-auto flex items-center justify-center px-6 py-3 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <i className="bi bi-arrow-clockwise me-2"></i>Reset Application
-            </button>
-            <button 
-              onClick={handleExportResults} 
-              disabled={isProcessing && stepsData.every(s => s.status === 'pending')}
-              className="w-full sm:w-auto flex items-center justify-center px-6 py-3 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <i className="bi bi-download me-2"></i>Export Full Report
-            </button>
+        {(finalPrfaq || finalMlpPlan) && !isProcessing && !generalError && (
+          <section id="enhanced-results-section" className="relative">
+            <div className="absolute inset-0 bg-gradient-to-r from-green-500/5 to-blue-500/10 rounded-2xl blur-xl"></div>
+            <div className="relative bg-slate-900/50 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-8 shadow-xl">
+              <ModernResults 
+                finalPrfaq={finalPrfaq}
+                finalMlpPlan={finalMlpPlan}
+                productIdea={productIdea}
+                stepsData={stepsData}
+              />
+            </div>
+          </section>
+        )}
+
+        <section id="actions-section" className="relative">
+          <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-purple-500/10 rounded-2xl blur-xl"></div>
+          <div className="relative bg-slate-900/50 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-8 shadow-xl">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="flex items-center justify-center w-10 h-10 bg-blue-500/20 rounded-xl">
+                <span className="text-blue-400 font-bold">5</span>
+              </div>
+              <h2 className="text-2xl font-semibold text-sky-300">Actions</h2>
+            </div>
+            <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4">
+              <button 
+                onClick={resetState} 
+                className="w-full sm:w-auto flex items-center justify-center px-6 py-3 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-900 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <i className="bi bi-arrow-clockwise me-2"></i>Reset Application
+              </button>
+              <button 
+                onClick={handleExportResults} 
+                disabled={isProcessing && stepsData.every(s => s.status === 'pending')}
+                className="w-full sm:w-auto flex items-center justify-center px-6 py-3 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-900 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <i className="bi bi-download me-2"></i>Export Full Report
+              </button>
+            </div>
           </div>
         </section>
 
       </main>
 
-      <footer className="w-full max-w-4xl mt-12 text-center text-gray-500">
+      <footer className="w-full max-w-4xl mt-12 text-center text-slate-500">
         <p>&copy; {new Date().getFullYear()} Product Concept Evaluator. All rights reserved.</p>
       </footer>
     </div>
