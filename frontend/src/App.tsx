@@ -43,6 +43,12 @@ function App() {
   const [originalProductIdea, setOriginalProductIdea] = useState<string>('');
   const [showWorkingBackwards, setShowWorkingBackwards] = useState(false);
 
+  // Tab Navigation State
+  const [activeTab, setActiveTab] = useState<'process' | 'final'>('process');
+  const [showFinalTab, setShowFinalTab] = useState(false);
+  const [showNotification, setShowNotification] = useState(false);
+  const [lastCompletedStepId, setLastCompletedStepId] = useState<number | null>(null);
+
   const resetState = () => {
     setProductIdea('');
     setIsProcessing(false);
@@ -58,6 +64,11 @@ function App() {
     setIsRefiningAnalysis(false);
     setOriginalProductIdea('');
     setShowWorkingBackwards(false);
+    // Reset tab state
+    setActiveTab('process');
+    setShowFinalTab(false);
+    setShowNotification(false);
+    setLastCompletedStepId(null);
     // Optionally, close all accordions or open the first one
     // setStepsData(prev => prev.map(s => s.id === 1 ? { ...s, isActive: true } : { ...s, isActive: false }));
   };
@@ -119,7 +130,7 @@ function App() {
     setAnalysisPhase('complete');
     setShowWorkingBackwards(true);
     setIsProcessing(true); // Provide immediate feedback
-    setCurrentStepText('Starting Working Backwards process...');
+    setCurrentStepText('Starting process...');
     proceedToMainWorkflow(enrichedBrief);
   };
 
@@ -127,7 +138,7 @@ function App() {
     if (!productAnalysis || !originalProductIdea) return;
     
     setIsRefiningAnalysis(true);
-    setCurrentStepText('Refining analysis based on your feedback...');
+    setCurrentStepText('Refining analysis...');
     setIsProcessing(true); // Show global processing state
     setProgress(10); // Show some progress during refinement
     
@@ -155,7 +166,7 @@ function App() {
       }
 
       setProductAnalysis(refineResult.analysis);
-      setCurrentStepText('Analysis refined successfully! Review the updated breakdown below.');
+      setCurrentStepText('Analysis refined successfully! Review the update below.');
       setProgress(15); // Reset to analysis complete state
       
     } catch (error) {
@@ -171,7 +182,7 @@ function App() {
   const proceedToMainWorkflow = async (inputIdea: string) => {
     setIsProcessing(true);
     setGeneralError(null);
-    setCurrentStepText('Initializing Working Backwards process...');
+    setCurrentStepText('Initializing process...');
     setProgress(15); // Start from 15% since analysis is complete
     
     // Set first step as active and its input as the (possibly enriched) product idea
@@ -270,6 +281,11 @@ function App() {
                 setStepsData(prev => prev.map(s => ({...s, status: (s.status === 'pending' || s.status === 'processing') ? 'completed' : s.status, isActive: s.id === initialStepsData[initialStepsData.length -1].id })));
                 setIsProcessing(false);
                 setProgress(100);
+                setShowFinalTab(true);
+                // Delay notification for smoother experience
+                setTimeout(() => {
+                  setShowNotification(true);
+                }, 1000);
                 return; // Exit function as processing is fully complete
               }
             } catch (e) {
@@ -320,6 +336,70 @@ function App() {
     }
   }, [showWorkingBackwards]);
 
+  // Auto-dismiss notification banner
+  useEffect(() => {
+    if (showNotification) {
+      const timer = setTimeout(() => {
+        setShowNotification(false);
+      }, 10000); // Auto-dismiss after 10 seconds
+
+      return () => clearTimeout(timer);
+    }
+  }, [showNotification]);
+
+  // Dismiss notification on tab change
+  useEffect(() => {
+    if (activeTab === 'final') {
+      setShowNotification(false);
+    }
+  }, [activeTab]);
+
+  // Scroll to top when switching to Documents tab
+  useEffect(() => {
+    if (activeTab === 'final' && showFinalTab) {
+      // Add delay to ensure content renders first
+      setTimeout(() => {
+        document.getElementById('steps-display-section')?.scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'start' 
+        });
+      }, 100);
+    }
+  }, [activeTab, showFinalTab]);
+
+  // Auto-scroll completed steps into view - improved implementation
+  useEffect(() => {
+    const newlyCompletedSteps = stepsData.filter(s => s.status === 'completed');
+    
+    if (newlyCompletedSteps.length > 0) {
+      const latestCompleted = newlyCompletedSteps[newlyCompletedSteps.length - 1];
+      
+      // Only scroll if this is a newly completed step and we're on the process tab
+      if (latestCompleted.id !== lastCompletedStepId && activeTab === 'process') {
+        setLastCompletedStepId(latestCompleted.id);
+        
+        // Add delay to ensure DOM updates and avoid conflicts with other auto-scrolls
+        setTimeout(() => {
+          const element = document.getElementById(`step-${latestCompleted.id}`);
+          if (element) {
+            // Check if element is significantly out of view (more conservative check)
+            const rect = element.getBoundingClientRect();
+            const viewportHeight = window.innerHeight;
+            const isSignificantlyOutOfView = rect.bottom > viewportHeight + 100 || rect.top < -100;
+            
+            if (isSignificantlyOutOfView) {
+              element.scrollIntoView({ 
+                behavior: 'smooth', 
+                block: 'nearest',
+                inline: 'nearest'
+              });
+            }
+          }
+        }, 500); // Longer delay to avoid conflicts
+      }
+    }
+  }, [stepsData, lastCompletedStepId]); // Removed activeTab from dependencies
+
   const generateReportText = () => {
     let report = `Product Idea:\n${productIdea}\n\n`;
     report += `-------------------------------------\nPROCESS STEPS\n-------------------------------------\n\n`;
@@ -364,59 +444,47 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-white flex flex-col items-center p-4 md:p-8">
-      <header className="w-full max-w-4xl mb-8 text-center">
-        {/* Enhanced title with gradient text */}
-        <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 bg-gradient-to-r from-white via-blue-100 to-purple-100 bg-clip-text text-transparent leading-tight">
-          <i className="bi bi-lightbulb-fill me-2"></i> 
-          Work Backwards
-          <br />
-          <span className="text-blue-400">Agent</span>
+    <div className="min-h-screen bg-gray-50 text-gray-900 flex flex-col items-center p-4 md:p-8">
+      <header className="w-full max-w-6xl mb-12 text-center">
+        <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4 leading-tight">
+          <span className="text-black">
+            Work Backwards
+          </span>
+          <span className="text-gray-400 mx-3">×</span>
+          <span className="text-gray-400">Agent</span>
         </h1>
         
-        <p className="text-xl text-slate-400 mt-2 max-w-2xl mx-auto leading-relaxed">
-          Transform product ideas into comprehensive PRFAQs using Amazon's proven Working Backwards methodology
+        <p className="text-xl text-gray-600 mt-2 max-w-2xl mx-auto leading-relaxed">
+          Turn product ideas into C-Suite ready briefs in less than 5 minutes
         </p>
       </header>
 
       {generalError && (
-        <div className="w-full max-w-4xl mb-4 p-4 bg-red-800 border border-red-600 rounded-lg shadow-xl text-center">
-          <h3 className="text-xl font-semibold text-red-200"><i className="bi bi-exclamation-triangle-fill me-2"></i> An Error Occurred</h3>
-          <p className="text-red-300 whitespace-pre-wrap">{generalError}</p>
+        <div className="w-full max-w-6xl mb-4 p-4 bg-red-50 border border-red-200 rounded-xl text-center">
+          <h3 className="text-xl font-semibold text-red-700 mb-2">An Error Occurred</h3>
+          <p className="text-red-600 whitespace-pre-wrap">{generalError}</p>
           <button 
             onClick={resetState} 
-            className="mt-3 px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-md"
+            className="mt-3 px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg transition-colors"
           >
             Try Again / Reset
           </button>
         </div>
       )}
 
-      <main className="w-full max-w-4xl space-y-8">
-        <section id="product-idea-section" className="relative">
-          <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-purple-500/10 rounded-2xl blur-xl"></div>
-          <div className="relative bg-slate-900/50 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-8 shadow-xl">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="flex items-center justify-center w-10 h-10 bg-blue-500/20 rounded-xl">
-                <span className="text-blue-400 font-bold">1</span>
-              </div>
-              <h2 className="text-2xl font-semibold text-sky-300">Enter Your Product Idea</h2>
-            </div>
+      <main className="w-full max-w-6xl space-y-8">
+        <section id="product-idea-section" className="py-12 md:py-16">
+          <div className="bg-white rounded-2xl p-8 border border-gray-100">
+            <h2 className="text-2xl font-semibold text-gray-900 mb-6">Enter Your Product Idea</h2>
             <ProductIdeaForm onSubmit={handleFormSubmit} isProcessing={isProcessing} />
           </div>
         </section>
 
         {/* Product Analysis Review Section */}
         {analysisPhase === 'reviewing' && productAnalysis && (
-          <section id="analysis-review-section" className="relative">
-            <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-purple-500/10 rounded-2xl blur-xl"></div>
-            <div className="relative bg-slate-900/50 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-8 shadow-xl">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="flex items-center justify-center w-10 h-10 bg-blue-500/20 rounded-xl">
-                  <span className="text-blue-400 font-bold">2</span>
-                </div>
-                <h2 className="text-2xl font-semibold text-sky-300">Refine Your Concept</h2>
-              </div>
+          <section id="analysis-review-section" className="py-12 md:py-16">
+            <div className="bg-white rounded-2xl p-8 border border-gray-100">
+              <h2 className="text-2xl font-semibold text-gray-900 mb-6">Refine Your Concept</h2>
               <ProductAnalysisReview
                 productIdea={originalProductIdea}
                 analysis={productAnalysis}
@@ -429,122 +497,146 @@ function App() {
         )}
 
         {(showWorkingBackwards || analysisPhase === 'complete') && (
-        <section id="steps-display-section" className="relative">
-          <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-purple-500/10 rounded-2xl blur-xl"></div>
-          <div className="relative bg-slate-900/50 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-8 shadow-xl">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="flex items-center justify-center w-10 h-10 bg-blue-500/20 rounded-xl">
-                <span className="text-blue-400 font-bold">3</span>
-              </div>
-              <h2 className="text-2xl font-semibold text-sky-300">Working Backwards Process</h2>
-            </div>
+        <section id="steps-display-section" className="py-12 md:py-16">
+          <div className="bg-white rounded-2xl p-8 border border-gray-100">
+            <h2 className="text-2xl font-semibold text-gray-900 mb-6">Working Backwards Process</h2>
             
-            {/* Integrated Progress Section - Only show when processing */}
+            {/* Progress Section - Always visible above tabs */}
             {(isProcessing || progress > 0 || stepsData.some(s => s.status !== 'pending') || !!generalError || analysisPhase === 'analyzing') && (
-              <div className="mb-6 p-4 bg-slate-800/30 rounded-xl border border-slate-700/30">
+              <div className="mb-8 p-4 bg-gray-50 rounded-xl border border-gray-200">
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-3">
                     {isProcessing || analysisPhase === 'analyzing' ? (
                       <div className="flex items-center justify-center w-6 h-6">
-                        <svg className="animate-spin h-5 w-5 text-blue-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <svg className="animate-spin h-5 w-5 text-black" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                           <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                           <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                         </svg>
                       </div>
                     ) : progress === 100 ? (
                       <div className="flex items-center justify-center w-6 h-6">
-                        <svg className="h-5 w-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg className="h-5 w-5 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                         </svg>
                       </div>
                     ) : (
                       <div className="flex items-center justify-center w-6 h-6">
-                        <div className="w-3 h-3 bg-blue-400 rounded-full"></div>
+                        <div className="w-3 h-3 bg-black rounded-full"></div>
                       </div>
                     )}
-                    <span className="text-slate-300 font-medium">{currentStepText}</span>
+                    <span className="text-gray-700 font-medium">{currentStepText}</span>
                   </div>
-                  <span className="text-sm text-slate-400 font-mono">{Math.round(progress)}%</span>
+                  <span className="text-sm text-gray-500 font-mono">{Math.round(progress)}%</span>
                 </div>
-                <div className="w-full bg-slate-700/50 rounded-full h-2">
+                <div className="w-full bg-gray-200 rounded-full h-0.5">
                   <div 
-                    className="bg-gradient-to-r from-blue-400 to-purple-500 h-2 rounded-full transition-all duration-500 ease-out"
+                    className="bg-black h-0.5 rounded-full transition-all duration-500 ease-out"
                     style={{ width: `${Math.min(progress, 100)}%` }}
                   ></div>
                 </div>
               </div>
             )}
-            
-            <StepsDisplay 
-              steps={stepsData} 
-              onToggleStep={handleToggleStep} 
-              isVisible={stepsData.some(s => s.status !== 'pending') || isProcessing || !!generalError}
-            />
+
+            {/* Tab Navigation - Show when final tab is available */}
+            {showFinalTab && (
+              <div className="flex border-b border-gray-200 mb-6 -mx-2 md:mx-0">
+                <button
+                  onClick={() => setActiveTab('final')}
+                  className={`flex-1 md:flex-none md:px-6 py-3 px-4 font-medium transition-colors ${
+                    activeTab === 'final' 
+                      ? 'text-black border-b-2 border-black' 
+                      : 'text-gray-500 hover:text-gray-700'
+                  }`}
+                >
+                  Documents
+                </button>
+                <button
+                  onClick={() => setActiveTab('process')}
+                  className={`flex-1 md:flex-none md:px-6 py-3 px-4 font-medium transition-colors ${
+                    activeTab === 'process' 
+                      ? 'text-black border-b-2 border-black' 
+                      : 'text-gray-500 hover:text-gray-700'
+                  }`}
+                >
+                  Process
+                </button>
+              </div>
+            )}
+
+            {/* Conditional Content Rendering */}
+            {activeTab === 'process' || !showFinalTab ? (
+              <StepsDisplay 
+                steps={stepsData} 
+                onToggleStep={handleToggleStep} 
+                isVisible={stepsData.some(s => s.status !== 'pending') || isProcessing || !!generalError}
+              />
+            ) : (
+              /* Final Documents Display */
+              finalPrfaq || finalMlpPlan ? (
+                <ModernResults 
+                  finalPrfaq={finalPrfaq || ''}
+                  finalMlpPlan={finalMlpPlan || ''}
+                  productIdea={productIdea}
+                  stepsData={stepsData}
+                />
+              ) : (
+                <div className="text-center py-8 text-gray-500">
+                  No documents available yet.
+                </div>
+              )
+            )}
           </div>
         </section>
         )}
 
-        {(finalPrfaq || finalMlpPlan) && !isProcessing && !generalError && (
-          <section id="results-section" className="relative">
-            <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-purple-500/10 rounded-2xl blur-xl"></div>
-            <div className="relative bg-slate-900/50 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-8 shadow-xl">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="flex items-center justify-center w-10 h-10 bg-blue-500/20 rounded-xl">
-                  <span className="text-blue-400 font-bold">4</span>
-                </div>
-                <h2 className="text-2xl font-semibold text-sky-300">Final Report</h2>
-              </div>
-              {finalPrfaq && (
-                <div className="mb-6">
-                  <h3 className="text-xl font-semibold text-sky-400 mb-2">Press Release & FAQ (PRFAQ)</h3>
-                  <div className="prose prose-sm sm:prose lg:prose-lg xl:prose-xl prose-invert max-w-none p-4 bg-slate-950 rounded-md"><Markdown>{finalPrfaq}</Markdown></div>
-                </div>
-              )}
-              {finalMlpPlan && (
-                <div>
-                  <h3 className="text-xl font-semibold text-sky-400 mb-2">Minimum Lovable Product (MLP) Plan</h3>
-                  <div className="prose prose-sm sm:prose lg:prose-lg xl:prose-xl prose-invert max-w-none p-4 bg-slate-950 rounded-md"><Markdown>{finalMlpPlan}</Markdown></div>
-                </div>
-              )}
-            </div>
-          </section>
+        {/* Notification Banner - Show when documents complete and still on process tab */}
+        {showNotification && activeTab === 'process' && (
+          <div className="fixed top-4 left-4 right-4 md:left-1/2 md:right-auto md:transform md:-translate-x-1/2 md:w-auto bg-black text-white px-6 py-3 rounded-lg shadow-lg z-50 flex items-center gap-3">
+            <span>✓</span>
+            <span className="hidden sm:inline">Documents ready</span>
+            <span className="sm:hidden">Ready</span>
+            <button 
+              onClick={() => setActiveTab('final')}
+              className="underline hover:no-underline"
+            >
+              <span className="hidden sm:inline">View final output</span>
+              <span className="sm:hidden">View</span>
+            </button>
+            <button 
+              onClick={() => setShowNotification(false)}
+              className="ml-2 text-white hover:text-gray-300"
+            >
+              ✕
+            </button>
+          </div>
         )}
 
         {(finalPrfaq || finalMlpPlan) && !isProcessing && !generalError && (
-          <section id="enhanced-results-section" className="relative">
-            <div className="absolute inset-0 bg-gradient-to-r from-green-500/5 to-blue-500/10 rounded-2xl blur-xl"></div>
-            <div className="relative bg-slate-900/50 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-8 shadow-xl">
-              <ModernResults 
-                finalPrfaq={finalPrfaq || ''}
-                finalMlpPlan={finalMlpPlan || ''}
-                productIdea={productIdea}
-                stepsData={stepsData}
-              />
-            </div>
-          </section>
-        )}
-
-        {/* Contextual Actions - Only show when there are results */}
-        {(finalPrfaq || finalMlpPlan || (progress === 100 && !isProcessing)) && (
-          <div className="flex justify-center space-x-4 mt-8">
+          <div className="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4 mt-8">
             <button 
               onClick={resetState} 
-              className="flex items-center justify-center px-6 py-3 bg-slate-700 hover:bg-slate-600 text-white font-medium rounded-xl transition-colors focus:outline-none focus:ring-2 focus:ring-slate-500/50"
+              className="flex items-center justify-center px-6 py-3 bg-white hover:bg-gray-50 text-black border border-gray-300 font-medium rounded-xl transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500"
             >
-              <i className="bi bi-arrow-clockwise me-2"></i>Analyze New Idea
+              <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
+              Analyze New Idea
             </button>
             <button 
               onClick={handleExportResults} 
-              className="flex items-center justify-center px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-medium rounded-xl transition-colors focus:outline-none focus:ring-2 focus:ring-green-500/50"
+              className="flex items-center justify-center px-6 py-3 bg-black hover:bg-gray-800 text-white font-medium rounded-xl transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500"
             >
-              <i className="bi bi-download me-2"></i>Export Report
+              <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              Export Report
             </button>
           </div>
         )}
 
       </main>
 
-      <footer className="w-full max-w-4xl mt-12 text-center text-slate-500">
+      <footer className="w-full max-w-6xl mt-12 text-center text-gray-500">
         <p>&copy; {new Date().getFullYear()} Njenga Vibe Code LLC. All rights reserved.</p>
       </footer>
     </div>

@@ -52,7 +52,7 @@ class PerplexityProcessor:
                 progress_callback({
                     "step": 1,
                     "status": "processing",
-                    "message": "Conducting market research with Perplexity...",
+                    "message": "Conducting market research...",
                     "progress": 10
                 })
             

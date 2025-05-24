@@ -48,7 +48,7 @@ class ClaudeProcessor:
                 progress_callback({
                     "step": step_id,
                     "status": "processing",
-                    "message": f"Processing with Claude Sonnet...",
+                    "message": f"Agent is working...",
                     "progress": ((step_id - 1) / 7) * 100 + 10 if step_id else 10
                 })
             
@@ -84,7 +84,7 @@ class ClaudeProcessor:
                 progress_callback({
                     "step": step_id,
                     "status": "completed",
-                    "message": "Claude processing completed",
+                    "message": "Agent done working",
                     "progress": (step_id / 7) * 100 if step_id else 100,
                     "output": output
                 })
@@ -110,7 +110,7 @@ class ClaudeProcessor:
                 progress_callback({
                     "step": step_id,
                     "status": "error",
-                    "message": f"Error in Claude processing: {error_msg}",
+                    "message": f"Error in Agent processing: {error_msg}",
                     "error": error_msg
                 })
             return {"error": f"Claude API call failed: {error_msg}"} 
