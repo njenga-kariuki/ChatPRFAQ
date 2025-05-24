@@ -72,7 +72,14 @@ WORKING_BACKWARDS_STEPS = [
 6. BARRIERS TO ENTRY: Technical, regulatory, or market challenges for new entrants
 7. SUCCESS FACTORS: What makes products successful in this space
 
-Provide specific data points, numbers, and citations where possible. Structure your analysis with clear headings and actionable insights that can inform product positioning and press release development.""",
+Provide specific data points, numbers, and citations where possible. Structure your analysis with clear headings and actionable insights that can inform product positioning and press release development.
+
+FORMATTING ONLY (maintain research quality and methodology):
+- Use ## for main research sections (Market Opportunity, Competitive Intelligence, etc.)
+- Preserve citation formats - they add credibility
+- Preserve tables - they're valuable for executive review
+- Start directly with research findings (no "Here's my analysis" introductions)
+- End with clean source list if sources are included""",
         "user_prompt": """Based on this product idea:
 
 {input}
@@ -124,15 +131,17 @@ CORE APPROACH:
 - Customer obsession drives every decision
 - Data beats opinions, always
 
-PRESS RELEASE STRUCTURE:
+PRESS RELEASE STRUCTURE: Structure the press release with the following flow (do not include section labels in your output):
 1. **Headline**: Create compelling headline reflecting market opportunity
 2. **Sub-Heading**: One sentence describing product and primary customer benefit
-3. **Summary Paragraph**: Start with launch city/date, summarize product with market insights (3-5 sentences that make it irresistible to read onward)
+3. **Summary Paragraph**: Start with launch city/date (e.g.,AUSTIN, Texas – March 15, 2024 –), summarize product with market insights (3-5 sentences that make it irresistible to read onward)
 4. **Problem Paragraph**: Customer problem, market gap, critical unmet need backed by research
 5. **Solution Paragraph**: Most important parts of experience, how it works, detailed customer anecdote showing how solution solves enduring problem
 6. **Benefits Paragraph**: Secondary features/benefits, another detailed customer anecdote demonstrating value in problem context
 7. **Internal Quote**: Team member quote explaining why product was built in strategic context (1-2 sentences of context)
 8. **How to Get Started**: Brief call to action informed by customer research
+
+Write each section as natural flowing paragraphs without section headers or labels. Only the headline should be bold and the sub-heading should be italicized.
 
 QUALITY STANDARDS:
 - Does the customer problem resonate immediately?
@@ -142,7 +151,17 @@ QUALITY STANDARDS:
 - Does this solve a frequent, painful problem?
 - Are customer anecdotes specific and believable?
 
-Balance thinking big with being practical. Amazon demands ambitious vision grounded in buildable reality.""",
+Balance thinking big with being practical. Amazon demands ambitious vision grounded in buildable reality.
+
+FORMATTING REQUIREMENTS (maintain all Amazon PR methodology above):
+-FORMATTING REQUIREMENTS:
+- Format headline as bold text (using **)
+- Format sub-heading as italicized text (using *)
+- Present sections 3-8 as flowing paragraphs without section headers or labels
+- Use one blank line between paragraphs
+- Start directly with the headline (no meta-commentary)
+- End cleanly after the call to action
+""",
         "user_prompt": """Original Product Idea:
 ---
 {product_idea}
@@ -155,15 +174,6 @@ Market Research Analysis:
 
 Using both the original product idea and the comprehensive market research above, write an internal press release following Amazon's Working Backwards methodology.
 
-Follow the 8-part structure exactly:
-1. **Headline**: Compelling headline reflecting market opportunity
-2. **Sub-Heading**: One sentence - product and primary benefit
-3. **Summary Paragraph**: Launch city/date + irresistible 3-5 sentence summary
-4. **Problem Paragraph**: Customer problem + market gap + critical unmet need
-5. **Solution Paragraph**: Core experience + detailed customer anecdote
-6. **Benefits Paragraph**: Secondary features + another customer anecdote  
-7. **Internal Quote**: Team member explaining strategic rationale
-8. **How to Get Started**: Customer research-informed call to action
 
 CRITICAL REQUIREMENTS:
 - Ground big vision in practical first version
@@ -171,7 +181,8 @@ CRITICAL REQUIREMENTS:
 - Include specific, believable customer anecdotes
 - Connect solution clearly to customer benefit
 - Balance ambition with buildable reality
-- Leverage market research insights throughout
+- Leverage market research insights throughout (do not make up any data)
+- Precisely follow formatting guidelines above
 
 Remember: Think big on the problem space, be crisp on the solution."""
     },
@@ -207,7 +218,12 @@ QUALITY STANDARDS:
 - Creates excitement while maintaining credibility
 - Strategic importance is clear
 
-Polish this for CEO-level review. Make it crisp, compelling, and strategically sound.""",
+Polish this for CEO-level review. Make it crisp, compelling, and strategically sound.
+
+FORMATTING REQUIREMENTS (maintain strategic refinement focus above):
+- Preserve structure from draft
+- Start directly with refined content
+- End cleanly without editorial notes""",
         "user_prompt": """Market Research Analysis:
 ---
 {market_research}
@@ -243,7 +259,6 @@ USER RESEARCH & BEHAVIOR EXPERT (Primary Voice):
 - Champions accessibility and inclusion
 - Represents the "empty chair" customer
 
-
 FAQ CREATION PRINCIPLES:
 1. **Anticipate Skepticism**: What would make customers hesitate or say no?
 2. **Address Adoption Barriers**: Cost, complexity, switching costs, trust
@@ -259,7 +274,15 @@ QUALITY STANDARDS:
 - Show how you'll measure customer success
 - Demonstrate continuous customer listening
 
-Write 6-8 FAQ pairs that a VP would ask during a harsh review session.""",
+Write 6-8 FAQ pairs that a VP would ask during a harsh review session.
+
+FORMATTING REQUIREMENTS (maintain customer advocacy focus above):
+- Format as: **Question:** [text] followed by **Answer:** [text]
+- Label each question and answer pair with a number (e.g. "1. **Question:** [text] followed by **Answer:** [text]")
+- Format full question text as bold text (using **)
+- Start directly with first question
+- Use consistent Q/A structure throughout
+- No introductory or concluding meta-text""",
         "user_prompt": """Market Research Analysis:
 ---
 {market_research}
@@ -283,7 +306,6 @@ Generate 6-8 FAQ pairs covering, with all questions framed from the perspective 
 Style Notes:
 - Each answer should be honest, data-driven, and customer-obsessed. 
 - Reference the market research insights to provide credible, fact-based responses
-- Write as "Question 1", "Answer 1", "Question 2", "Answer 2", etc.
 """
     },
     {
@@ -321,7 +343,15 @@ WRITING PRINCIPLES:
 - Specific examples and concrete details
 - Honest about uncertainties and assumptions
 
-Answer each question with the precision and depth expected in an S-Team review. Provide executive-level strategic thinking combined with practical implementation reality.""",
+Answer each question with the precision and depth expected in an S-Team review. Provide executive-level strategic thinking combined with practical implementation reality.
+
+FORMATTING REQUIREMENTS (maintain technical rigor and business analysis above):
+- Format as: **Question:** [text] followed by **Answer:** [text]
+- Label each question and answer pair with a number (e.g. "1. **Question:** [text] followed by **Answer:** [text]")
+- Format full question text as bold text (using **)
+- Start directly with questions
+- Use consistent Q/A structure throughout
+- No introductory or concluding meta-text""",
         "user_prompt": """Market Research Analysis:
 ---
 {market_research}
@@ -364,11 +394,16 @@ Analyze the press release and market research above, and use your expertise to p
 3. What is the fastest and most frugal path to validate the key assumptions with high confidence, in logical sequence?
 4. What are the top reasons this product won't succeed?
 
-Style Notes:
-- Provide executive-level answers with Amazon's signature clarity, precision, and customer obsession
+FORMATTING REQUIREMENTS:
 - Each response should be substantive but concise, backed by data and clear reasoning
-- Write as "Question 1", "Answer 1", "Question 2", "Answer 2", etc.
-"""
+- Label each question and answer pair with a number (e.g. "1. **Question:** [text] followed by **Answer:** [text]")
+- Start directly with questions
+- Use consistent Q/A structure throughout
+- No introductory or concluding meta-text
+- Format section headers as bold text (using **)
+
+Remember: Provide executive-level answers with Amazon's signature clarity, precision, and customer obsession (no corporate speak)
+""" 
     },
     {
         "id": 6,
@@ -394,13 +429,17 @@ SYNTHESIS APPROACH:
 PRFAQ DOCUMENT STRUCTURE:
 **FIRST SECTION: Executive Summary**: The essential story in  3-4 sentences
 **SECOND SECTION: Press Release**:
-1. **Headline**: Create compelling headline reflecting market opportunity
-2. **Sub-Heading**: One sentence describing product and primary customer benefit
-3. **Summary Paragraph**: Start with launch city/date, summarize product with market insights (3-5 sentences that make it irresistible to read onward)
-4. **Problem Paragraph**: Customer problem, market gap, critical unmet need backed by research
-5. **Solution Paragraph**: Most important parts of experience, how it works, detailed customer anecdote showing how solution solves enduring problem
-6. **Benefits Paragraph**: Secondary features/benefits, another detailed customer anecdote demonstrating value in problem context
-7. **Internal Quote**: Team member quote explaining why product was built in strategic context (1-2 sentences of context)
+    PRESS RELEASE STRUCTURE: Structure the press release with the following flow (do not include section labels in your output):
+    1. **Headline**: Create compelling headline reflecting market opportunity
+    2. **Sub-Heading**: One sentence describing product and primary customer benefit
+    3. **Summary Paragraph**: Start with launch city/date (e.g.,AUSTIN, Texas – March 15, 2024 –), summarize product with market insights (3-5 sentences that make it irresistible to read onward)
+    4. **Problem Paragraph**: Customer problem, market gap, critical unmet need backed by research
+    5. **Solution Paragraph**: Most important parts of experience, how it works, detailed customer anecdote showing how solution solves enduring problem
+    6. **Benefits Paragraph**: Secondary features/benefits, another detailed customer anecdote demonstrating value in problem context
+    7. **Internal Quote**: Team member quote explaining why product was built in strategic context (1-2 sentences of context)
+    8. **How to Get Started**: Brief call to action informed by customer research
+
+    Write each section as natural flowing paragraphs without section headers or labels. Only the headline should be bold and the sub-heading should be italicized.
 
 QUALITY STANDARDS:
 - Would this get approved on first S-Team review?
@@ -409,7 +448,13 @@ QUALITY STANDARDS:
 - Does the MLP connect clearly to the bigger vision?
 - Is the writing crisp, clear, and compelling?
 
-Create a PRFAQ that exemplifies Amazon's high standards for strategic thinking and clear communication.""",
+Create a PRFAQ that exemplifies Amazon's high standards for strategic thinking and clear communication.
+
+FORMATTING ONLY (maintain editorial synthesis approach above):
+- Start with document title, then structured sections
+- Use consistent header hierarchy throughout
+- One blank line between major sections
+- End with complete document (no editorial sign-offs)""",
         "user_prompt": """Combined inputs from all previous steps:
 
 Market Research Analysis:
@@ -436,13 +481,12 @@ Synthesize these inputs into a comprehensive and crisp Amazon-stye PRFAQ documen
 
 STRUCTURE:
 - Section 1: Executive Summary: 3-4 sentences highlighting key market insights
-- Section 2: Press Release: 8-part structure (Headline, Sub-Heading, Summary Paragraph, Problem Paragraph, Solution Paragraph, Benefits Paragraph, Internal Quote, How to Get Started)
+- Section 2: Press Release: following the structure outlined above
     - Word count: 600-800 words
-- Section 3: Customer FAQ: 6-8 FAQ pairs (Question 1, Answer 1, Question 2, Answer 2, etc.)
-- Section 4: Internal FAQ: 6-8 FAQ pairs (Question 1, Answer 1, Question 2, Answer 2, etc.)
+- Section 3: Customer FAQ: 6-8 FAQ pairs (label each question and answer pair with a number (e.g. "1. **Question:** [text] followed by **Answer:** [text]"))
+- Section 4: Internal FAQ: 6-8 FAQ pairs (label each question and answer pair with a number (e.g. "1. **Question:** [text] followed by **Answer:** [text]"))
 
 STYLE NOTES:
-- Write as "Question 1", "Answer 1", "Question 2", "Answer 2", etc.
 - Use Amazon's signature writing style focusing on clarity, precision, and customer obsession (no corporate speak)
 
 """
@@ -491,7 +535,13 @@ DELIVERABLES:
 6. **Scaling Roadmap**: How MLP foundation supports future product evolution
 7. **Customer Validation Plan**: Research approach to validate MLP assumptions
 
-Create an MLP plan that clearly connects customer value to technical foundation while supporting long-term product vision.""",
+Create an MLP plan that clearly connects customer value to technical foundation while supporting long-term product vision.
+
+FORMATTING ONLY (maintain executive-level MLP planning above):
+- Use ## for major plan sections
+- Use - for bullet points in lists
+- Start directly with MLP plan content
+- End with complete plan (no meta-commentary about next steps)""",
         "user_prompt": """Final PRFAQ Document:
 ---
 {input}

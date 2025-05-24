@@ -230,15 +230,7 @@ class LLMProcessor:
         # Store the output for this step
         self.step_outputs[step_id] = output
         
-        # Send completion update (if not already sent by claude_processor)
-        if progress_callback:
-            progress_callback({
-                "step": step_id,
-                "status": "completed",
-                "message": f"Completed {step['name']}",
-                "progress": (step_id / 7) * 100,
-                "output": output
-            })
+        # Note: Progress callback completion message is handled by claude_processor
         
         return {
             "output": output,
@@ -415,7 +407,7 @@ class LLMProcessor:
                 progress_callback({
                     "step": 0,
                     "status": "processing",
-                    "message": "Analyzing product concept...",
+                    "message": "Agent analyzing product concept structure...",
                     "progress": 5
                 })
             

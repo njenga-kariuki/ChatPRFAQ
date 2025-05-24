@@ -1,6 +1,7 @@
 import React from 'react';
 import Markdown from 'react-markdown';
 import { StepData } from '../types'; // Assuming StepData is in types.ts at src/types.ts
+import { ContentProcessor } from '../utils/contentProcessor';
 
 interface ModernResultsProps {
   finalPrfaq: string;
@@ -61,13 +62,25 @@ const ModernResults: React.FC<ModernResultsProps> = ({ finalPrfaq, finalMlpPlan,
       <div className="px-8 py-12 md:px-16 md:py-16 max-w-4xl mx-auto">
         {activeTab === 'prfaq' && (
           <article className="prose-custom">
-            <Markdown>{finalPrfaq}</Markdown>
+            <Markdown 
+              components={{
+                p: ({children}) => <p style={{marginBottom: '2rem', lineHeight: '1.7'}}>{children}</p>
+              }}
+            >
+              {ContentProcessor.processContent(finalPrfaq)}
+            </Markdown>
           </article>
         )}
         
         {activeTab === 'mlp' && (
           <article className="prose-custom">
-            <Markdown>{finalMlpPlan}</Markdown>
+            <Markdown 
+              components={{
+                p: ({children}) => <p style={{marginBottom: '2rem', lineHeight: '1.7'}}>{children}</p>
+              }}
+            >
+              {ContentProcessor.processContent(finalMlpPlan)}
+            </Markdown>
           </article>
         )}
       </div>

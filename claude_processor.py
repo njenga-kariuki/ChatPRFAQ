@@ -10,6 +10,18 @@ class ClaudeProcessor:
         self.model = CLAUDE_MODEL
         logger.info(f"ClaudeProcessor initialized with model: {self.model}")
         
+        # Step-specific activity messages for enhanced progress tracking
+        self.step_activity_messages = {
+            0: "Agent analyzing product concept structure...",
+            1: "Agent researching market landscape and competitive intelligence...",
+            2: "Agent drafting customer-focused press release...",
+            3: "Agent refining press release for executive review...",
+            4: "Agent anticipating customer concerns and adoption barriers...",
+            5: "Agent analyzing strategic business and technical challenges...",
+            6: "Agent synthesizing comprehensive PRFAQ document...",
+            7: "Agent defining minimum lovable product roadmap..."
+        }
+        
         if not ANTHROPIC_API_KEY:
             logger.error("ANTHROPIC_API_KEY is not set. Claude functionality will not work.")
         else:
@@ -44,11 +56,14 @@ class ClaudeProcessor:
             return {"error": error_msg}
         
         try:
+            # Get step-specific activity message
+            activity_message = self.step_activity_messages.get(step_id, "Agent processing...")
+            
             if progress_callback:
                 progress_callback({
                     "step": step_id,
                     "status": "processing",
-                    "message": f"Agent is working...",
+                    "message": activity_message,
                     "progress": ((step_id - 1) / 7) * 100 + 10 if step_id else 10
                 })
             
@@ -80,11 +95,24 @@ class ClaudeProcessor:
             else:
                 logger.info("Claude response appears to be of appropriate length")
             
+            # Get completion message
+            completion_messages = {
+                0: "Product analysis complete",
+                1: "Market research and competitive analysis complete",
+                2: "Press release draft complete", 
+                3: "Press release refinement complete",
+                4: "Customer FAQ complete",
+                5: "Internal FAQ complete",
+                6: "PRFAQ document synthesis complete",
+                7: "MLP roadmap complete"
+            }
+            completion_message = completion_messages.get(step_id, "Agent completed processing")
+            
             if progress_callback:
                 progress_callback({
                     "step": step_id,
                     "status": "completed",
-                    "message": "Agent done working",
+                    "message": completion_message,
                     "progress": (step_id / 7) * 100 if step_id else 100,
                     "output": output
                 })

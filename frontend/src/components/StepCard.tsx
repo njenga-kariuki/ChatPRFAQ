@@ -1,6 +1,7 @@
 import React from 'react';
 import { StepData } from '../types'; // Assuming types.ts is in src/
 import Markdown from 'react-markdown'; // We'll add this dependency later
+import { ContentProcessor } from '../utils/contentProcessor';
 
 interface StepCardProps {
   step: StepData;
@@ -28,6 +29,50 @@ const StepCard: React.FC<StepCardProps> = ({ step, onToggle }) => {
     }
   };
 
+  // Debugging function to check applied styles
+  const debugStyles = React.useCallback(() => {
+    if (step.output && step.isActive) {
+      setTimeout(() => {
+        const container = document.querySelector(`#step-${step.id} .prose-custom`);
+        if (container) {
+          console.log(`🔍 StepCard ${step.id} CSS Debug:`);
+          console.log('- Container classes:', container.className);
+          
+          const paragraphs = container.querySelectorAll('p');
+          paragraphs.forEach((p, index) => {
+            const styles = window.getComputedStyle(p);
+            console.log(`  📝 Paragraph ${index + 1}:`);
+            console.log(`    - margin-bottom: ${styles.marginBottom}`);
+            console.log(`    - margin-top: ${styles.marginTop}`);
+            console.log(`    - line-height: ${styles.lineHeight}`);
+            console.log(`    - text content: "${p.textContent?.substring(0, 50)}..."`);
+          });
+          
+          console.log('=====================================');
+        }
+      }, 100);
+    }
+  }, [step.id, step.output, step.isActive]);
+
+  React.useEffect(() => {
+    debugStyles();
+  }, [debugStyles]);
+
+  // Test content for spacing verification
+  const testContent = `# Test Document
+
+This is the first paragraph of test content. It should have proper spacing below it to improve readability in professional business documents.
+
+This is the second paragraph. There should be significant visual separation between this paragraph and the one above to make scanning easier.
+
+This is the third paragraph. The spacing should be consistent throughout the document to maintain professional appearance.
+
+## Section Header
+
+Content under headers should also have proper spacing. This paragraph follows a header.
+
+The final paragraph should demonstrate that our spacing solution works consistently across all content types.`;
+
   if (step.status === 'pending') return null;
 
   return (
@@ -54,20 +99,16 @@ const StepCard: React.FC<StepCardProps> = ({ step, onToggle }) => {
       {/* Content - Collapsible with improved spacing */}
       {step.isActive && (
         <div className="p-8 md:p-12">
-          {step.input && (
-            <div className="mb-8">
-              <h4 className="text-sm font-medium text-gray-500 uppercase tracking-wide mb-4">Input</h4>
-              <div className="prose-custom bg-gray-50 p-4 rounded-lg">
-                <Markdown>{step.input}</Markdown>
-              </div>
-            </div>
-          )}
-          
           {step.output ? (
             <div>
-              {step.input && <h4 className="text-sm font-medium text-gray-500 uppercase tracking-wide mb-4">Output</h4>}
               <div className="prose-custom">
-                <Markdown>{step.output}</Markdown>
+                <Markdown 
+                  components={{
+                    p: ({children}) => <p style={{marginBottom: '2rem', lineHeight: '1.7'}}>{children}</p>
+                  }}
+                >
+                  {ContentProcessor.processContent(step.output)}
+                </Markdown>
               </div>
             </div>
           ) : (

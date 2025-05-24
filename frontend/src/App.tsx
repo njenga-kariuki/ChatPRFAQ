@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import './index.css'; // Ensure Tailwind styles are imported
 import ProductIdeaForm from './components/ProductIdeaForm';
 import ProcessingStatus from './components/ProcessingStatus'; // Import ProcessingStatus
@@ -7,6 +7,7 @@ import ProductAnalysisReview from './components/ProductAnalysisReview'; // Impor
 import { StepData } from './types'; // Import StepData
 import Markdown from 'react-markdown'; // Import react-markdown
 import ModernResults from './components/ModernResults'; // Added import for ModernResults
+import { ContentProcessor } from './utils/contentProcessor';
 
 // Interface for feedback data
 interface FeedbackData {
@@ -14,6 +15,95 @@ interface FeedbackData {
   problem: string;
   scope: string;
 }
+
+// Unified scroll management hook
+const useSmartScroll = () => {
+  const lastUserInteractionRef = useRef<number>(0);
+  const scrollTimeoutRef = useRef<number>();
+  
+  // Track user interactions to prevent interrupting reading
+  useEffect(() => {
+    const updateInteraction = () => {
+      lastUserInteractionRef.current = Date.now();
+    };
+    
+    // Listen for user interactions
+    window.addEventListener('scroll', updateInteraction);
+    window.addEventListener('mousedown', updateInteraction);
+    window.addEventListener('touchstart', updateInteraction);
+    window.addEventListener('keydown', updateInteraction);
+    
+    return () => {
+      window.removeEventListener('scroll', updateInteraction);
+      window.removeEventListener('mousedown', updateInteraction);
+      window.removeEventListener('touchstart', updateInteraction);
+      window.removeEventListener('keydown', updateInteraction);
+    };
+  }, []);
+  
+  const smartScroll = (targetId: string, options: {
+    block?: ScrollLogicalPosition;
+    delay?: number;
+    forceScroll?: boolean;
+    priority?: 'low' | 'medium' | 'high';
+  } = {}) => {
+    const {
+      block = 'nearest',
+      delay = 300,
+      forceScroll = false,
+      priority = 'medium'
+    } = options;
+    
+    // Clear any pending scroll
+    if (scrollTimeoutRef.current) {
+      clearTimeout(scrollTimeoutRef.current);
+    }
+    
+    scrollTimeoutRef.current = setTimeout(() => {
+      const element = document.getElementById(targetId);
+      if (!element) return;
+      
+      // Check if user has interacted recently (unless forced or high priority)
+      const timeSinceInteraction = Date.now() - lastUserInteractionRef.current;
+      const interactionCooldown = priority === 'high' ? 1000 : 3000;
+      
+      if (!forceScroll && timeSinceInteraction < interactionCooldown) {
+        console.log(`Skipping scroll to ${targetId} - user interaction detected`);
+        return;
+      }
+      
+      // Check if element is already visible (unless forced)
+      if (!forceScroll) {
+        const rect = element.getBoundingClientRect();
+        const viewportHeight = window.innerHeight;
+        const isInView = rect.top >= 0 && rect.bottom <= viewportHeight + 100;
+        
+        if (isInView) {
+          console.log(`Skipping scroll to ${targetId} - already in view`);
+          return;
+        }
+      }
+      
+      console.log(`Smart scrolling to ${targetId}`);
+      element.scrollIntoView({
+        behavior: 'smooth',
+        block,
+        inline: 'nearest'
+      });
+    }, delay) as unknown as number;
+  };
+  
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current);
+      }
+    };
+  }, []);
+  
+  return { smartScroll };
+};
 
 // Initial step definitions - will be updated by API stream
 const initialStepsData: StepData[] = [
@@ -48,6 +138,9 @@ function App() {
   const [showFinalTab, setShowFinalTab] = useState(false);
   const [showNotification, setShowNotification] = useState(false);
   const [lastCompletedStepId, setLastCompletedStepId] = useState<number | null>(null);
+
+  // Initialize smart scroll hook
+  const { smartScroll } = useSmartScroll();
 
   const resetState = () => {
     setProductIdea('');
@@ -312,29 +405,61 @@ function App() {
     }
   }, [isProcessing, progress, stepsData]);
 
-  // Auto-scroll to analysis section when it appears
+  // Unified scroll management with smart behavior
   useEffect(() => {
+    // Auto-scroll to analysis section when it appears
     if (analysisPhase === 'reviewing') {
-      setTimeout(() => {
-        document.getElementById('analysis-review-section')?.scrollIntoView({ 
-          behavior: 'smooth', 
-          block: 'center' 
-        });
-      }, 100);
+      smartScroll('analysis-review-section', { 
+        block: 'center', 
+        delay: 100, 
+        priority: 'high' 
+      });
     }
-  }, [analysisPhase]);
+  }, [analysisPhase, smartScroll]);
 
-  // Auto-scroll to Working Backwards section when it appears
   useEffect(() => {
+    // Auto-scroll to Working Backwards section when it appears
     if (showWorkingBackwards) {
-      setTimeout(() => {
-        document.getElementById('steps-display-section')?.scrollIntoView({ 
-          behavior: 'smooth', 
-          block: 'start' 
-        });
-      }, 200);
+      smartScroll('steps-display-section', { 
+        block: 'start', 
+        delay: 200, 
+        priority: 'medium' 
+      });
     }
-  }, [showWorkingBackwards]);
+  }, [showWorkingBackwards, smartScroll]);
+
+  useEffect(() => {
+    // Smart scroll for completed steps
+    const newlyCompletedSteps = stepsData.filter(s => s.status === 'completed');
+    
+    if (newlyCompletedSteps.length > 0) {
+      const latestCompleted = newlyCompletedSteps[newlyCompletedSteps.length - 1];
+      
+      // Only scroll if this is a newly completed step and we're on the process tab
+      if (latestCompleted.id !== lastCompletedStepId && activeTab === 'process') {
+        setLastCompletedStepId(latestCompleted.id);
+        
+        // Use smart scroll with conservative settings
+        smartScroll(`step-${latestCompleted.id}`, {
+          block: 'nearest',
+          delay: 500,
+          priority: 'low'
+        });
+      }
+    }
+  }, [stepsData, lastCompletedStepId, activeTab, smartScroll]);
+
+  useEffect(() => {
+    // Scroll to top when switching to Documents tab (only if user initiated)
+    if (activeTab === 'final' && showFinalTab) {
+      smartScroll('steps-display-section', { 
+        block: 'start', 
+        delay: 100, 
+        forceScroll: true, 
+        priority: 'medium' 
+      });
+    }
+  }, [activeTab, showFinalTab, smartScroll]);
 
   // Auto-dismiss notification banner
   useEffect(() => {
@@ -354,76 +479,35 @@ function App() {
     }
   }, [activeTab]);
 
-  // Scroll to top when switching to Documents tab
-  useEffect(() => {
-    if (activeTab === 'final' && showFinalTab) {
-      // Add delay to ensure content renders first
-      setTimeout(() => {
-        document.getElementById('steps-display-section')?.scrollIntoView({ 
-          behavior: 'smooth', 
-          block: 'start' 
-        });
-      }, 100);
-    }
-  }, [activeTab, showFinalTab]);
-
-  // Auto-scroll completed steps into view - improved implementation
-  useEffect(() => {
-    const newlyCompletedSteps = stepsData.filter(s => s.status === 'completed');
-    
-    if (newlyCompletedSteps.length > 0) {
-      const latestCompleted = newlyCompletedSteps[newlyCompletedSteps.length - 1];
-      
-      // Only scroll if this is a newly completed step and we're on the process tab
-      if (latestCompleted.id !== lastCompletedStepId && activeTab === 'process') {
-        setLastCompletedStepId(latestCompleted.id);
-        
-        // Add delay to ensure DOM updates and avoid conflicts with other auto-scrolls
-        setTimeout(() => {
-          const element = document.getElementById(`step-${latestCompleted.id}`);
-          if (element) {
-            // Check if element is significantly out of view (more conservative check)
-            const rect = element.getBoundingClientRect();
-            const viewportHeight = window.innerHeight;
-            const isSignificantlyOutOfView = rect.bottom > viewportHeight + 100 || rect.top < -100;
-            
-            if (isSignificantlyOutOfView) {
-              element.scrollIntoView({ 
-                behavior: 'smooth', 
-                block: 'nearest',
-                inline: 'nearest'
-              });
-            }
-          }
-        }, 500); // Longer delay to avoid conflicts
-      }
-    }
-  }, [stepsData, lastCompletedStepId]); // Removed activeTab from dependencies
-
   const generateReportText = () => {
-    let report = `Product Idea:\n${productIdea}\n\n`;
-    report += `-------------------------------------\nPROCESS STEPS\n-------------------------------------\n\n`;
-    stepsData.forEach(step => {
-      report += `Step ${step.id}: ${step.name} (${step.persona})\n`;
-      report += `Status: ${step.status}\n`;
-      if (step.input) {
-        report += `Input:\n${step.input}\n\n`;
-      }
-      if (step.output) {
-        report += `Output:\n${step.output}\n\n`;
-      }
-      if (step.error) {
-        report += `Error: ${step.error}\n\n`;
-      }
-      report += `----------\n\n`;
-    });
-
+    let report = `Product Concept Evaluation Report\n`;
+    report += `Generated: ${new Date().toLocaleDateString()}\n\n`;
+    report += `Product Idea:\n${productIdea}\n\n`;
+    
+    report += `${'='.repeat(60)}\nFINAL DOCUMENTS\n${'='.repeat(60)}\n\n`;
+    
     if (finalPrfaq) {
-      report += `-------------------------------------\nFINAL PRFAQ\n-------------------------------------\n${finalPrfaq}\n\n`;
+      report += `PRFAQ DOCUMENT\n${'-'.repeat(40)}\n`;
+      report += `${ContentProcessor.formatForExport(finalPrfaq)}\n\n`;
     }
+    
     if (finalMlpPlan) {
-      report += `-------------------------------------\nFINAL MLP PLAN\n-------------------------------------\n${finalMlpPlan}\n\n`;
+      report += `MLP PLAN\n${'-'.repeat(40)}\n`;
+      report += `${ContentProcessor.formatForExport(finalMlpPlan)}\n\n`;
     }
+    
+    // Only include detailed steps if user specifically wants them
+    const includeSteps = window.confirm("Include detailed process steps in export?");
+    if (includeSteps) {
+      report += `${'='.repeat(60)}\nPROCESS STEPS\n${'='.repeat(60)}\n\n`;
+      stepsData.forEach(step => {
+        if (step.status === 'completed' && step.output) {
+          report += `${step.name}\n${'-'.repeat(step.name.length)}\n`;
+          report += `${ContentProcessor.formatForExport(step.output)}\n\n`;
+        }
+      });
+    }
+    
     return report;
   };
 

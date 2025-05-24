@@ -30,13 +30,96 @@ body {
   @apply prose-h1:text-2xl prose-h1:mt-8 prose-h1:mb-6;
   @apply prose-h2:text-xl prose-h2:mt-6 prose-h2:mb-4;
   @apply prose-h3:text-lg prose-h3:mt-5 prose-h3:mb-3;
-  @apply prose-p:text-base prose-p:leading-[1.75] prose-p:mb-6;
   @apply prose-strong:font-semibold prose-strong:text-gray-900;
-  @apply prose-ul:my-6 prose-li:my-2;
   @apply prose-code:bg-gray-100 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-sm;
   @apply prose-pre:bg-gray-900 prose-pre:shadow-sm;
   @apply prose-blockquote:border-gray-200 prose-blockquote:bg-gray-50 prose-blockquote:py-1 prose-blockquote:px-4;
   font-size: 16px !important;
+}
+
+/* FAQ Question/Answer Formatting */
+.prose-custom p strong:first-child {
+  display: block;
+  margin-top: 2rem;
+  margin-bottom: 0.75rem;
+  color: #111827;
+}
+
+.prose-custom p:has(strong:first-child) + p:not(:has(strong:first-child)) {
+  margin-left: 1rem;
+  margin-bottom: 2rem;
+  border-left: 3px solid #e5e7eb;
+  padding-left: 1rem;
+}
+
+/* Table Improvements */
+.prose-custom table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5rem 0;
+  border: 1px solid #d1d5db;
+  background: white;
+}
+
+.prose-custom th, .prose-custom td {
+  border: 1px solid #d1d5db;
+  padding: 0.75rem;
+  text-align: left;
+  vertical-align: top;
+}
+
+.prose-custom th {
+  background-color: #f9fafb;
+  font-weight: 600;
+  color: #374151;
+}
+
+.prose-custom tbody tr:nth-child(even) {
+  background-color: #f9fafb;
+}
+
+/* Professional Section Spacing */
+.prose-custom h2 {
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.prose-custom h3 {
+  margin-top: 1.5rem;
+  margin-bottom: 0.75rem;
+}
+
+/* Enhanced paragraph spacing for professional documents */
+.prose-custom p {
+  margin-bottom: 2rem !important;
+  line-height: 1.7;
+}
+
+.prose-custom p + p {
+  margin-top: 2rem !important;
+}
+
+/* Proper spacing after headers */
+.prose-custom h1 + p, .prose-custom h2 + p, .prose-custom h3 + p {
+  margin-top: 1rem !important;
+}
+
+/* Enhanced List Spacing */
+.prose-custom ul, .prose-custom ol {
+  margin-top: 2rem !important;
+  margin-bottom: 2rem !important;
+}
+
+.prose-custom li {
+  margin-bottom: 0.5rem;
+  line-height: 1.6;
+}
+
+/* Citation Styling */
+.prose-custom p:contains("[") {
+  position: relative;
 }
 
 /* FAQ Specific Formatting */
@@ -52,15 +135,3 @@ body {
 .faq-pair {
   @apply mb-10 last:mb-0;
 }
-
-/* body {
-  font-family: sans-serif;
-  margin: 20px;
-  background-color: #f0f0f0;
-}
-
-#root {
-  background-color: white;
-  padding: 20px;
-  border-radius: 8px;
-} */ 
