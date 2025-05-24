@@ -1,143 +1,223 @@
 #!/usr/bin/env python3
 """
-Test script to verify Gemini API integration
+Test script to verify Claude API integration
 """
 
 import os
 import sys
-import logging
+import time
 
-# Configure logging for the test
-logging.basicConfig(
-    level=logging.DEBUG,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-)
+# Basic imports check
+try:
+    print("Testing imports...")
+    import anthropic
+    print("✓ Anthropic import successful")
+    
+    from flask import Flask
+    print("✓ Flask import successful")
+    
+    from flask_cors import CORS
+    print("✓ Flask-CORS import successful")
+    
+    # Test project-specific imports
+    print("\nTesting project imports...")
+    
+    api_key = os.environ.get("ANTHROPIC_API_KEY", "")
+    if not api_key:
+        print("✗ ANTHROPIC_API_KEY not found in environment")
+        sys.exit(1)
+    print("✓ ANTHROPIC_API_KEY found in environment")
+    
+    from config import ANTHROPIC_API_KEY, CLAUDE_MODEL, WORKING_BACKWARDS_STEPS
+    print("✓ Config import successful")
+    print(f"✓ Model configured: {CLAUDE_MODEL}")
+    
+    from llm_processor import LLMProcessor
+    print("✓ LLMProcessor import successful")
+    
+    from perplexity_processor import PerplexityProcessor
+    print("✓ PerplexityProcessor import successful")
+    
+    from claude_processor import ClaudeProcessor
+    print("✓ ClaudeProcessor import successful")
+    
+except ImportError as e:
+    print(f"✗ Import error: {e}")
+    sys.exit(1)
 
-def test_api_key():
-    """Test if API key is available"""
-    api_key = os.environ.get("GEMINI_API_KEY", "")
-    print(f"✓ API Key present: {'Yes' if api_key else 'No'}")
-    if api_key:
-        print(f"✓ API Key length: {len(api_key)} characters")
-    return bool(api_key)
-
-def test_imports():
-    """Test if all required imports work"""
+def test_claude_api():
+    """Test basic Claude API functionality"""
+    print("\n=== Testing Claude API ===")
+    
     try:
-        import google.generativeai as genai
-        print("✓ google.generativeai import successful")
+        from config import ANTHROPIC_API_KEY, CLAUDE_MODEL
         
-        from config import GEMINI_API_KEY, GEMINI_MODEL, WORKING_BACKWARDS_STEPS
-        print("✓ config imports successful")
-        print(f"✓ Model configured: {GEMINI_MODEL}")
-        print(f"✓ Steps configured: {len(WORKING_BACKWARDS_STEPS)}")
+        if not ANTHROPIC_API_KEY:
+            print("✗ ANTHROPIC_API_KEY not configured")
+            return False
         
-        from llm_processor import LLMProcessor
-        print("✓ LLMProcessor import successful")
+        client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
+        print("✓ Claude API client configured")
         
-        return True
-    except Exception as e:
-        print(f"✗ Import error: {e}")
-        return False
-
-def test_gemini_api():
-    """Test basic Gemini API functionality"""
-    try:
-        import google.generativeai as genai
-        from config import GEMINI_API_KEY, GEMINI_MODEL
+        # Test basic API call
+        print(f"✓ Testing model: {CLAUDE_MODEL}")
         
-        # Configure API
-        genai.configure(api_key=GEMINI_API_KEY)
-        print("✓ Gemini API configured")
-        
-        # Test model creation
-        model = genai.GenerativeModel(
-            model_name=GEMINI_MODEL,
-            system_instruction="You are a helpful assistant."
+        response = client.messages.create(
+            model=CLAUDE_MODEL,
+            max_tokens=100,
+            temperature=0.7,
+            messages=[
+                {"role": "user", "content": "Hello, Claude! Please respond with 'API test successful' to confirm the connection works."}
+            ]
         )
-        print("✓ GenerativeModel created successfully")
         
-        # Test simple generation
-        response = model.generate_content("Say hello in exactly 5 words.")
-        print("✓ generate_content call successful")
-        
-        if hasattr(response, 'text') and response.text:
-            print(f"✓ Response received: '{response.text.strip()}'")
+        if response and response.content and response.content[0].text:
+            print(f"✓ Claude API test successful")
+            print(f"Response: {response.content[0].text[:100]}...")
             return True
         else:
-            print(f"✗ Invalid response: {response}")
+            print("✗ Invalid response from Claude API")
             return False
             
     except Exception as e:
-        print(f"✗ Gemini API test failed: {e}")
-        import traceback
-        traceback.print_exc()
+        print(f"✗ Claude API test failed: {e}")
+        return False
+
+def test_claude_processor():
+    """Test ClaudeProcessor functionality"""
+    print("\n=== Testing ClaudeProcessor ===")
+    
+    try:
+        processor = ClaudeProcessor()
+        print("✓ ClaudeProcessor initialized")
+        
+        result = processor.generate_response(
+            system_prompt="You are a helpful assistant.",
+            user_prompt="Say 'ClaudeProcessor test successful' to confirm this works.",
+            progress_callback=None,
+            step_id=None
+        )
+        
+        if "error" in result:
+            print(f"✗ ClaudeProcessor test failed: {result['error']}")
+            return False
+        
+        if "output" in result and result["output"]:
+            print("✓ ClaudeProcessor test successful")
+            print(f"Response: {result['output'][:100]}...")
+            return True
+        else:
+            print("✗ Invalid response from ClaudeProcessor")
+            return False
+            
+    except Exception as e:
+        print(f"✗ ClaudeProcessor test failed: {e}")
         return False
 
 def test_llm_processor():
-    """Test LLMProcessor with a simple step"""
+    """Test LLMProcessor with Claude integration"""
+    print("\n=== Testing LLMProcessor ===")
+    
     try:
-        from llm_processor import LLMProcessor
-        
         processor = LLMProcessor()
-        print("✓ LLMProcessor instance created")
+        print("✓ LLMProcessor initialized")
         
-        # Test simple step processing
-        test_input = "A smart alarm clock that learns your sleep patterns"
-        result = processor.generate_step_response(1, test_input)
+        # Test product analysis (Step 0)
+        result = processor.analyze_product_idea("A simple test product idea for API testing")
         
         if "error" in result:
-            print(f"✗ Step processing failed: {result['error']}")
+            print(f"✗ LLMProcessor test failed: {result['error']}")
             return False
-        elif "output" in result:
-            output_length = len(result["output"])
-            print(f"✓ Step 1 processing successful - output length: {output_length}")
-            print(f"✓ Output preview: {result['output'][:100]}...")
+        
+        if "analysis" in result and result["analysis"]:
+            print("✓ LLMProcessor test successful")
+            print(f"Analysis: {result['analysis'][:100]}...")
             return True
         else:
-            print(f"✗ Unexpected result format: {result}")
+            print("✗ Invalid response from LLMProcessor")
             return False
             
     except Exception as e:
         print(f"✗ LLMProcessor test failed: {e}")
-        import traceback
-        traceback.print_exc()
+        return False
+
+def test_config_values():
+    """Test configuration values"""
+    print("\n=== Testing Configuration ===")
+    
+    try:
+        from config import ANTHROPIC_API_KEY, CLAUDE_MODEL, WORKING_BACKWARDS_STEPS
+        
+        if not ANTHROPIC_API_KEY:
+            print("✗ ANTHROPIC_API_KEY not configured")
+            return False
+        print("✓ ANTHROPIC_API_KEY configured")
+        
+        if CLAUDE_MODEL != "claude-sonnet-4-20250514":
+            print(f"⚠ Expected claude-sonnet-4-20250514, got: {CLAUDE_MODEL}")
+        else:
+            print(f"✓ Correct Claude model configured: {CLAUDE_MODEL}")
+        
+        if len(WORKING_BACKWARDS_STEPS) != 7:
+            print(f"✗ Expected 7 working backwards steps, got: {len(WORKING_BACKWARDS_STEPS)}")
+            return False
+        print(f"✓ Working backwards steps configured: {len(WORKING_BACKWARDS_STEPS)} steps")
+        
+        return True
+        
+    except Exception as e:
+        print(f"✗ Configuration test failed: {e}")
         return False
 
 def main():
     """Run all tests"""
-    print("=== Testing LLM-Powered Product Concept Evaluator ===\n")
+    print("Starting API connectivity tests...\n")
     
     tests = [
-        ("API Key", test_api_key),
-        ("Imports", test_imports),
-        ("Gemini API", test_gemini_api),
-        ("LLMProcessor", test_llm_processor)
+        ("Configuration", test_config_values),
+        ("Claude API", test_claude_api),
+        ("Claude Processor", test_claude_processor),
+        ("LLM Processor", test_llm_processor),
     ]
     
-    results = {}
+    results = []
+    
     for test_name, test_func in tests:
-        print(f"\n--- Testing {test_name} ---")
-        try:
-            results[test_name] = test_func()
-        except Exception as e:
-            print(f"✗ {test_name} test crashed: {e}")
-            results[test_name] = False
+        print(f"\n{'='*50}")
+        print(f"Running {test_name} test...")
+        print('='*50)
+        
+        start_time = time.time()
+        success = test_func()
+        end_time = time.time()
+        
+        results.append((test_name, success, end_time - start_time))
+        
+        if success:
+            print(f"✓ {test_name} test PASSED ({end_time - start_time:.2f}s)")
+        else:
+            print(f"✗ {test_name} test FAILED ({end_time - start_time:.2f}s)")
     
-    print("\n=== Test Results ===")
-    all_passed = True
-    for test_name, passed in results.items():
-        status = "PASS" if passed else "FAIL"
-        print(f"{test_name}: {status}")
-        if not passed:
-            all_passed = False
+    # Summary
+    print(f"\n{'='*50}")
+    print("TEST SUMMARY")
+    print('='*50)
     
-    if all_passed:
-        print("\n🎉 All tests passed! The application should work correctly.")
+    total_tests = len(results)
+    passed_tests = sum(1 for _, success, _ in results if success)
+    
+    for test_name, success, duration in results:
+        status = "PASSED" if success else "FAILED"
+        print(f"{test_name:20} | {status:6} | {duration:6.2f}s")
+    
+    print(f"\nResult: {passed_tests}/{total_tests} tests passed")
+    
+    if passed_tests == total_tests:
+        print("🎉 All tests passed! Claude integration is working correctly.")
+        return 0
     else:
-        print("\n❌ Some tests failed. Check the errors above for debugging.")
-    
-    return 0 if all_passed else 1
+        print("❌ Some tests failed. Please check the configuration and API keys.")
+        return 1
 
 if __name__ == "__main__":
     sys.exit(main()) 

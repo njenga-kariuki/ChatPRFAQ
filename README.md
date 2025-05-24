@@ -1,8 +1,17 @@
 # LLM-Powered Product Concept Evaluator
 
-## Overview
+A sophisticated web application that implements Amazon's "Working Backwards" methodology using Anthropic Claude to help product teams develop comprehensive product strategies and PRFAQs.
 
 This web application simulates Amazon's "Working Backwards" process using Large Language Models to help product managers, entrepreneurs, and innovators develop and refine their product concepts. The application generates a comprehensive Press Release/FAQ (PRFAQ) document and a Minimum Lovable Product (MLP) plan through a structured 6-step AI-driven process.
+
+## Key Features
+
+- **Working Backwards Method**: Implements Amazon's product development methodology with AI assistance
+- **LLM Integration**: Anthropic Claude Sonnet (claude-sonnet-4-20250514) for advanced reasoning
+- **Market Research**: Integrated Perplexity AI for real-time competitive analysis  
+- **Interactive Web Interface**: Modern React-based frontend for seamless user experience
+- **Progress Tracking**: Real-time updates on document generation progress
+- **Export Options**: Download generated documents in multiple formats
 
 ## Features
 
@@ -45,209 +54,86 @@ This web application simulates Amazon's "Working Backwards" process using Large 
 ## Architecture
 
 ```
-┌─────────────────┐    HTTP/JSON     ┌───────────────────┐
-│  Frontend UI    │ ◄──────────────► │  Flask Web Server │
-│  (HTML/CSS/JS)  │                  │  (app.py/routes) │
-└─────────────────┘                  └───────────────────┘
-                                              │
-                                              │ Function Calls
-                                              ▼
-                                     ┌───────────────────┐
-                                     │   LLM Processor   │
-                                     │ (llm_processor.py)│
-                                     └───────────────────┘
-                                              │
-                                              │ API Calls
-                                              ▼
-                                     ┌───────────────────┐
-                                     │  Google Gemini    │
-                                     │      API          │
-                                     └───────────────────┘
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│   React.js      │    │   Flask API     │    │  Anthropic      │
+│   Frontend      │◄──►│   (Python)      │◄──►│  Claude Sonnet  │
+│                 │    │                 │    │  4-20250514     │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
+                              │
+                              ▼
+                       ┌─────────────────┐
+                       │  Perplexity AI  │
+                       │  (Market        │
+                       │   Research)     │
+                       └─────────────────┘
 ```
 
-## Getting Started
+## Getting API Keys
 
-### Prerequisites
-- Python 3.11 or higher
-- Google Gemini API key ([Get one here](https://aistudio.google.com/app/apikey))
-- Modern web browser (Chrome, Firefox, Safari, Edge)
+### Anthropic Claude API
+1. Go to [Anthropic Console](https://console.anthropic.com/)
+2. Create an account and verify your email
+3. Navigate to API Keys in your dashboard
+4. Create a new API key
+5. Add the key to Replit Secrets as `ANTHROPIC_API_KEY`
 
-### Installation
+### Perplexity API  
+1. Go to [Perplexity API](https://docs.perplexity.ai/)
+2. Sign up for an account
+3. Generate an API key from your dashboard
+4. Add the key to Replit Secrets as `PERPLEXITY_API_KEY`
 
-1. **Clone or download the project**
-   ```bash
-   git clone <repository-url>
-   cd product-concept-evaluator
-   ```
+## Environment Variables
 
-2. **Install dependencies**
-   ```bash
-   pip install -e .
-   ```
+The application requires the following environment variables (set in Replit Secrets):
 
-3. **Set up environment variables**
-   
-   **For Replit:** Add to Replit Secrets:
-   - `GEMINI_API_KEY`: Your Google Gemini API key
-   
-   **For local development:** Create a `.env` file:
-   ```bash
-   export GEMINI_API_KEY="your-api-key-here"
-   export SESSION_SECRET="your-session-secret"  # Optional
-   ```
+- `ANTHROPIC_API_KEY` (Required): Anthropic Claude API key
+- `PERPLEXITY_API_KEY` (Required): Perplexity AI API key for market research
 
-### Running the Application
-
-#### Option 1: Development Server (Recommended for Testing)
 ```bash
-python run_dev.py
-```
-- ✅ No timeout limitations
-- ✅ Detailed console logging
-- ✅ Auto-reload on code changes
-- ✅ Perfect for development and debugging
-
-#### Option 2: Production Server
-```bash
-python main.py
-```
-or
-```bash
-gunicorn --bind 0.0.0.0:5000 --timeout 120 main:app
+# Set these in Replit Secrets
+export ANTHROPIC_API_KEY="your-anthropic-api-key-here"
+export PERPLEXITY_API_KEY="your-perplexity-api-key-here"
 ```
 
-#### Option 3: Replit Deployment
-The application is pre-configured for Replit. Simply hit the "Run" button.
+## Model Configuration
 
-### Testing the Setup
+The application uses `claude-sonnet-4-20250514` for optimal results. To change models, update `config.py`:
 
-Run the included test script to verify everything is working:
+```python
+CLAUDE_MODEL = "your-preferred-model"
+```
+
+Available Claude models:
+- `claude-sonnet-4-20250514` (Recommended)
+- `claude-opus-4-20250514` (Most capable)
+- `claude-3-5-sonnet-20241022` (Previous generation)
+
+## Testing
+
+Run the test suite to verify all components:
+
 ```bash
 python test_api.py
 ```
 
-This will test:
-- API key validation
-- Gemini API connectivity
-- Core functionality
-- Step processing
-
-## Usage Guide
-
-### Basic Workflow
-
-1. **Access the Application**
-   - Open your browser to `http://localhost:5000` (development)
-   - Or your Replit URL (production)
-
-2. **Enter Your Product Idea**
-   - Provide a detailed description (minimum 10 characters)
-   - Include the problem it solves, target audience, and unique value proposition
-   - Example: "A mobile app for Kenya small businesses that integrates M-Pesa, WhatsApp, and inventory management"
-
-3. **Choose Processing Mode**
-   - **Standard**: Complete processing, then display results
-   - **Streaming**: Real-time updates as each step completes
-
-4. **Review Results**
-   - Browse through each step in the accordion interface
-   - Review the final PRFAQ document
-   - Examine the MLP plan with features and metrics
-
-5. **Export and Share**
-   - Download results as text files
-   - Copy sections for presentations or documentation
-
-### API Endpoints
-
-#### Core Endpoints
-- `GET /` - Main application interface
-- `POST /api/process` - Process complete pipeline (3-4 minutes)
-- `POST /api/process_stream` - Stream processing with real-time updates
-- `POST /api/process_step` - Process individual steps
-
-#### Request Format
-```json
-{
-  "product_idea": "Your detailed product description here..."
-}
-```
-
-#### Response Format
-```json
-{
-  "product_idea": "Original input",
-  "steps": [
-    {
-      "id": 1,
-      "name": "Drafting Press Release",
-      "persona": "Product Manager Persona",
-      "input": "...",
-      "output": "..."
-    }
-  ],
-  "prfaq": "Complete PRFAQ document",
-  "mlp_plan": "MLP plan with features and metrics"
-}
-```
-
-## Performance & Expectations
-
-### Processing Times
-- **Each Step**: 20-40 seconds (depends on complexity)
-- **Total Duration**: 3-4 minutes for complete evaluation
-- **Concurrent Users**: Supports multiple simultaneous evaluations
-
-### Output Quality
-- **Press Release**: Publication-ready, 500-800 words
-- **FAQs**: 5-7 comprehensive Q&As per section
-- **PRFAQ Document**: 2000-4000 words, professionally formatted
-- **MLP Plan**: Actionable roadmap with metrics and technical considerations
-
-## File Structure
-
-```
-├── main.py                 # Application entry point
-├── app.py                  # Flask application factory
-├── routes.py               # API routes and endpoints
-├── llm_processor.py        # Core LLM processing logic
-├── config.py               # Configuration and step definitions
-├── run_dev.py              # Development server script
-├── test_api.py             # API integration tests
-├── pyproject.toml          # Python dependencies
-├── .replit                 # Replit deployment configuration
-├── templates/
-│   └── index.html          # Main web interface
-├── static/
-│   ├── js/
-│   │   └── main.js         # Frontend JavaScript
-│   └── css/
-│       └── style.css       # Custom styling
-└── README.md               # This file
-```
-
-## Configuration
-
-### Environment Variables
-- `GEMINI_API_KEY` (Required): Google Gemini API key
-- `SESSION_SECRET` (Optional): Flask session secret key
-
-### Model Configuration
-The application uses `gemini-2.5-pro-preview-05-06` for optimal results. To change models, update `config.py`:
-
-```python
-GEMINI_MODEL = "your-preferred-model"
-```
-
-### Step Customization
-Modify personas and prompts in `config.py` under `WORKING_BACKWARDS_STEPS`. Each step includes:
-- System prompt (persona definition)
-- User prompt template
-- Metadata (name, description)
+The test suite validates:
+- Claude API connectivity
+- Configuration values
+- Claude processor functionality  
+- LLM processor integration
 
 ## Troubleshooting
 
 ### Common Issues
+
+**Claude API Error**
+- Solution: Verify `ANTHROPIC_API_KEY` in environment/secrets
+- Check API key validity at [Anthropic Console](https://console.anthropic.com/)
+
+**Model Not Found**
+- Solution: Ensure you're using a valid Claude model identifier
+- Update `CLAUDE_MODEL` in `config.py` if needed
 
 **Application gets stuck processing**
 - Cause: Timeout issues with long-running requests

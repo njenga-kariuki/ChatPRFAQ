@@ -269,3 +269,177 @@ def process_single_step():
         return jsonify({
             'error': f'Server error: {str(e)}'
         }), 500
+
+@app.route('/api/analyze_product_idea', methods=['POST'])
+def analyze_product_idea():
+    try:
+        data = request.get_json()
+        if not data or 'product_idea' not in data:
+            return jsonify({'error': 'Missing product_idea'}), 400
+        
+        result = llm_processor.analyze_product_idea(data['product_idea'])
+        
+        if 'error' in result:
+            return jsonify({'error': result['error']}), 500
+        
+        return jsonify(result)
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/refine_analysis', methods=['POST'])
+def refine_analysis():
+    try:
+        data = request.get_json()
+        required_fields = ['original_input', 'current_analysis', 'feedback']
+        
+        if not data or not all(field in data for field in required_fields):
+            return jsonify({'error': 'Missing required fields'}), 400
+        
+        result = llm_processor.refine_product_analysis(
+            data['original_input'],
+            data['current_analysis'], 
+            data['feedback']
+        )
+        
+        if 'error' in result:
+            return jsonify({'error': result['error']}), 500
+        
+        return jsonify(result)
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/create_enriched_brief', methods=['POST'])
+def create_enriched_brief():
+    try:
+        data = request.get_json()
+        required_fields = ['original_idea', 'analysis']
+        
+        if not data or not all(field in data for field in required_fields):
+            return jsonify({'error': 'Missing required fields'}), 400
+        
+        brief = llm_processor.create_enriched_product_brief(
+            data['original_idea'],
+            data['analysis']
+        )
+        
+        return jsonify({'brief': brief})
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/test-perplexity', methods=['GET'])
+def test_perplexity_api():
+    """Test endpoint to debug Perplexity API authentication"""
+    from config import PERPLEXITY_API_KEY, PERPLEXITY_BASE_URL, PERPLEXITY_MODEL
+    from openai import OpenAI
+    import requests
+    import traceback
+    
+    results = {
+        "api_key_check": {},
+        "direct_request": {},
+        "openai_client": {},
+        "summary": ""
+    }
+    
+    # 1. Check API key
+    if PERPLEXITY_API_KEY:
+        results["api_key_check"] = {
+            "status": "present",
+            "length": len(PERPLEXITY_API_KEY),
+            "prefix": PERPLEXITY_API_KEY[:20] + "..." if len(PERPLEXITY_API_KEY) > 20 else PERPLEXITY_API_KEY,
+            "format_check": {
+                "starts_with_pplx": PERPLEXITY_API_KEY.startswith("pplx-"),
+                "contains_spaces": " " in PERPLEXITY_API_KEY,
+                "contains_newlines": "\n" in PERPLEXITY_API_KEY
+            }
+        }
+    else:
+        results["api_key_check"] = {
+            "status": "missing",
+            "error": "PERPLEXITY_API_KEY not found in environment"
+        }
+        results["summary"] = "API key not configured. Please check Replit Secrets."
+        return jsonify(results), 500
+    
+    # 2. Test with direct HTTP request
+    try:
+        headers = {
+            "Authorization": f"Bearer {PERPLEXITY_API_KEY}",
+            "Content-Type": "application/json"
+        }
+        
+        data = {
+            "model": PERPLEXITY_MODEL,
+            "messages": [{"role": "user", "content": "Reply 'test ok' only"}],
+            "max_tokens": 10,
+            "temperature": 0
+        }
+        
+        response = requests.post(
+            f"{PERPLEXITY_BASE_URL}/chat/completions",
+            headers=headers,
+            json=data,
+            timeout=10
+        )
+        
+        results["direct_request"] = {
+            "status_code": response.status_code,
+            "success": response.status_code == 200
+        }
+        
+        if response.status_code == 200:
+            resp_json = response.json()
+            if "choices" in resp_json:
+                results["direct_request"]["response"] = resp_json["choices"][0]["message"]["content"]
+        else:
+            results["direct_request"]["error"] = response.text[:500]
+            
+    except Exception as e:
+        results["direct_request"] = {
+            "success": False,
+            "error": str(e),
+            "traceback": traceback.format_exc()
+        }
+    
+    # 3. Test with OpenAI client
+    try:
+        client = OpenAI(
+            api_key=PERPLEXITY_API_KEY,
+            base_url=PERPLEXITY_BASE_URL
+        )
+        
+        response = client.chat.completions.create(
+            model=PERPLEXITY_MODEL,
+            messages=[{"role": "user", "content": "Reply 'test ok' only"}],
+            max_tokens=10,
+            temperature=0
+        )
+        
+        results["openai_client"] = {
+            "success": True,
+            "response": response.choices[0].message.content
+        }
+        
+    except Exception as e:
+        results["openai_client"] = {
+            "success": False,
+            "error": str(e),
+            "error_type": type(e).__name__,
+            "traceback": traceback.format_exc()
+        }
+    
+    # 4. Summary
+    if results["direct_request"].get("success") and results["openai_client"].get("success"):
+        results["summary"] = "✅ Both tests passed! Perplexity API is working correctly."
+        status_code = 200
+    elif results["direct_request"].get("success") and not results["openai_client"].get("success"):
+        results["summary"] = "⚠️ API key is valid but OpenAI client has issues."
+        status_code = 500
+    else:
+        results["summary"] = "❌ Perplexity API authentication failed. Check API key."
+        status_code = 500
+    
+    return jsonify(results), status_code

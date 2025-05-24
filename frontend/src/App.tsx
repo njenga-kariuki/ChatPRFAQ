@@ -3,18 +3,27 @@ import './index.css'; // Ensure Tailwind styles are imported
 import ProductIdeaForm from './components/ProductIdeaForm';
 import ProcessingStatus from './components/ProcessingStatus'; // Import ProcessingStatus
 import StepsDisplay from './components/StepsDisplay'; // Import StepsDisplay
+import ProductAnalysisReview from './components/ProductAnalysisReview'; // Import new component
 import { StepData } from './types'; // Import StepData
 import Markdown from 'react-markdown'; // Import react-markdown
 import ModernResults from './components/ModernResults'; // Added import for ModernResults
 
+// Interface for feedback data
+interface FeedbackData {
+  customer: string;
+  problem: string;
+  scope: string;
+}
+
 // Initial step definitions - will be updated by API stream
 const initialStepsData: StepData[] = [
-  { id: 1, name: 'Drafting Press Release', persona: 'Product Manager Persona', status: 'pending', isActive: false, input: null, output: null },
-  { id: 2, name: 'Refining Press Release', persona: 'Marketing Lead Persona', status: 'pending', isActive: false, input: null, output: null },
-  { id: 3, name: 'Drafting External FAQ', persona: 'Customer Advocate & PM Personas', status: 'pending', isActive: false, input: null, output: null },
-  { id: 4, name: 'Drafting Internal FAQ', persona: 'Lead Engineer & PM Personas', status: 'pending', isActive: false, input: null, output: null },
-  { id: 5, name: 'Synthesizing PRFAQ Document', persona: 'Editor Persona', status: 'pending', isActive: false, input: null, output: null },
-  { id: 6, name: 'Defining MLP Plan', persona: 'PM & Lead Engineer Persona', status: 'pending', isActive: false, input: null, output: null },
+  { id: 1, name: 'Market Research & Analysis', persona: 'Expert Market Research Analyst Persona', status: 'pending', isActive: false, input: null, output: null },
+  { id: 2, name: 'Drafting Press Release', persona: 'Principal Product Manager Persona', status: 'pending', isActive: false, input: null, output: null },
+  { id: 3, name: 'Refining Press Release', persona: 'VP Product Persona', status: 'pending', isActive: false, input: null, output: null },
+  { id: 4, name: 'Drafting External FAQ', persona: 'User Research & Behavior Expert Persona', status: 'pending', isActive: false, input: null, output: null },
+  { id: 5, name: 'Drafting Internal FAQ', persona: 'VP Business Lead & Principal Engineer Personas', status: 'pending', isActive: false, input: null, output: null },
+  { id: 6, name: 'Synthesizing PRFAQ Document', persona: 'Senior Editor/Writer Persona', status: 'pending', isActive: false, input: null, output: null },
+  { id: 7, name: 'Defining MLP Plan', persona: 'SVP Product & VP Engineering Personas', status: 'pending', isActive: false, input: null, output: null },
 ];
 
 function App() {
@@ -27,6 +36,13 @@ function App() {
   const [finalMlpPlan, setFinalMlpPlan] = useState<string | null>(null);
   const [generalError, setGeneralError] = useState<string | null>(null);
 
+  // Product Analysis State
+  const [analysisPhase, setAnalysisPhase] = useState<'none' | 'analyzing' | 'reviewing' | 'refining' | 'complete'>('none');
+  const [productAnalysis, setProductAnalysis] = useState<string | null>(null);
+  const [isRefiningAnalysis, setIsRefiningAnalysis] = useState(false);
+  const [originalProductIdea, setOriginalProductIdea] = useState<string>('');
+  const [showWorkingBackwards, setShowWorkingBackwards] = useState(false);
+
   const resetState = () => {
     setProductIdea('');
     setIsProcessing(false);
@@ -36,6 +52,12 @@ function App() {
     setFinalPrfaq(null);
     setFinalMlpPlan(null);
     setGeneralError(null);
+    // Reset analysis state
+    setAnalysisPhase('none');
+    setProductAnalysis(null);
+    setIsRefiningAnalysis(false);
+    setOriginalProductIdea('');
+    setShowWorkingBackwards(false);
     // Optionally, close all accordions or open the first one
     // setStepsData(prev => prev.map(s => s.id === 1 ? { ...s, isActive: true } : { ...s, isActive: false }));
   };
@@ -51,11 +73,109 @@ function App() {
   const handleFormSubmit = async (idea: string) => {
     resetState();
     setProductIdea(idea);
+    setOriginalProductIdea(idea);
+    setAnalysisPhase('analyzing');
+    setIsProcessing(true); // Set processing immediately for UI feedback
+    setProgress(5); // Set initial progress for visual feedback
+    setCurrentStepText('Analyzing product concept...');
+
+    try {
+      // Step 0: Analyze Product Idea
+      const analysisResponse = await fetch('/api/analyze_product_idea', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ product_idea: idea }),
+      });
+
+      if (!analysisResponse.ok) {
+        const errorData = await analysisResponse.json().catch(() => ({ error: "Failed to analyze product idea." }));
+        throw new Error(errorData.error || "Analysis failed.");
+      }
+
+      const analysisResult = await analysisResponse.json();
+      
+      if (analysisResult.error) {
+        throw new Error(analysisResult.error);
+      }
+
+      setProductAnalysis(analysisResult.analysis);
+      setAnalysisPhase('reviewing');
+      setIsProcessing(false); // Stop processing when analysis complete
+      setProgress(15); // Set progress to 15% when analysis is done
+      setCurrentStepText('Review your product analysis below.');
+      
+    } catch (error) {
+      console.error('Product analysis error:', error);
+      setGeneralError(error instanceof Error ? error.message : "Analysis failed. Proceeding with original idea.");
+      setIsProcessing(false); // Stop processing on error
+      // Fallback: proceed directly to main workflow
+      proceedToMainWorkflow(idea);
+    }
+  };
+
+  const handleAnalysisConfirm = (enrichedBrief: string) => {
+    setAnalysisPhase('complete');
+    setShowWorkingBackwards(true);
+    setIsProcessing(true); // Provide immediate feedback
+    setCurrentStepText('Starting Working Backwards process...');
+    proceedToMainWorkflow(enrichedBrief);
+  };
+
+  const handleAnalysisRefine = async (feedback: FeedbackData) => {
+    if (!productAnalysis || !originalProductIdea) return;
+    
+    setIsRefiningAnalysis(true);
+    setCurrentStepText('Refining analysis based on your feedback...');
+    setIsProcessing(true); // Show global processing state
+    setProgress(10); // Show some progress during refinement
+    
+    try {
+      const refineResponse = await fetch('/api/refine_analysis', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          original_input: originalProductIdea,
+          current_analysis: productAnalysis,
+          feedback: feedback
+        }),
+      });
+
+      if (!refineResponse.ok) {
+        throw new Error("Failed to refine analysis.");
+      }
+
+      const refineResult = await refineResponse.json();
+      
+      if (refineResult.error) {
+        throw new Error(refineResult.error);
+      }
+
+      setProductAnalysis(refineResult.analysis);
+      setCurrentStepText('Analysis refined successfully! Review the updated breakdown below.');
+      setProgress(15); // Reset to analysis complete state
+      
+    } catch (error) {
+      console.error('Analysis refinement error:', error);
+      setGeneralError(error instanceof Error ? error.message : "Failed to refine analysis.");
+      setCurrentStepText('Refinement failed. Please try again or proceed with current analysis.');
+    } finally {
+      setIsRefiningAnalysis(false);
+      setIsProcessing(false); // Stop global processing
+    }
+  };
+
+  const proceedToMainWorkflow = async (inputIdea: string) => {
     setIsProcessing(true);
     setGeneralError(null);
-    setCurrentStepText('Initializing evaluation...');
-    // Set first step as active and its input as the product idea
-    setStepsData(initialStepsData.map(s => ({ ...s, status: 'pending', isActive: s.id === 1, input: s.id === 1 ? idea : null })));
+    setCurrentStepText('Initializing Working Backwards process...');
+    setProgress(15); // Start from 15% since analysis is complete
+    
+    // Set first step as active and its input as the (possibly enriched) product idea
+    setStepsData(initialStepsData.map(s => ({ ...s, status: 'pending', isActive: s.id === 1, input: s.id === 1 ? inputIdea : null })));
 
     try {
       const response = await fetch('/api/process_stream', {
@@ -63,7 +183,7 @@ function App() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ product_idea: idea }),
+        body: JSON.stringify({ product_idea: inputIdea }),
       });
 
       if (!response.ok) {
@@ -112,7 +232,9 @@ function App() {
               }
 
               if (eventData.progress !== undefined) {
-                setProgress(Math.round(eventData.progress));
+                // Adjust progress to account for analysis phase (15-100% for main workflow)
+                const adjustedProgress = 15 + (eventData.progress * 0.85);
+                setProgress(Math.round(adjustedProgress));
               }
 
               if (eventData.message) {
@@ -158,7 +280,7 @@ function App() {
         }
       } // End of while loop for stream reading
     } catch (error) {
-      console.error('Form submission or SSE error:', error);
+      console.error('Main workflow error:', error);
       setGeneralError(error instanceof Error ? error.message : "An unexpected error occurred.");
       setIsProcessing(false);
       setProgress(0);
@@ -173,6 +295,30 @@ function App() {
         // setStepsData(prev => prev.map(s => s.id === 1 ? { ...s, isActive: true } : { ...s, isActive: false }));
     }
   }, [isProcessing, progress, stepsData]);
+
+  // Auto-scroll to analysis section when it appears
+  useEffect(() => {
+    if (analysisPhase === 'reviewing') {
+      setTimeout(() => {
+        document.getElementById('analysis-review-section')?.scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'center' 
+        });
+      }, 100);
+    }
+  }, [analysisPhase]);
+
+  // Auto-scroll to Working Backwards section when it appears
+  useEffect(() => {
+    if (showWorkingBackwards) {
+      setTimeout(() => {
+        document.getElementById('steps-display-section')?.scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'start' 
+        });
+      }, 200);
+    }
+  }, [showWorkingBackwards]);
 
   const generateReportText = () => {
     let report = `Product Idea:\n${productIdea}\n\n`;
@@ -260,23 +406,29 @@ function App() {
           </div>
         </section>
 
-        <section id="processing-status-section" className="relative">
-          <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-purple-500/10 rounded-2xl blur-xl"></div>
-          <div className="relative bg-slate-900/50 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-8 shadow-xl">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="flex items-center justify-center w-10 h-10 bg-blue-500/20 rounded-xl">
-                <span className="text-blue-400 font-bold">2</span>
+        {/* Product Analysis Review Section */}
+        {analysisPhase === 'reviewing' && productAnalysis && (
+          <section id="analysis-review-section" className="relative">
+            <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-purple-500/10 rounded-2xl blur-xl"></div>
+            <div className="relative bg-slate-900/50 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-8 shadow-xl">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="flex items-center justify-center w-10 h-10 bg-blue-500/20 rounded-xl">
+                  <span className="text-blue-400 font-bold">2</span>
+                </div>
+                <h2 className="text-2xl font-semibold text-sky-300">Refine Your Concept</h2>
               </div>
-              <h2 className="text-2xl font-semibold text-sky-300">Evaluation Progress</h2>
+              <ProductAnalysisReview
+                productIdea={originalProductIdea}
+                analysis={productAnalysis}
+                onConfirm={handleAnalysisConfirm}
+                onRefine={handleAnalysisRefine}
+                isRefining={isRefiningAnalysis}
+              />
             </div>
-            <ProcessingStatus 
-              progress={progress} 
-              currentStepText={currentStepText} 
-              isVisible={isProcessing || progress > 0 || stepsData.some(s => s.status !== 'pending') || !!generalError}
-            />
-          </div>
-        </section>
+          </section>
+        )}
 
+        {(showWorkingBackwards || analysisPhase === 'complete') && (
         <section id="steps-display-section" className="relative">
           <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-purple-500/10 rounded-2xl blur-xl"></div>
           <div className="relative bg-slate-900/50 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-8 shadow-xl">
@@ -284,8 +436,45 @@ function App() {
               <div className="flex items-center justify-center w-10 h-10 bg-blue-500/20 rounded-xl">
                 <span className="text-blue-400 font-bold">3</span>
               </div>
-              <h2 className="text-2xl font-semibold text-sky-300">Working Backwards Steps</h2>
+              <h2 className="text-2xl font-semibold text-sky-300">Working Backwards Process</h2>
             </div>
+            
+            {/* Integrated Progress Section - Only show when processing */}
+            {(isProcessing || progress > 0 || stepsData.some(s => s.status !== 'pending') || !!generalError || analysisPhase === 'analyzing') && (
+              <div className="mb-6 p-4 bg-slate-800/30 rounded-xl border border-slate-700/30">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-3">
+                    {isProcessing || analysisPhase === 'analyzing' ? (
+                      <div className="flex items-center justify-center w-6 h-6">
+                        <svg className="animate-spin h-5 w-5 text-blue-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                      </div>
+                    ) : progress === 100 ? (
+                      <div className="flex items-center justify-center w-6 h-6">
+                        <svg className="h-5 w-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        </svg>
+                      </div>
+                    ) : (
+                      <div className="flex items-center justify-center w-6 h-6">
+                        <div className="w-3 h-3 bg-blue-400 rounded-full"></div>
+                      </div>
+                    )}
+                    <span className="text-slate-300 font-medium">{currentStepText}</span>
+                  </div>
+                  <span className="text-sm text-slate-400 font-mono">{Math.round(progress)}%</span>
+                </div>
+                <div className="w-full bg-slate-700/50 rounded-full h-2">
+                  <div 
+                    className="bg-gradient-to-r from-blue-400 to-purple-500 h-2 rounded-full transition-all duration-500 ease-out"
+                    style={{ width: `${Math.min(progress, 100)}%` }}
+                  ></div>
+                </div>
+              </div>
+            )}
+            
             <StepsDisplay 
               steps={stepsData} 
               onToggleStep={handleToggleStep} 
@@ -293,6 +482,7 @@ function App() {
             />
           </div>
         </section>
+        )}
 
         {(finalPrfaq || finalMlpPlan) && !isProcessing && !generalError && (
           <section id="results-section" className="relative">
@@ -325,8 +515,8 @@ function App() {
             <div className="absolute inset-0 bg-gradient-to-r from-green-500/5 to-blue-500/10 rounded-2xl blur-xl"></div>
             <div className="relative bg-slate-900/50 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-8 shadow-xl">
               <ModernResults 
-                finalPrfaq={finalPrfaq}
-                finalMlpPlan={finalMlpPlan}
+                finalPrfaq={finalPrfaq || ''}
+                finalMlpPlan={finalMlpPlan || ''}
                 productIdea={productIdea}
                 stepsData={stepsData}
               />
@@ -334,37 +524,28 @@ function App() {
           </section>
         )}
 
-        <section id="actions-section" className="relative">
-          <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-purple-500/10 rounded-2xl blur-xl"></div>
-          <div className="relative bg-slate-900/50 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-8 shadow-xl">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="flex items-center justify-center w-10 h-10 bg-blue-500/20 rounded-xl">
-                <span className="text-blue-400 font-bold">5</span>
-              </div>
-              <h2 className="text-2xl font-semibold text-sky-300">Actions</h2>
-            </div>
-            <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4">
-              <button 
-                onClick={resetState} 
-                className="w-full sm:w-auto flex items-center justify-center px-6 py-3 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-900 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                <i className="bi bi-arrow-clockwise me-2"></i>Reset Application
-              </button>
-              <button 
-                onClick={handleExportResults} 
-                disabled={isProcessing && stepsData.every(s => s.status === 'pending')}
-                className="w-full sm:w-auto flex items-center justify-center px-6 py-3 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-900 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                <i className="bi bi-download me-2"></i>Export Full Report
-              </button>
-            </div>
+        {/* Contextual Actions - Only show when there are results */}
+        {(finalPrfaq || finalMlpPlan || (progress === 100 && !isProcessing)) && (
+          <div className="flex justify-center space-x-4 mt-8">
+            <button 
+              onClick={resetState} 
+              className="flex items-center justify-center px-6 py-3 bg-slate-700 hover:bg-slate-600 text-white font-medium rounded-xl transition-colors focus:outline-none focus:ring-2 focus:ring-slate-500/50"
+            >
+              <i className="bi bi-arrow-clockwise me-2"></i>Analyze New Idea
+            </button>
+            <button 
+              onClick={handleExportResults} 
+              className="flex items-center justify-center px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-medium rounded-xl transition-colors focus:outline-none focus:ring-2 focus:ring-green-500/50"
+            >
+              <i className="bi bi-download me-2"></i>Export Report
+            </button>
           </div>
-        </section>
+        )}
 
       </main>
 
       <footer className="w-full max-w-4xl mt-12 text-center text-slate-500">
-        <p>&copy; {new Date().getFullYear()} Product Concept Evaluator. All rights reserved.</p>
+        <p>&copy; {new Date().getFullYear()} Njenga Vibe Code LLC. All rights reserved.</p>
       </footer>
     </div>
   );
