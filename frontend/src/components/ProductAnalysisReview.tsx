@@ -135,7 +135,7 @@ const ProductAnalysisReview: React.FC<ProductAnalysisReviewProps> = ({
         </div>
         <h3 className="text-2xl font-bold text-white mb-2">Concept Analysis Complete</h3>
         <p className="text-slate-400 max-w-2xl mx-auto">
-          Review the strategic breakdown of your product concept. You can proceed with this analysis or refine it based on your feedback.
+          Review the breakdown of your product concept that will inform the brief. You can proceed with this analysis or refine it based on your feedback.
         </p>
       </div>
 
