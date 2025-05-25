@@ -4,6 +4,9 @@ export class ContentProcessor {
     { pattern: /^(Here's|Here is|I've created|Below is).*?:?\s*$/gim, replacement: '' },
     { pattern: /^(This document|The following|Let me know if).*?$/gim, replacement: '' },
     
+    // Fix: Preserve headers with colons/semicolons on same line
+    { pattern: /^(#{1,6}\s+.*?:)\s*\n+/gm, replacement: '$1\n' },
+    
     // Normalize spacing: exactly 2 newlines for proper markdown paragraphs
     { pattern: /\n{3,}/g, replacement: '\n\n' },
   ];

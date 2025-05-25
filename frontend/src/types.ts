@@ -7,4 +7,5 @@ export interface StepData {
   output?: string | null;
   error?: string | null;
   isActive?: boolean; // To control accordion open state
+  keyInsight?: string | null; // Add this line for research insights
 } 

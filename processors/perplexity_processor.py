@@ -107,7 +107,7 @@ class PerplexityProcessor:
                     "step": 1,
                     "status": "completed",
                     "message": "Market research and competitive analysis complete",
-                    "progress": 14.3,  # ~1/7 of total progress
+                    "progress": 10.0,  # ~1/10 of total progress
                     "output": research_output
                 })
             

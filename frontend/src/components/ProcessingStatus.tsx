@@ -44,7 +44,7 @@ const ProcessingStatus: React.FC<ProcessingStatusProps> = ({ progress, currentSt
           </svg>
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="text-center">
-              <div className="text-2xl font-bold text-white">{Math.round(normalizedProgress)}%</div>
+              <div className="text-2xl font-bold text-white">{Math.min(Math.round(normalizedProgress), 100)}%</div>
               <div className="text-xs text-slate-400">Complete</div>
             </div>
           </div>

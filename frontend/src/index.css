@@ -320,13 +320,37 @@ body {
 }
 
 .prose-custom p {
-  margin-bottom: 2rem !important;
+  margin-bottom: 1.5rem !important;
   line-height: 1.7;
   color: #374151;
 }
 
 .prose-custom p + p {
   margin-top: 2rem !important;
+}
+
+.prose-custom li p {
+  margin-bottom: 0.5rem !important;
+}
+
+.prose-custom ul ul,
+.prose-custom ol ol,
+.prose-custom ul ol,
+.prose-custom ol ul {
+  margin-top: 0.75rem !important;
+  margin-bottom: 0.75rem !important;
+}
+
+.prose-custom h3 + p,
+.prose-custom h4 + p {
+  margin-top: 0.75rem !important;
+}
+
+.prose-custom h3 + ul,
+.prose-custom h3 + ol,
+.prose-custom h4 + ul,
+.prose-custom h4 + ol {
+  margin-top: 0.75rem !important;
 }
 
 .prose-custom h1 + p, 

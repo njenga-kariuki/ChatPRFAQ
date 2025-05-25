@@ -26,14 +26,61 @@ class ClaudeProcessor:
         
         # Step-specific activity messages for enhanced progress tracking
         self.step_activity_messages = {
-            0: "Agent analyzing product concept structure...",
-            1: "Agent researching market landscape and competitive intelligence...",
-            2: "Agent drafting customer-focused press release...",
-            3: "Agent refining press release for executive review...",
-            4: "Agent anticipating customer concerns and adoption barriers...",
-            5: "Agent analyzing strategic business and technical challenges...",
-            6: "Agent synthesizing comprehensive PRFAQ document...",
-            7: "Agent defining minimum lovable product roadmap..."
+            0: [
+                "Product strategist analyzing concept...",
+                "Sharing analysis with team for feedback..."
+            ],
+            1: [
+                "Market analyst pulling competitive intelligence...",
+                "Analyzing industry trends and competitors...",
+                "Presenting findings to product team..."
+            ],
+            2: [
+                "User researcher scheduling customer interviews...",
+                "Conducting problem discovery sessions...",
+                "Synthesizing findings for team review..."
+            ],
+            3: [
+                "PM drafting initial press release...",
+                "Circulating draft for team input...",
+                "Incorporating feedback from marketing and engineering..."
+            ],
+            4: [
+                "VP Product reviewing press release...",
+                "Running exec readout session...",
+                "PM incorporating VP's strategic feedback..."
+            ],
+            5: [
+                "Legal and compliance reviewing proposal...",
+                "Engineering assessing technical feasibility...",
+                "Finance analyzing business model...",
+                "PM synthesizing cross-functional feedback..."
+            ],
+            6: [
+                "User researcher reviewing concept...",
+                "Scheduling concept validation sessions...",
+                "Running customer feedback sessions...",
+                "Documenting key insights..."
+            ],
+            7: [
+                "PM reviewing validation results...",
+                "Meeting with engineering on feasibility concerns...",
+                "Refining solution based on feedback..."
+            ],
+            8: [
+                "Customer success team drafting FAQ from research...",
+                "PM reviewing for completeness..."
+            ],
+            9: [
+                "Editor reviewing all documents...",
+                "Final stakeholder alignment meeting...",
+                "Incorporating last feedback round..."
+            ],
+            10: [
+                "Engineering and PM defining MLP scope...",
+                "Prioritization workshop in progress...",
+                "Finalizing MLP roadmap with leadership..."
+            ]
         }
         
         if not ANTHROPIC_API_KEY:
@@ -70,16 +117,31 @@ class ClaudeProcessor:
             return {"error": error_msg}
         
         try:
-            # Get step-specific activity message
-            activity_message = self.step_activity_messages.get(step_id, "Agent processing...")
+            # Get messages for this step
+            messages = self.step_activity_messages.get(step_id, ["Processing..."])
             
+            # Send initial message
             if progress_callback:
-                progress_callback({
-                    "step": step_id,
-                    "status": "processing",
-                    "message": activity_message,
-                    "progress": ((step_id - 1) / 7) * 100 + 10 if step_id else 10
-                })
+                if isinstance(messages, list) and len(messages) > 0:
+                    progress_callback({
+                        "step": step_id,
+                        "status": "processing",
+                        "message": messages[0],
+                        "progress": ((step_id - 1) / 10) * 100 + 5 if step_id and step_id > 0 else 5
+                    })
+                    
+                    # Set up message progression for team dynamics
+                    if len(messages) > 1:
+                        import threading
+                        for i, msg in enumerate(messages[1:], 1):
+                            delay = i * 2.0
+                            progress_increment = 5 + (i * 3)
+                            threading.Timer(delay, lambda m=msg, p=progress_increment, sid=step_id: progress_callback({
+                                "step": sid,
+                                "status": "processing", 
+                                "message": m,
+                                "progress": ((sid - 1) / 10) * 100 + p if sid and sid > 0 else p
+                            })).start()
             
             logger.info(f"Calling Claude API with model: {self.model}")
             logger.debug(f"System prompt length: {len(system_prompt)}")
@@ -115,7 +177,7 @@ class ClaudeProcessor:
                     "step": step_id,
                     "status": "completed",
                     "message": f"Step {step_id} completed successfully",
-                    "progress": (step_id / 7) * 100 if step_id else 100,
+                    "progress": (step_id / 10) * 100 if step_id else 100,
                     "output": output
                 })
             

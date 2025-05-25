@@ -107,15 +107,29 @@ const useSmartScroll = () => {
   return { smartScroll };
 };
 
+const extractKeyInsight = (output: string, stepId: number): string | null => {
+  if (stepId === 2) { // Problem validation
+    const match = output.match(/High Priority Pain Points.*?[-•]\s*(.+?)(?:\n|$)/);
+    return match ? match[1].trim().substring(0, 100) + '...' : null;
+  } else if (stepId === 6) { // Concept validation
+    const match = output.match(/What Resonated Most.*?[-•]\s*(.+?)(?:\n|$)/);
+    return match ? match[1].trim().substring(0, 100) + '...' : null;
+  }
+  return null;
+};
+
 // Initial step definitions - will be updated by API stream
 const initialStepsData: StepData[] = [
-  { id: 1, name: 'Market Research & Analysis', persona: 'Expert Market Research Analyst Persona', status: 'pending', isActive: false, input: null, output: null },
-  { id: 2, name: 'Drafting Press Release', persona: 'Principal Product Manager Persona', status: 'pending', isActive: false, input: null, output: null },
-  { id: 3, name: 'Refining Press Release', persona: 'VP Product Persona', status: 'pending', isActive: false, input: null, output: null },
-  { id: 4, name: 'Drafting External FAQ', persona: 'User Research & Behavior Expert Persona', status: 'pending', isActive: false, input: null, output: null },
-  { id: 5, name: 'Drafting Internal FAQ', persona: 'VP Business Lead & Principal Engineer Personas', status: 'pending', isActive: false, input: null, output: null },
-  { id: 6, name: 'Synthesizing PRFAQ Document', persona: 'Senior Editor/Writer Persona', status: 'pending', isActive: false, input: null, output: null },
-  { id: 7, name: 'Defining MLP Plan', persona: 'SVP Product & VP Engineering Personas', status: 'pending', isActive: false, input: null, output: null },
+  { id: 1, name: 'Market Research & Analysis', persona: 'Market Analyst + PM', status: 'pending', isActive: false, input: null, output: null },
+  { id: 2, name: 'Problem Validation Research', persona: 'User Researcher + Customers', status: 'pending', isActive: false, input: null, output: null },
+  { id: 3, name: 'Drafting Press Release', persona: 'PM + Team', status: 'pending', isActive: false, input: null, output: null },
+  { id: 4, name: 'Refining Press Release', persona: 'PM incorporating VP feedback', status: 'pending', isActive: false, input: null, output: null },
+  { id: 5, name: 'Drafting Internal FAQ', persona: 'Finance + Legal + Engineering', status: 'pending', isActive: false, input: null, output: null },
+  { id: 6, name: 'Concept Validation Research', persona: 'User Researcher + Customers', status: 'pending', isActive: false, input: null, output: null },
+  { id: 7, name: 'Solution Refinement', persona: 'PM + Tech Lead', status: 'pending', isActive: false, input: null, output: null },
+  { id: 8, name: 'Drafting External FAQ', persona: 'Marketing', status: 'pending', isActive: false, input: null, output: null },
+  { id: 9, name: 'Synthesizing PRFAQ Document', persona: 'Editor + Team', status: 'pending', isActive: false, input: null, output: null },
+  { id: 10, name: 'Defining MLP Plan', persona: 'PM + Tech Lead', status: 'pending', isActive: false, input: null, output: null },
 ];
 
 function App() {
@@ -415,7 +429,14 @@ function App() {
                   if (s.id === stepId) {
                     let updatedStep: Partial<StepData> = { status: eventData.status, isActive: true };
                     if (eventData.input) updatedStep.input = eventData.input;
-                    if (eventData.output) updatedStep.output = eventData.output;
+                    if (eventData.output) {
+                      updatedStep.output = eventData.output;
+                      // Extract key insights for research steps
+                      if (eventData.status === 'completed') {
+                        const insight = extractKeyInsight(eventData.output, stepId);
+                        if (insight) updatedStep.keyInsight = insight;
+                      }
+                    }
                     if (eventData.status === 'completed') updatedStep.isActive = false;
                     return { ...s, ...updatedStep };
                   }
@@ -683,13 +704,43 @@ function App() {
                           )}
                           <span className="text-gray-700 font-medium">{currentStepText}</span>
                         </div>
-                        <span className="text-sm text-gray-500 font-mono">{Math.round(progress)}%</span>
+                        <span className="text-sm text-gray-500 font-mono">{Math.min(Math.round(progress), 100)}%</span>
                       </div>
-                      <div className="w-full bg-gray-200 rounded-full h-0.5">
+                      
+                      {/* Main progress bar */}
+                      <div className="w-full bg-gray-200 rounded-full h-0.5 mb-3">
                         <div 
                           className="bg-black h-0.5 rounded-full transition-all duration-500 ease-out"
                           style={{ width: `${Math.min(progress, 100)}%` }}
                         ></div>
+                      </div>
+                      
+                      {/* Step indicators - NEW */}
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs text-gray-500">
+                          Step {stepsData.filter(s => s.status !== 'pending').length} of {stepsData.length}
+                        </span>
+                        <div className="flex space-x-1.5">
+                          {stepsData.map((step) => (
+                            <div
+                              key={step.id}
+                              className={`group relative`}
+                            >
+                              <div
+                                className={`w-2 h-2 rounded-full transition-all ${
+                                  step.status === 'completed' ? 'bg-black' :
+                                  step.status === 'processing' ? 'bg-black animate-pulse' :
+                                  step.status === 'error' ? 'bg-red-500' :
+                                  'bg-gray-300'
+                                }`}
+                              />
+                              {/* Tooltip on hover */}
+                              <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 text-xs text-white bg-gray-800 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">
+                                {step.name}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
                       </div>
                     </div>
                   )}

@@ -1,6 +1,7 @@
 import React from 'react';
 import { StepData } from '../types'; // Assuming types.ts is in src/
 import Markdown from 'react-markdown'; // We'll add this dependency later
+import remarkGfm from 'remark-gfm';
 import { ContentProcessor } from '../utils/contentProcessor';
 
 interface StepCardProps {
@@ -55,12 +56,49 @@ const StepCard: React.FC<StepCardProps> = ({ step, onToggle }) => {
       {/* Content - Collapsible with improved spacing */}
       {step.isActive && (
         <div className="p-8 md:p-12">
+          {/* Key Insight for research steps */}
+          {step.status === 'completed' && [2, 6].includes(step.id) && step.keyInsight && (
+            <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
+              <div className="flex items-center gap-2 mb-2">
+                <span className="text-green-600">💡</span>
+                <span className="text-sm font-medium text-green-800">Key Insight</span>
+              </div>
+              <p className="text-sm text-green-700">
+                {step.keyInsight}
+              </p>
+            </div>
+          )}
+          
           {step.output ? (
             <div>
               <div className="prose-custom">
                 <Markdown 
+                  remarkPlugins={[remarkGfm]}
                   components={{
-                    p: ({children}) => <p style={{marginBottom: '2rem', lineHeight: '1.7'}}>{children}</p>
+                    p: ({children}) => <p style={{marginBottom: '1.5rem', lineHeight: '1.7'}}>{children}</p>,
+                    table: ({children}) => (
+                      <div className="overflow-x-auto my-6">
+                        <table className="min-w-full divide-y divide-gray-200 border border-gray-200">
+                          {children}
+                        </table>
+                      </div>
+                    ),
+                    thead: ({children}) => (
+                      <thead className="bg-gray-50">{children}</thead>
+                    ),
+                    th: ({children}) => (
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-r last:border-r-0">
+                        {children}
+                      </th>
+                    ),
+                    td: ({children}) => (
+                      <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900 border-r last:border-r-0">
+                        {children}
+                      </td>
+                    ),
+                    tr: ({children}) => (
+                      <tr className="border-b hover:bg-gray-50">{children}</tr>
+                    )
                   }}
                 >
                   {ContentProcessor.processContent(step.output)}

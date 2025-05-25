@@ -10,7 +10,7 @@ interface StepsDisplayProps {
 
 const StepsDisplay: React.FC<StepsDisplayProps> = ({ steps, onToggleStep, isVisible }) => {
   if (!isVisible || !steps || steps.length === 0) {
-    return null; // Or a placeholder like <p>Waiting for processing to start...</p>
+    return null;
   }
 
   return (
