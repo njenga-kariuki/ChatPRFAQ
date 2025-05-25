@@ -4,6 +4,7 @@ import ProductIdeaForm from './components/ProductIdeaForm';
 import ProcessingStatus from './components/ProcessingStatus'; // Import ProcessingStatus
 import StepsDisplay from './components/StepsDisplay'; // Import StepsDisplay
 import ProductAnalysisReview from './components/ProductAnalysisReview'; // Import new component
+import LandingPage from './components/LandingPage'; // Import LandingPage
 import { StepData } from './types'; // Import StepData
 import Markdown from 'react-markdown'; // Import react-markdown
 import ModernResults from './components/ModernResults'; // Added import for ModernResults
@@ -117,6 +118,9 @@ const initialStepsData: StepData[] = [
 ];
 
 function App() {
+  // App State Management
+  const [appState, setAppState] = useState<'landing' | 'app' | 'processing'>('landing');
+  
   const [productIdea, setProductIdea] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -125,6 +129,9 @@ function App() {
   const [finalPrfaq, setFinalPrfaq] = useState<string | null>(null);
   const [finalMlpPlan, setFinalMlpPlan] = useState<string | null>(null);
   const [generalError, setGeneralError] = useState<string | null>(null);
+
+  // Track if we're auto-submitting from landing page
+  const [isAutoSubmitting, setIsAutoSubmitting] = useState(false);
 
   // Product Analysis State
   const [analysisPhase, setAnalysisPhase] = useState<'none' | 'analyzing' | 'reviewing' | 'refining' | 'complete'>('none');
@@ -143,6 +150,7 @@ function App() {
   const { smartScroll } = useSmartScroll();
 
   const resetState = () => {
+    setAppState('app'); // Return to app view, not landing
     setProductIdea('');
     setIsProcessing(false);
     setProgress(0);
@@ -151,6 +159,7 @@ function App() {
     setFinalPrfaq(null);
     setFinalMlpPlan(null);
     setGeneralError(null);
+    setIsAutoSubmitting(false); // Reset auto-submit flag
     // Reset analysis state
     setAnalysisPhase('none');
     setProductAnalysis(null);
@@ -166,6 +175,19 @@ function App() {
     // setStepsData(prev => prev.map(s => s.id === 1 ? { ...s, isActive: true } : { ...s, isActive: false }));
   };
 
+  const handleStartEvaluation = (productIdea?: string) => {
+    setAppState('app');
+    // If a product idea was provided from the landing page, automatically submit it
+    if (productIdea && productIdea.trim().length >= 10) {
+      setIsAutoSubmitting(true);
+      setProductIdea(productIdea); // Store the idea for pre-population
+      // Small delay to ensure the UI has transitioned before starting the form submission
+      setTimeout(() => {
+        handleFormSubmit(productIdea); // Pass original value - handleFormSubmit will handle any needed trimming
+      }, 100);
+    }
+  };
+
   const handleToggleStep = (stepId: number) => {
     setStepsData(prevSteps =>
       prevSteps.map(step =>
@@ -176,6 +198,7 @@ function App() {
 
   const handleFormSubmit = async (idea: string) => {
     resetState();
+    setAppState('processing'); // Set processing state
     setProductIdea(idea);
     setOriginalProductIdea(idea);
     setAnalysisPhase('analyzing');
@@ -528,201 +551,213 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 text-gray-900 flex flex-col items-center p-4 md:p-8">
-      <header className="w-full max-w-6xl mb-12 text-center">
-        <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4 leading-tight">
-          <span className="text-black">
-            Work Backwards
-          </span>
-          <span className="text-gray-400 mx-3">×</span>
-          <span className="text-gray-400">Agent</span>
-        </h1>
-        
-        <p className="text-xl text-gray-600 mt-2 max-w-2xl mx-auto leading-relaxed">
-          Turn product ideas into C-Suite ready briefs in less than 5 minutes
-        </p>
-      </header>
+    <div className="min-h-screen bg-gray-50 text-gray-900">
+      {appState === 'landing' ? (
+        // Landing Page Experience
+        <LandingPage onStartEvaluation={handleStartEvaluation} />
+      ) : (
+        // App Experience (both 'app' and 'processing' states)
+        <div className="flex flex-col items-center p-4 md:p-8">
+          <header className="w-full max-w-6xl mb-12 text-center">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4 leading-tight">
+              <span className="text-black">
+                Work Backwards
+              </span>
+              <span className="text-gray-400 mx-3">×</span>
+              <span className="text-gray-400">Agent</span>
+            </h1>
+            
+            <p className="text-xl text-gray-600 mt-2 max-w-2xl mx-auto leading-relaxed">
+              Turn product ideas into C-Suite ready briefs in less than 5 minutes
+            </p>
+          </header>
 
-      {generalError && (
-        <div className="w-full max-w-6xl mb-4 p-4 bg-red-50 border border-red-200 rounded-xl text-center">
-          <h3 className="text-xl font-semibold text-red-700 mb-2">An Error Occurred</h3>
-          <p className="text-red-600 whitespace-pre-wrap">{generalError}</p>
-          <button 
-            onClick={resetState} 
-            className="mt-3 px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg transition-colors"
-          >
-            Try Again / Reset
-          </button>
+          {generalError && (
+            <div className="w-full max-w-6xl mb-4 p-4 bg-red-50 border border-red-200 rounded-xl text-center">
+              <h3 className="text-xl font-semibold text-red-700 mb-2">An Error Occurred</h3>
+              <p className="text-red-600 whitespace-pre-wrap">{generalError}</p>
+              <button 
+                onClick={resetState} 
+                className="mt-3 px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg transition-colors"
+              >
+                Try Again / Reset
+              </button>
+            </div>
+          )}
+
+          <main className="w-full max-w-6xl space-y-8">
+            <section id="product-idea-section" className="py-12 md:py-16">
+              <div className="bg-white rounded-2xl p-8 border border-gray-100">
+                <h2 className="text-2xl font-semibold text-gray-900 mb-6">Enter Your Product Idea</h2>
+                <ProductIdeaForm 
+                  onSubmit={handleFormSubmit} 
+                  isProcessing={isProcessing}
+                  initialValue={isAutoSubmitting ? productIdea : undefined}
+                />
+              </div>
+            </section>
+
+            {/* Product Analysis Review Section */}
+            {analysisPhase === 'reviewing' && productAnalysis && (
+              <section id="analysis-review-section" className="py-12 md:py-16">
+                <div className="bg-white rounded-2xl p-8 border border-gray-100">
+                  <h2 className="text-2xl font-semibold text-gray-900 mb-6">Refine Your Concept</h2>
+                  <ProductAnalysisReview
+                    productIdea={originalProductIdea}
+                    analysis={productAnalysis}
+                    onConfirm={handleAnalysisConfirm}
+                    onRefine={handleAnalysisRefine}
+                    isRefining={isRefiningAnalysis}
+                  />
+                </div>
+              </section>
+            )}
+
+            {(showWorkingBackwards || analysisPhase === 'complete') && (
+            <section id="steps-display-section" className="py-12 md:py-16">
+              <div className="bg-white rounded-2xl p-8 border border-gray-100">
+                <h2 className="text-2xl font-semibold text-gray-900 mb-6">Working Backwards Process</h2>
+                
+                {/* Progress Section - Always visible above tabs */}
+                {(isProcessing || progress > 0 || stepsData.some(s => s.status !== 'pending') || !!generalError || analysisPhase === 'analyzing') && (
+                  <div className="mb-8 p-4 bg-gray-50 rounded-xl border border-gray-200">
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center gap-3">
+                        {isProcessing || analysisPhase === 'analyzing' ? (
+                          <div className="flex items-center justify-center w-6 h-6">
+                            <svg className="animate-spin h-5 w-5 text-black" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                          </div>
+                        ) : progress === 100 ? (
+                          <div className="flex items-center justify-center w-6 h-6">
+                            <svg className="h-5 w-5 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                            </svg>
+                          </div>
+                        ) : (
+                          <div className="flex items-center justify-center w-6 h-6">
+                            <div className="w-3 h-3 bg-black rounded-full"></div>
+                          </div>
+                        )}
+                        <span className="text-gray-700 font-medium">{currentStepText}</span>
+                      </div>
+                      <span className="text-sm text-gray-500 font-mono">{Math.round(progress)}%</span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-0.5">
+                      <div 
+                        className="bg-black h-0.5 rounded-full transition-all duration-500 ease-out"
+                        style={{ width: `${Math.min(progress, 100)}%` }}
+                      ></div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Tab Navigation - Show when final tab is available */}
+                {showFinalTab && (
+                  <div className="flex border-b border-gray-200 mb-6 -mx-2 md:mx-0">
+                    <button
+                      onClick={() => setActiveTab('final')}
+                      className={`flex-1 md:flex-none md:px-6 py-3 px-4 font-medium transition-colors ${
+                        activeTab === 'final' 
+                          ? 'text-black border-b-2 border-black' 
+                          : 'text-gray-500 hover:text-gray-700'
+                      }`}
+                    >
+                      Documents
+                    </button>
+                    <button
+                      onClick={() => setActiveTab('process')}
+                      className={`flex-1 md:flex-none md:px-6 py-3 px-4 font-medium transition-colors ${
+                        activeTab === 'process' 
+                          ? 'text-black border-b-2 border-black' 
+                          : 'text-gray-500 hover:text-gray-700'
+                      }`}
+                    >
+                      Process
+                    </button>
+                  </div>
+                )}
+
+                {/* Conditional Content Rendering */}
+                {activeTab === 'process' || !showFinalTab ? (
+                  <StepsDisplay 
+                    steps={stepsData} 
+                    onToggleStep={handleToggleStep} 
+                    isVisible={stepsData.some(s => s.status !== 'pending') || isProcessing || !!generalError}
+                  />
+                ) : (
+                  /* Final Documents Display */
+                  finalPrfaq || finalMlpPlan ? (
+                    <ModernResults 
+                      finalPrfaq={finalPrfaq || ''}
+                      finalMlpPlan={finalMlpPlan || ''}
+                      productIdea={productIdea}
+                      stepsData={stepsData}
+                    />
+                  ) : (
+                    <div className="text-center py-8 text-gray-500">
+                      No documents available yet.
+                    </div>
+                  )
+                )}
+              </div>
+            </section>
+            )}
+
+            {/* Notification Banner - Show when documents complete and still on process tab */}
+            {showNotification && activeTab === 'process' && (
+              <div className="fixed top-4 left-4 right-4 md:left-1/2 md:right-auto md:transform md:-translate-x-1/2 md:w-auto bg-black text-white px-6 py-3 rounded-lg shadow-lg z-50 flex items-center gap-3">
+                <span>✓</span>
+                <span className="hidden sm:inline">Documents ready</span>
+                <span className="sm:hidden">Ready</span>
+                <button 
+                  onClick={() => setActiveTab('final')}
+                  className="underline hover:no-underline"
+                >
+                  <span className="hidden sm:inline">View final output</span>
+                  <span className="sm:hidden">View</span>
+                </button>
+                <button 
+                  onClick={() => setShowNotification(false)}
+                  className="ml-2 text-white hover:text-gray-300"
+                >
+                  ✕
+                </button>
+              </div>
+            )}
+
+            {(finalPrfaq || finalMlpPlan) && !isProcessing && !generalError && (
+              <div className="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4 mt-8">
+                <button 
+                  onClick={resetState} 
+                  className="flex items-center justify-center px-6 py-3 bg-white hover:bg-gray-50 text-black border border-gray-300 font-medium rounded-xl transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500"
+                >
+                  <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                  </svg>
+                  Analyze New Idea
+                </button>
+                <button 
+                  onClick={handleExportResults} 
+                  className="flex items-center justify-center px-6 py-3 bg-black hover:bg-gray-800 text-white font-medium rounded-xl transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500"
+                >
+                  <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                  Export Report
+                </button>
+              </div>
+            )}
+
+          </main>
+
+          <footer className="w-full max-w-6xl mt-12 text-center text-gray-500">
+            <p>&copy; {new Date().getFullYear()} Njenga Vibe Code LLC. All rights reserved.</p>
+          </footer>
         </div>
       )}
-
-      <main className="w-full max-w-6xl space-y-8">
-        <section id="product-idea-section" className="py-12 md:py-16">
-          <div className="bg-white rounded-2xl p-8 border border-gray-100">
-            <h2 className="text-2xl font-semibold text-gray-900 mb-6">Enter Your Product Idea</h2>
-            <ProductIdeaForm onSubmit={handleFormSubmit} isProcessing={isProcessing} />
-          </div>
-        </section>
-
-        {/* Product Analysis Review Section */}
-        {analysisPhase === 'reviewing' && productAnalysis && (
-          <section id="analysis-review-section" className="py-12 md:py-16">
-            <div className="bg-white rounded-2xl p-8 border border-gray-100">
-              <h2 className="text-2xl font-semibold text-gray-900 mb-6">Refine Your Concept</h2>
-              <ProductAnalysisReview
-                productIdea={originalProductIdea}
-                analysis={productAnalysis}
-                onConfirm={handleAnalysisConfirm}
-                onRefine={handleAnalysisRefine}
-                isRefining={isRefiningAnalysis}
-              />
-            </div>
-          </section>
-        )}
-
-        {(showWorkingBackwards || analysisPhase === 'complete') && (
-        <section id="steps-display-section" className="py-12 md:py-16">
-          <div className="bg-white rounded-2xl p-8 border border-gray-100">
-            <h2 className="text-2xl font-semibold text-gray-900 mb-6">Working Backwards Process</h2>
-            
-            {/* Progress Section - Always visible above tabs */}
-            {(isProcessing || progress > 0 || stepsData.some(s => s.status !== 'pending') || !!generalError || analysisPhase === 'analyzing') && (
-              <div className="mb-8 p-4 bg-gray-50 rounded-xl border border-gray-200">
-                <div className="flex items-center justify-between mb-3">
-                  <div className="flex items-center gap-3">
-                    {isProcessing || analysisPhase === 'analyzing' ? (
-                      <div className="flex items-center justify-center w-6 h-6">
-                        <svg className="animate-spin h-5 w-5 text-black" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                        </svg>
-                      </div>
-                    ) : progress === 100 ? (
-                      <div className="flex items-center justify-center w-6 h-6">
-                        <svg className="h-5 w-5 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                        </svg>
-                      </div>
-                    ) : (
-                      <div className="flex items-center justify-center w-6 h-6">
-                        <div className="w-3 h-3 bg-black rounded-full"></div>
-                      </div>
-                    )}
-                    <span className="text-gray-700 font-medium">{currentStepText}</span>
-                  </div>
-                  <span className="text-sm text-gray-500 font-mono">{Math.round(progress)}%</span>
-                </div>
-                <div className="w-full bg-gray-200 rounded-full h-0.5">
-                  <div 
-                    className="bg-black h-0.5 rounded-full transition-all duration-500 ease-out"
-                    style={{ width: `${Math.min(progress, 100)}%` }}
-                  ></div>
-                </div>
-              </div>
-            )}
-
-            {/* Tab Navigation - Show when final tab is available */}
-            {showFinalTab && (
-              <div className="flex border-b border-gray-200 mb-6 -mx-2 md:mx-0">
-                <button
-                  onClick={() => setActiveTab('final')}
-                  className={`flex-1 md:flex-none md:px-6 py-3 px-4 font-medium transition-colors ${
-                    activeTab === 'final' 
-                      ? 'text-black border-b-2 border-black' 
-                      : 'text-gray-500 hover:text-gray-700'
-                  }`}
-                >
-                  Documents
-                </button>
-                <button
-                  onClick={() => setActiveTab('process')}
-                  className={`flex-1 md:flex-none md:px-6 py-3 px-4 font-medium transition-colors ${
-                    activeTab === 'process' 
-                      ? 'text-black border-b-2 border-black' 
-                      : 'text-gray-500 hover:text-gray-700'
-                  }`}
-                >
-                  Process
-                </button>
-              </div>
-            )}
-
-            {/* Conditional Content Rendering */}
-            {activeTab === 'process' || !showFinalTab ? (
-              <StepsDisplay 
-                steps={stepsData} 
-                onToggleStep={handleToggleStep} 
-                isVisible={stepsData.some(s => s.status !== 'pending') || isProcessing || !!generalError}
-              />
-            ) : (
-              /* Final Documents Display */
-              finalPrfaq || finalMlpPlan ? (
-                <ModernResults 
-                  finalPrfaq={finalPrfaq || ''}
-                  finalMlpPlan={finalMlpPlan || ''}
-                  productIdea={productIdea}
-                  stepsData={stepsData}
-                />
-              ) : (
-                <div className="text-center py-8 text-gray-500">
-                  No documents available yet.
-                </div>
-              )
-            )}
-          </div>
-        </section>
-        )}
-
-        {/* Notification Banner - Show when documents complete and still on process tab */}
-        {showNotification && activeTab === 'process' && (
-          <div className="fixed top-4 left-4 right-4 md:left-1/2 md:right-auto md:transform md:-translate-x-1/2 md:w-auto bg-black text-white px-6 py-3 rounded-lg shadow-lg z-50 flex items-center gap-3">
-            <span>✓</span>
-            <span className="hidden sm:inline">Documents ready</span>
-            <span className="sm:hidden">Ready</span>
-            <button 
-              onClick={() => setActiveTab('final')}
-              className="underline hover:no-underline"
-            >
-              <span className="hidden sm:inline">View final output</span>
-              <span className="sm:hidden">View</span>
-            </button>
-            <button 
-              onClick={() => setShowNotification(false)}
-              className="ml-2 text-white hover:text-gray-300"
-            >
-              ✕
-            </button>
-          </div>
-        )}
-
-        {(finalPrfaq || finalMlpPlan) && !isProcessing && !generalError && (
-          <div className="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4 mt-8">
-            <button 
-              onClick={resetState} 
-              className="flex items-center justify-center px-6 py-3 bg-white hover:bg-gray-50 text-black border border-gray-300 font-medium rounded-xl transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500"
-            >
-              <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-              </svg>
-              Analyze New Idea
-            </button>
-            <button 
-              onClick={handleExportResults} 
-              className="flex items-center justify-center px-6 py-3 bg-black hover:bg-gray-800 text-white font-medium rounded-xl transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500"
-            >
-              <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-              </svg>
-              Export Report
-            </button>
-          </div>
-        )}
-
-      </main>
-
-      <footer className="w-full max-w-6xl mt-12 text-center text-gray-500">
-        <p>&copy; {new Date().getFullYear()} Njenga Vibe Code LLC. All rights reserved.</p>
-      </footer>
     </div>
   );
 }

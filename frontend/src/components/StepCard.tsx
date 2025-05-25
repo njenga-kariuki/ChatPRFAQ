@@ -58,21 +58,6 @@ const StepCard: React.FC<StepCardProps> = ({ step, onToggle }) => {
     debugStyles();
   }, [debugStyles]);
 
-  // Test content for spacing verification
-  const testContent = `# Test Document
-
-This is the first paragraph of test content. It should have proper spacing below it to improve readability in professional business documents.
-
-This is the second paragraph. There should be significant visual separation between this paragraph and the one above to make scanning easier.
-
-This is the third paragraph. The spacing should be consistent throughout the document to maintain professional appearance.
-
-## Section Header
-
-Content under headers should also have proper spacing. This paragraph follows a header.
-
-The final paragraph should demonstrate that our spacing solution works consistently across all content types.`;
-
   if (step.status === 'pending') return null;
 
   return (

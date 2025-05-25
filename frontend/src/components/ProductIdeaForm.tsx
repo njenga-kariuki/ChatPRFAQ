@@ -1,13 +1,21 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 interface ProductIdeaFormProps {
   onSubmit: (productIdea: string) => void;
   isProcessing: boolean;
+  initialValue?: string; // Optional prop for pre-populating the textarea
 }
 
-const ProductIdeaForm: React.FC<ProductIdeaFormProps> = ({ onSubmit, isProcessing }) => {
-  const [productIdea, setProductIdea] = useState('');
+const ProductIdeaForm: React.FC<ProductIdeaFormProps> = ({ onSubmit, isProcessing, initialValue }) => {
+  const [productIdea, setProductIdea] = useState(initialValue || '');
   const [error, setError] = useState('');
+
+  // Update productIdea if initialValue changes (for auto-submit scenarios)
+  useEffect(() => {
+    if (initialValue !== undefined) {
+      setProductIdea(initialValue);
+    }
+  }, [initialValue]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

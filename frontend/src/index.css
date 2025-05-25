@@ -1,8 +1,254 @@
 @import 'tailwindcss';
 
+/* Smooth scroll behavior */
+html {
+  scroll-behavior: smooth;
+}
+
 /* Base styles for clean, professional look */
 body {
   @apply bg-gray-50 text-gray-900 antialiased;
+}
+
+/* Landing Page Styles */
+
+/* Method Badge */
+.method-badge {
+  text-align: center;
+  margin-bottom: 24px;
+  font-size: 14px;
+  color: #6b7280;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+}
+
+/* Hero Section */
+.highlight {
+  color: #ff9900;
+  font-style: italic;
+}
+
+.strikethrough {
+  text-decoration: line-through;
+}
+
+.subheadline {
+  font-size: 18px;
+  line-height: 1.4;
+  color: #4b5563;
+  margin: 0 auto;
+  max-width: 750px;
+}
+
+/* Framework Container */
+.framework-container {
+    background-color: #f9fafb;
+    border-radius: 16px;
+    padding: 48px;
+    margin: 24px 0;
+}
+
+.framework-content {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+/* Framework Header */
+.framework-header {
+    text-align: center;
+    margin-bottom: 48px;
+}
+
+.framework-title {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    color: #111827;
+}
+
+.framework-subtitle {
+    font-size: 16px;
+    color: #6b7280;
+    line-height: 1.5;
+}
+
+/* Agents Grid */
+.agents-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 32px;
+}
+
+/* Agent Column */
+.agent-column {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.column-title {
+    font-size: 14px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #6b7280;
+    margin-bottom: 6px;
+}
+
+/* Agent Card */
+.agent-card {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: all 0.2s ease;
+}
+
+.agent-card:hover {
+    border-color: #d1d5db;
+    transform: translateX(4px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+/* Agent Icon */
+.agent-icon {
+    width: 28px;
+    height: 28px;
+    background: #111827;
+    color: #ffffff;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+    flex-shrink: 0;
+    letter-spacing: 0.05em;
+}
+
+/* Agent Name */
+.agent-name {
+    font-size: 15px;
+    color: #111827;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    .agents-grid {
+        grid-template-columns: 1fr;
+        gap: 24px;
+    }
+    
+    .framework-container {
+        padding: 32px 20px;
+        margin: 16px 0;
+    }
+
+    /* Mobile-specific agent framework styles - Vertical stacking */
+    .agent-cards-container {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 1rem !important;
+    }
+
+    .mobile-agent-card {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 auto !important;
+    }
+
+    /* Ensure proper spacing for team/reviewer sections */
+    .agent-cards-container h4 {
+        margin-top: 2rem !important;
+    }
+
+    .agent-cards-container h4:first-child {
+        margin-top: 0 !important;
+    }
+}
+
+/* Agent Framework Styles */
+.agent-column {
+  @apply flex flex-col;
+}
+
+.column-header {
+  @apply text-sm font-semibold text-gray-500 uppercase tracking-wide mb-4 text-center;
+}
+
+.agent-item {
+  @apply bg-white border border-gray-200 rounded-lg p-3 flex items-center gap-3 transition-all duration-200 hover:shadow-md hover:border-gray-300;
+}
+
+.agent-badge {
+  @apply bg-gray-900 text-white text-xs font-bold px-2 py-1 rounded flex-shrink-0;
+  min-width: 28px;
+  text-align: center;
+  font-size: 11px;
+}
+
+.agent-name {
+  @apply text-sm font-medium text-gray-900;
+  line-height: 1.3;
+}
+
+/* Credibility Section */
+.credibility-badge {
+  @apply flex flex-col items-center;
+}
+
+.badge-container {
+  @apply flex items-center gap-4 p-4 bg-white rounded-xl border border-gray-200 shadow-sm w-full justify-center;
+}
+
+.badge-icon-large {
+  @apply w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0;
+}
+
+.amazon-icon {
+  background-color: #ff9900;
+}
+
+.stanford-icon {
+  background-color: #8b1538;
+}
+
+.badge-content {
+  @apply text-left;
+}
+
+.badge-title {
+  @apply font-semibold text-gray-900 text-lg;
+}
+
+.badge-subtitle {
+  @apply text-gray-600 text-sm;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .subheadline {
+    font-size: 16px;
+    max-width: 100%;
+  }
+  
+  .badge-container {
+    flex-direction: column;
+    text-align: center;
+    gap: 8px;
+  }
+  
+  .badge-content {
+    text-align: center;
+  }
+}
+
+/* Scroll offset for anchor links */
+#start {
+  scroll-margin-top: 100px;
 }
 
 /* Scrollbar styling for better aesthetics */
@@ -23,18 +269,131 @@ body {
   @apply bg-gray-400;
 }
 
-/* Enhanced prose styling - Minimal and clean */
+/* Enhanced prose styling - Custom implementation without typography plugin */
 .prose-custom {
-  @apply prose prose-gray max-w-none;
-  @apply prose-headings:font-semibold prose-headings:tracking-tight;
-  @apply prose-h1:text-2xl prose-h1:mt-8 prose-h1:mb-6;
-  @apply prose-h2:text-xl prose-h2:mt-6 prose-h2:mb-4;
-  @apply prose-h3:text-lg prose-h3:mt-5 prose-h3:mb-3;
-  @apply prose-strong:font-semibold prose-strong:text-gray-900;
-  @apply prose-code:bg-gray-100 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-sm;
-  @apply prose-pre:bg-gray-900 prose-pre:shadow-sm;
-  @apply prose-blockquote:border-gray-200 prose-blockquote:bg-gray-50 prose-blockquote:py-1 prose-blockquote:px-4;
+  max-width: none;
+  color: #6b7280;
   font-size: 16px !important;
+  line-height: 1.7;
+}
+
+.prose-custom h1 {
+  font-size: 2rem;
+  font-weight: 600;
+  color: #111827;
+  margin-top: 2rem;
+  margin-bottom: 1.5rem;
+  line-height: 1.2;
+  letter-spacing: -0.025em;
+}
+
+.prose-custom h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #111827;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid #e5e7eb;
+  line-height: 1.3;
+  letter-spacing: -0.025em;
+}
+
+.prose-custom h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #111827;
+  margin-top: 1.5rem;
+  margin-bottom: 0.75rem;
+  line-height: 1.4;
+  letter-spacing: -0.025em;
+}
+
+.prose-custom h4 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #111827;
+  margin-top: 1.25rem;
+  margin-bottom: 0.5rem;
+  line-height: 1.4;
+  letter-spacing: -0.025em;
+}
+
+.prose-custom p {
+  margin-bottom: 2rem !important;
+  line-height: 1.7;
+  color: #374151;
+}
+
+.prose-custom p + p {
+  margin-top: 2rem !important;
+}
+
+.prose-custom h1 + p, 
+.prose-custom h2 + p, 
+.prose-custom h3 + p,
+.prose-custom h4 + p {
+  margin-top: 1rem !important;
+}
+
+.prose-custom strong {
+  font-weight: 600;
+  color: #111827;
+}
+
+.prose-custom code {
+  background-color: #f3f4f6;
+  padding: 0.125rem 0.375rem;
+  border-radius: 0.25rem;
+  font-size: 0.875rem;
+  color: #1f2937;
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Consolas, "Liberation Mono", Menlo, monospace;
+}
+
+.prose-custom pre {
+  background-color: #111827;
+  color: #f9fafb;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+}
+
+.prose-custom pre code {
+  background-color: transparent;
+  padding: 0;
+  color: inherit;
+  font-size: inherit;
+}
+
+.prose-custom blockquote {
+  border-left: 3px solid #e5e7eb;
+  background-color: #f9fafb;
+  padding: 0.25rem 1rem;
+  margin: 1.5rem 0;
+  font-style: italic;
+  color: #6b7280;
+}
+
+.prose-custom ul, .prose-custom ol {
+  margin-top: 2rem !important;
+  margin-bottom: 2rem !important;
+  padding-left: 1.5rem;
+}
+
+.prose-custom li {
+  margin-bottom: 0.5rem;
+  line-height: 1.6;
+  color: #374151;
+}
+
+.prose-custom ul li {
+  list-style-type: disc;
+}
+
+.prose-custom ol li {
+  list-style-type: decimal;
 }
 
 /* FAQ Question/Answer Formatting */
@@ -76,45 +435,6 @@ body {
 
 .prose-custom tbody tr:nth-child(even) {
   background-color: #f9fafb;
-}
-
-/* Professional Section Spacing */
-.prose-custom h2 {
-  margin-top: 2rem;
-  margin-bottom: 1rem;
-  padding-bottom: 0.5rem;
-  border-bottom: 2px solid #e5e7eb;
-}
-
-.prose-custom h3 {
-  margin-top: 1.5rem;
-  margin-bottom: 0.75rem;
-}
-
-/* Enhanced paragraph spacing for professional documents */
-.prose-custom p {
-  margin-bottom: 2rem !important;
-  line-height: 1.7;
-}
-
-.prose-custom p + p {
-  margin-top: 2rem !important;
-}
-
-/* Proper spacing after headers */
-.prose-custom h1 + p, .prose-custom h2 + p, .prose-custom h3 + p {
-  margin-top: 1rem !important;
-}
-
-/* Enhanced List Spacing */
-.prose-custom ul, .prose-custom ol {
-  margin-top: 2rem !important;
-  margin-bottom: 2rem !important;
-}
-
-.prose-custom li {
-  margin-bottom: 0.5rem;
-  line-height: 1.6;
 }
 
 /* Citation Styling */
