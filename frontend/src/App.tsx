@@ -642,7 +642,6 @@ function App() {
               {analysisPhase === 'reviewing' && productAnalysis && (
                 <section id="analysis-review-section" className="py-12 md:py-16">
                   <div className="bg-white rounded-2xl p-8 border border-gray-100">
-                    <h2 className="text-2xl font-semibold text-gray-900 mb-6">Refine Your Concept</h2>
                     <ProductAnalysisReview
                       productIdea={originalProductIdea}
                       analysis={productAnalysis}

@@ -126,9 +126,9 @@ const ProductAnalysisReview: React.FC<ProductAnalysisReviewProps> = ({
 
       {/* Header */}
       <div className="text-center mb-8">
-        <h3 className="text-2xl font-bold text-gray-900 mb-2">Concept Analysis Complete</h3>
+        <h3 className="text-2xl font-bold text-gray-900 mb-2">Review Your Input Brief</h3>
         <p className="text-gray-600 max-w-2xl mx-auto">
-          Review the breakdown of your product concept that will inform the brief. You can proceed or refine it.
+          Here's how we've framed your target customer, problem, and scope. These inputs will guide the team's work. Refine or continue to build your PRFAQ.
         </p>
       </div>
 
