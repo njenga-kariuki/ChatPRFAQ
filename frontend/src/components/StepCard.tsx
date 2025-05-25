@@ -29,35 +29,6 @@ const StepCard: React.FC<StepCardProps> = ({ step, onToggle }) => {
     }
   };
 
-  // Debugging function to check applied styles
-  const debugStyles = React.useCallback(() => {
-    if (step.output && step.isActive) {
-      setTimeout(() => {
-        const container = document.querySelector(`#step-${step.id} .prose-custom`);
-        if (container) {
-          console.log(`🔍 StepCard ${step.id} CSS Debug:`);
-          console.log('- Container classes:', container.className);
-          
-          const paragraphs = container.querySelectorAll('p');
-          paragraphs.forEach((p, index) => {
-            const styles = window.getComputedStyle(p);
-            console.log(`  📝 Paragraph ${index + 1}:`);
-            console.log(`    - margin-bottom: ${styles.marginBottom}`);
-            console.log(`    - margin-top: ${styles.marginTop}`);
-            console.log(`    - line-height: ${styles.lineHeight}`);
-            console.log(`    - text content: "${p.textContent?.substring(0, 50)}..."`);
-          });
-          
-          console.log('=====================================');
-        }
-      }, 100);
-    }
-  }, [step.id, step.output, step.isActive]);
-
-  React.useEffect(() => {
-    debugStyles();
-  }, [debugStyles]);
-
   if (step.status === 'pending') return null;
 
   return (

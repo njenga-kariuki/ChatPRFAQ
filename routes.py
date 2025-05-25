@@ -7,6 +7,7 @@ import time
 import threading
 import queue
 import os
+import uuid
 
 # Configure logging
 logger = logging.getLogger(__name__)
@@ -15,6 +16,10 @@ logger = logging.getLogger(__name__)
 logger.info("Creating LLMProcessor instance...")
 llm_processor = LLMProcessor()
 logger.info("LLMProcessor instance created successfully")
+
+def generate_request_id():
+    """Generate a short request ID for tracking"""
+    return str(uuid.uuid4())[:8]
 
 # Serve React app directly from Flask
 from flask import send_from_directory
@@ -47,48 +52,49 @@ def process_product_idea():
     
     Returns a JSON response with the results of each step in the process.
     """
-    logger.info("=== /api/process endpoint called ===")
+    request_id = generate_request_id()
+    logger.info(f"[{request_id}] API /process endpoint called")
     try:
         data = request.get_json()
-        logger.debug(f"Request data received: {data is not None}")
+        logger.debug(f"[{request_id}] Request data received: {data is not None}")
         
         if not data or 'product_idea' not in data:
-            logger.warning("Missing product_idea in request body")
+            logger.warning(f"[{request_id}] Missing product_idea in request body")
             return jsonify({
                 'error': 'Missing product_idea in request body'
             }), 400
         
         product_idea = data['product_idea']
-        logger.info(f"Product idea received - length: {len(product_idea)} characters")
-        logger.debug(f"Product idea preview: {product_idea[:100]}...")
+        logger.info(f"[{request_id}] Product idea received - length: {len(product_idea)} characters")
+        logger.debug(f"[{request_id}] Product idea preview: {product_idea[:100]}...")
         
         if not product_idea or len(product_idea.strip()) < 10:
-            logger.warning(f"Product idea too short: {len(product_idea)} characters")
+            logger.warning(f"[{request_id}] Product idea too short: {len(product_idea)} characters")
             return jsonify({
                 'error': 'Product idea is too short. Please provide more details.'
             }), 400
             
         # Process the product idea through all steps
-        logger.info("Starting LLM processing...")
+        logger.info(f"[{request_id}] Starting LLM processing...")
         start_time = time.time()
         results = llm_processor.process_all_steps(product_idea)
         end_time = time.time()
         
-        logger.info(f"LLM processing completed in {end_time - start_time:.2f} seconds")
+        logger.info(f"[{request_id}] LLM processing completed in {end_time - start_time:.2f} seconds")
         
         if 'error' in results:
-            logger.error(f"LLM processing failed: {results['error']}")
+            logger.error(f"[{request_id}] LLM processing failed: {results['error']}")
             return jsonify({
                 'error': results['error'],
                 'step': results.get('step', 'unknown')
             }), 500
             
-        logger.info("Returning successful results")
-        logger.debug(f"Results contain {len(results.get('steps', []))} steps")
+        logger.info(f"[{request_id}] Returning successful results")
+        logger.debug(f"[{request_id}] Results contain {len(results.get('steps', []))} steps")
         return jsonify(results)
         
     except Exception as e:
-        logger.exception("Unexpected error in process_product_idea")
+        logger.exception(f"[{request_id}] Unexpected error in process_product_idea")
         return jsonify({
             'error': f'Server error: {str(e)}'
         }), 500
@@ -105,45 +111,46 @@ def process_product_idea_stream():
     
     Returns Server-Sent Events stream with real-time progress updates.
     """
-    logger.info("=== /api/process_stream endpoint called ===")
+    request_id = generate_request_id()
+    logger.info(f"[{request_id}] API /process_stream endpoint called")
     try:
         data = request.get_json()
-        logger.debug(f"Stream request data received: {data is not None}")
+        logger.debug(f"[{request_id}] Stream request data received: {data is not None}")
         
         if not data or 'product_idea' not in data:
-            logger.warning("Missing product_idea in stream request body")
+            logger.warning(f"[{request_id}] Missing product_idea in stream request body")
             return jsonify({
                 'error': 'Missing product_idea in request body'
             }), 400
         
         product_idea = data['product_idea']
-        logger.info(f"Stream product idea received - length: {len(product_idea)} characters")
+        logger.info(f"[{request_id}] Stream product idea received - length: {len(product_idea)} characters")
         
         if not product_idea or len(product_idea.strip()) < 10:
-            logger.warning(f"Stream product idea too short: {len(product_idea)} characters")
+            logger.warning(f"[{request_id}] Stream product idea too short: {len(product_idea)} characters")
             return jsonify({
                 'error': 'Product idea is too short. Please provide more details.'
             }), 400
         
         def generate():
-            logger.info("Starting stream generator")
+            logger.info(f"[{request_id}] Starting stream generator")
             # Create a queue for progress updates
             progress_queue = queue.Queue()
             result_container = {}
             
             def progress_callback(update):
-                logger.debug(f"Progress callback received: {update.get('status', 'unknown')}")
+                logger.info(f"[{request_id}] Step {update.get('step', '?')} | {update.get('status', 'unknown')}")
                 progress_queue.put(update)
             
             def process_in_thread():
                 try:
-                    logger.info("Background processing thread started")
+                    logger.info(f"[{request_id}] Background processing thread started")
                     result = llm_processor.process_all_steps(product_idea, progress_callback)
                     result_container['result'] = result
                     progress_queue.put({'done': True})
-                    logger.info("Background processing thread completed")
+                    logger.info(f"[{request_id}] Background processing thread completed")
                 except Exception as e:
-                    logger.exception("Error in background processing thread")
+                    logger.exception(f"[{request_id}] Error in background processing thread")
                     progress_queue.put({
                         'error': True,
                         'message': f'Server error: {str(e)}'
@@ -153,11 +160,11 @@ def process_product_idea_stream():
             thread = threading.Thread(target=process_in_thread)
             thread.daemon = True
             thread.start()
-            logger.info("Background thread started")
+            logger.info(f"[{request_id}] Background thread started")
             
             # Send initial status
             initial_update = {'status': 'started', 'message': 'Starting evaluation...', 'progress': 0}
-            logger.debug(f"Sending initial update: {initial_update}")
+            logger.debug(f"[{request_id}] Sending initial update: {initial_update}")
             yield f"data: {json.dumps(initial_update)}\n\n"
             
             # Stream progress updates
@@ -166,10 +173,10 @@ def process_product_idea_stream():
                 try:
                     update = progress_queue.get(timeout=60)  # 60 second timeout
                     update_count += 1
-                    logger.debug(f"Streaming update #{update_count}: {update.get('status', 'unknown')}")
+                    logger.debug(f"[{request_id}] Streaming update #{update_count}: {update.get('status', 'unknown')}")
                     
                     if update.get('done'):
-                        logger.info("Processing completed - sending final result")
+                        logger.info(f"[{request_id}] Processing completed - sending final result")
                         # Send final result
                         if 'result' in result_container:
                             if 'error' in result_container['result']:
@@ -178,7 +185,7 @@ def process_product_idea_stream():
                                 yield f"data: {json.dumps({'complete': True, 'result': result_container['result']})}\n\n"
                         break
                     elif update.get('error'):
-                        logger.error(f"Error in stream: {update['message']}")
+                        logger.error(f"[{request_id}] Error in stream: {update['message']}")
                         yield f"data: {json.dumps({'error': update['message']})}\n\n"
                         break
                     else:
@@ -187,17 +194,17 @@ def process_product_idea_stream():
                         
                 except queue.Empty:
                     # Timeout - send keepalive
-                    logger.debug("Stream timeout - sending keepalive")
+                    logger.debug(f"[{request_id}] Stream timeout - sending keepalive")
                     yield f"data: {json.dumps({'keepalive': True})}\n\n"
                     continue
                 except Exception as e:
-                    logger.exception("Error in stream generator")
+                    logger.exception(f"[{request_id}] Error in stream generator")
                     yield f"data: {json.dumps({'error': f'Stream error: {str(e)}'})}\n\n"
                     break
                     
-            logger.info(f"Stream generator completed after {update_count} updates")
+            logger.info(f"[{request_id}] Stream generator completed after {update_count} updates")
         
-        logger.info("Returning streaming response")
+        logger.info(f"[{request_id}] Returning streaming response")
         return Response(
             generate(),
             mimetype='text/event-stream',
@@ -210,7 +217,7 @@ def process_product_idea_stream():
         )
         
     except Exception as e:
-        logger.exception("Error setting up stream")
+        logger.exception(f"[{request_id}] Error setting up stream")
         return jsonify({
             'error': f'Server error: {str(e)}'
         }), 500
@@ -229,13 +236,14 @@ def process_single_step():
     
     Returns a JSON response with the results of the requested step.
     """
-    logger.info("=== /api/process_step endpoint called ===")
+    request_id = generate_request_id()
+    logger.info(f"[{request_id}] API /process_step endpoint called")
     try:
         data = request.get_json()
-        logger.debug(f"Single step request data received: {data is not None}")
+        logger.debug(f"[{request_id}] Single step request data received: {data is not None}")
         
         if not data or 'step_id' not in data or 'input' not in data:
-            logger.warning("Missing required fields in single step request")
+            logger.warning(f"[{request_id}] Missing required fields in single step request")
             return jsonify({
                 'error': 'Missing required fields (step_id, input) in request body'
             }), 400
@@ -244,28 +252,28 @@ def process_single_step():
         input_text = data['input']
         step_data = data.get('step_data', None)
         
-        logger.info(f"Processing single step {step_id}")
-        logger.debug(f"Input text length: {len(input_text)}")
+        logger.info(f"[{request_id}] Processing single step {step_id}")
+        logger.debug(f"[{request_id}] Input text length: {len(input_text)}")
         
         # Process the single step
         start_time = time.time()
         result = llm_processor.generate_step_response(step_id, input_text, step_data)
         end_time = time.time()
         
-        logger.info(f"Single step {step_id} completed in {end_time - start_time:.2f} seconds")
+        logger.info(f"[{request_id}] Single step {step_id} completed in {end_time - start_time:.2f} seconds")
         
         if 'error' in result:
-            logger.error(f"Single step {step_id} failed: {result['error']}")
+            logger.error(f"[{request_id}] Single step {step_id} failed: {result['error']}")
             return jsonify({
                 'error': result['error'],
                 'step': step_id
             }), 500
             
-        logger.info(f"Single step {step_id} successful")
+        logger.info(f"[{request_id}] Single step {step_id} successful")
         return jsonify(result)
         
     except Exception as e:
-        logger.exception(f"Error processing single step {data.get('step_id', 'unknown')}")
+        logger.exception(f"[{request_id}] Error processing single step {data.get('step_id', 'unknown')}")
         return jsonify({
             'error': f'Server error: {str(e)}'
         }), 500

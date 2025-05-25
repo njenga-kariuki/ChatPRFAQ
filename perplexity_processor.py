@@ -4,6 +4,20 @@ from config import PERPLEXITY_API_KEY, PERPLEXITY_BASE_URL, PERPLEXITY_MODEL
 
 logger = logging.getLogger(__name__)
 
+def format_response_summary(text: str, max_length: int = 150) -> str:
+    """Format LLM response for clean logging"""
+    if not text:
+        return "Empty response"
+    
+    # Clean up response
+    cleaned = text.strip().replace('\n', ' ').replace('\r', ' ')
+    
+    # Truncate if too long
+    if len(cleaned) > max_length:
+        return f"{cleaned[:max_length]}... ({len(text)} chars total)"
+    
+    return f"{cleaned} ({len(text)} chars)"
+
 class PerplexityProcessor:
     def __init__(self):
         # The OpenAI client automatically adds the Bearer prefix to the API key
@@ -32,7 +46,7 @@ class PerplexityProcessor:
         Returns:
             Dict containing research results or error information
         """
-        logger.info("=== Starting Initial Perplexity Market Research ===")
+        logger.info("Starting initial Perplexity market research")
         
         # Check if client was properly initialized
         if not self.client:
@@ -48,29 +62,29 @@ class PerplexityProcessor:
             return {"error": error_msg}
         
         try:
+            # Format the user prompt with the product idea
+            formatted_prompt = user_prompt.format(input=product_idea)
+            
             if progress_callback:
                 progress_callback({
                     "step": 1,
                     "status": "processing",
                     "message": "Agent researching market landscape and competitive intelligence...",
-                    "progress": 10
+                    "progress": 5
                 })
-            
-            # Format the user prompt with the product idea
-            formatted_prompt = user_prompt.format(input=product_idea)
             
             logger.info("Calling Perplexity Sonar API for initial research...")
             logger.debug(f"Using model: {self.model}")
             
-            # Remove the extra_headers parameter - OpenAI client handles auth automatically
             response = self.client.chat.completions.create(
                 model=self.model,
                 messages=[
                     {"role": "system", "content": system_prompt},
                     {"role": "user", "content": formatted_prompt}
                 ],
-                temperature=0.3,  # Lower temperature for factual research
-                max_tokens=4000
+                max_tokens=8192,
+                temperature=0.3,
+                top_p=0.9
             )
             
             if not response or not response.choices or not response.choices[0].message.content:
@@ -78,12 +92,12 @@ class PerplexityProcessor:
                 return {"error": "Invalid response from Perplexity API"}
             
             research_output = response.choices[0].message.content
-            logger.info(f"Initial research completed - length: {len(research_output)} characters")
+            logger.info(f"Perplexity response: {format_response_summary(research_output)}")
             
-            # Critical validation logging for response quality
-            if len(research_output.strip()) < 100:
+            # Quality validation
+            if len(research_output.strip()) < 500:
                 logger.warning(f"Perplexity response seems unusually short: {len(research_output)} chars")
-            elif "Market Opportunity Analysis" not in research_output and "Competitive Intelligence" not in research_output:
+            elif not any(keyword in research_output.lower() for keyword in ['market', 'competitive', 'customer', 'industry']):
                 logger.warning("Perplexity response may not contain expected research sections")
             else:
                 logger.info("Perplexity response appears to contain expected research sections")
@@ -93,34 +107,29 @@ class PerplexityProcessor:
                     "step": 1,
                     "status": "completed",
                     "message": "Market research and competitive analysis complete",
-                    "progress": (1/7) * 100,
+                    "progress": 14.3,  # ~1/7 of total progress
                     "output": research_output
                 })
             
-            logger.info("=== Initial Market Research completed successfully ===")
+            logger.info("Initial market research completed successfully")
+            
             return {
                 "output": research_output,
                 "step": "Market Research & Analysis",
-                "persona": "Senior Market Research Analyst",
-                "description": "Comprehensive market research and competitive analysis"
+                "persona": "Expert Market Research Analyst",
+                "description": "Comprehensive market research and competitive analysis using real-time web data."
             }
             
         except Exception as e:
-            logger.error(f"Error in conduct_initial_market_research: {str(e)}")
+            logger.error(f"API call failed | Model: {self.model}, Error: {type(e).__name__}: {str(e)}")
             logger.exception("Full error traceback:")
-            
-            # Better error message for API key issues
-            error_msg = str(e)
-            if "401" in error_msg or "Unauthorized" in error_msg:
-                error_msg = "Authentication failed. Please check that PERPLEXITY_API_KEY is correct in Replit Secrets."
-            elif "Connection error" in error_msg:
-                error_msg = "Unable to connect to Perplexity API. Please verify PERPLEXITY_API_KEY is correct."
             
             if progress_callback:
                 progress_callback({
                     "step": 1,
                     "status": "error",
-                    "message": f"Error in market research: {error_msg}",
-                    "error": error_msg
+                    "message": f"Market research failed: {str(e)}",
+                    "error": str(e)
                 })
-            return {"error": f"Initial market research failed: {error_msg}"} 
+            
+            return {"error": f"Market research failed: {str(e)}"} 

@@ -4,13 +4,6 @@ Development server script that bypasses Gunicorn timeout issues
 """
 
 from app import app
-import logging
-
-# Configure detailed logging for development
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-)
 
 if __name__ == "__main__":
     print("🚀 Starting LLM-Powered Product Concept Evaluator (Development Mode)")

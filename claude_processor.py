@@ -4,6 +4,20 @@ from config import ANTHROPIC_API_KEY, CLAUDE_MODEL
 
 logger = logging.getLogger(__name__)
 
+def format_response_summary(text: str, max_length: int = 150) -> str:
+    """Format LLM response for clean logging"""
+    if not text:
+        return "Empty response"
+    
+    # Clean up response
+    cleaned = text.strip().replace('\n', ' ').replace('\r', ' ')
+    
+    # Truncate if too long
+    if len(cleaned) > max_length:
+        return f"{cleaned[:max_length]}... ({len(text)} chars total)"
+    
+    return f"{cleaned} ({len(text)} chars)"
+
 class ClaudeProcessor:
     def __init__(self):
         self.client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
@@ -29,18 +43,18 @@ class ClaudeProcessor:
     
     def generate_response(self, system_prompt, user_prompt, progress_callback=None, step_id=None):
         """
-        Generate a response using Claude Sonnet API
+        Generate a response from Claude API
         
         Args:
-            system_prompt: The system prompt defining the persona and context
-            user_prompt: The formatted user prompt with input data
+            system_prompt: The system prompt for Claude
+            user_prompt: The user prompt for Claude
             progress_callback: Optional callback for progress updates
-            step_id: Optional step identifier for progress tracking
+            step_id: Optional step ID for progress tracking
             
         Returns:
-            Dict containing response results or error information
+            Dict containing response or error information
         """
-        logger.info(f"=== Starting Claude API call for Step {step_id} ===")
+        logger.info(f"Starting Claude API call for step {step_id}")
         
         # Check if client was properly initialized
         if not self.client:
@@ -50,7 +64,7 @@ class ClaudeProcessor:
                 progress_callback({
                     "step": step_id,
                     "status": "error",
-                    "message": "Claude API failed: API key not configured",
+                    "message": "Claude API not configured",
                     "error": error_msg
                 })
             return {"error": error_msg}
@@ -87,7 +101,7 @@ class ClaudeProcessor:
                 return {"error": "Invalid response from Claude API"}
             
             output = response.content[0].text
-            logger.info(f"Claude response received - length: {len(output)} characters")
+            logger.info(f"Claude response: {format_response_summary(output)}")
             
             # Critical validation logging for response quality
             if len(output.strip()) < 100:
@@ -95,50 +109,30 @@ class ClaudeProcessor:
             else:
                 logger.info("Claude response appears to be of appropriate length")
             
-            # Get completion message
-            completion_messages = {
-                0: "Product analysis complete",
-                1: "Market research and competitive analysis complete",
-                2: "Press release draft complete", 
-                3: "Press release refinement complete",
-                4: "Customer FAQ complete",
-                5: "Internal FAQ complete",
-                6: "PRFAQ document synthesis complete",
-                7: "MLP roadmap complete"
-            }
-            completion_message = completion_messages.get(step_id, "Agent completed processing")
-            
+            # Send completion update via progress callback
             if progress_callback:
                 progress_callback({
                     "step": step_id,
                     "status": "completed",
-                    "message": completion_message,
+                    "message": f"Step {step_id} completed successfully",
                     "progress": (step_id / 7) * 100 if step_id else 100,
                     "output": output
                 })
             
-            logger.info("=== Claude API call completed successfully ===")
-            return {
-                "output": output,
-                "model_used": self.model
-            }
+            logger.info("Claude API call completed successfully")
+            return {"output": output}
             
         except Exception as e:
-            logger.error(f"Error in Claude API call: {str(e)}")
+            error_msg = f"Claude API error: {str(e)}"
+            logger.error(f"API call failed | Model: {self.model}, Error: {type(e).__name__}: {str(e)}")
             logger.exception("Full error traceback:")
-            
-            # Better error message for API key issues
-            error_msg = str(e)
-            if "authentication" in error_msg.lower() or "api_key" in error_msg.lower():
-                error_msg = "Invalid API key. Please check ANTHROPIC_API_KEY in Replit Secrets."
-            elif "connection" in error_msg.lower():
-                error_msg = "Unable to connect to Claude API. Please verify ANTHROPIC_API_KEY is correct."
             
             if progress_callback:
                 progress_callback({
                     "step": step_id,
                     "status": "error",
-                    "message": f"Error in Agent processing: {error_msg}",
+                    "message": f"Step {step_id} failed: {str(e)}",
                     "error": error_msg
                 })
-            return {"error": f"Claude API call failed: {error_msg}"} 
+            
+            return {"error": error_msg} 
