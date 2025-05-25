@@ -41,7 +41,8 @@ const LandingPage: React.FC<LandingPageProps> = ({ onStartEvaluation }) => {
           </h1>
           {/* Extended Subheadline */}
           <p className="subheadline">
-            You know the pain: Draft. Review. Politics. Rewrite. Repeat. There's gotta be a better way. Amazon's Working Backwards methodology, automated by 10 specialized AI agents. One input, skip straight to approval. Built by a 10-year Amazon PM & Stanford GSB grad.
+            You know the pain: Draft. Review. Politics. Rewrite. Repeat. There's gotta be a better way. Amazon's Working Backwards methodology, automated by 10 specialized AI agents. 
+            One input, straight to approval. Built by a 10-year Amazon PM & Stanford GSB grad.
           </p>
         </div>
       </section>
