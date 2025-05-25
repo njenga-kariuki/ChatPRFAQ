@@ -7,6 +7,9 @@ import os
 import sys
 import time
 
+# Add parent directory to path so we can import config and processors
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 # Basic imports check
 try:
     print("Testing imports...")
@@ -32,13 +35,13 @@ try:
     print("✓ Config import successful")
     print(f"✓ Model configured: {CLAUDE_MODEL}")
     
-    from llm_processor import LLMProcessor
+    from processors.llm_processor import LLMProcessor
     print("✓ LLMProcessor import successful")
     
-    from perplexity_processor import PerplexityProcessor
+    from processors.perplexity_processor import PerplexityProcessor
     print("✓ PerplexityProcessor import successful")
     
-    from claude_processor import ClaudeProcessor
+    from processors.claude_processor import ClaudeProcessor
     print("✓ ClaudeProcessor import successful")
     
 except ImportError as e:

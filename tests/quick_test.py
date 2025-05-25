@@ -2,6 +2,9 @@
 import os
 import sys
 
+# Add parent directory to path so we can import config and processors
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 # Test 1: Check environment variable
 api_key = os.environ.get("PERPLEXITY_API_KEY", "")
 print(f"API Key present: {bool(api_key)}")
@@ -41,7 +44,7 @@ except Exception as e:
 
 # Test 3: Test PerplexityProcessor class
 try:
-    from perplexity_processor import PerplexityProcessor
+    from processors.perplexity_processor import PerplexityProcessor
     
     print("Testing PerplexityProcessor...")
     processor = PerplexityProcessor()

@@ -1,6 +1,6 @@
 from flask import request, jsonify, Response
 from app import app
-from llm_processor import LLMProcessor
+from processors.llm_processor import LLMProcessor
 import logging
 import json
 import time

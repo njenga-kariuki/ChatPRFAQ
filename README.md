@@ -171,7 +171,7 @@ This provides:
 python test_api.py
 
 # Test single step processing
-python -c "from llm_processor import LLMProcessor; p = LLMProcessor(); print(p.generate_step_response(1, 'test idea'))"
+python -c "from processors.llm_processor import LLMProcessor; p = LLMProcessor(); print(p.generate_step_response(1, 'test idea'))"
 
 # Test web server
 curl -X POST http://localhost:5000/api/process -H "Content-Type: application/json" -d '{"product_idea":"test"}'

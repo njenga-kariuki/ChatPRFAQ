@@ -1,15 +1,13 @@
 import logging
 # import google.generativeai as genai  # Kept for potential future use
 from config import ANTHROPIC_API_KEY, CLAUDE_MODEL, WORKING_BACKWARDS_STEPS, PRODUCT_ANALYSIS_STEP
-from perplexity_processor import PerplexityProcessor
-from claude_processor import ClaudeProcessor
+from .perplexity_processor import PerplexityProcessor
+from .claude_processor import ClaudeProcessor
 
 # Get logger for this module
 logger = logging.getLogger(__name__)
 
 # Configure Google Generative AI with API key
-logger.info(f"Configuring Claude API with model: {CLAUDE_MODEL}")
-logger.info(f"API Key configured: {'Yes' if ANTHROPIC_API_KEY else 'No'}")
 # genai.configure(api_key=ANTHROPIC_API_KEY)
 
 class LLMProcessor:
@@ -53,7 +51,10 @@ class LLMProcessor:
             elif step_id == 2:
                 # Press release drafting with market research
                 return self._handle_press_release_with_research(input_text, step_data, progress_callback)
-            elif step_id in [3, 4, 5]:
+            elif step_id == 3:
+                # Press release refinement step (special case)
+                return self._handle_press_release_refinement(input_text, step_data, progress_callback)
+            elif step_id in [4, 5]:
                 # Steps that need market research context
                 return self._handle_step_with_market_research(step_id, input_text, step_data, progress_callback)
             elif step_id == 6:
@@ -123,6 +124,35 @@ class LLMProcessor:
         # Use existing Claude processing logic
         return self._call_claude_api(step, formatted_prompt, progress_callback, step_id=2)
 
+    def _handle_press_release_refinement(self, input_text, step_data, progress_callback=None):
+        """Handle press release refinement step (special case)"""
+        logger.info("Handling press release refinement step")
+        
+        step = next((s for s in self.steps if s["id"] == 3), None)
+        if not step:
+            return {"error": "Press release refinement step configuration not found"}
+        
+        # Enhanced validation logging with specific details
+        if not step_data:
+            logger.error("Step 3: No step_data provided")
+            return {"error": "Market research data required for press release refinement"}
+        elif 'market_research' not in step_data:
+            logger.error(f"Step 3: step_data missing 'market_research' key. Available keys: {list(step_data.keys())}")
+            return {"error": "Market research data required for press release refinement"}
+        
+        # Critical data flow tracking
+        market_research_length = len(step_data['market_research'])
+        input_length = len(input_text) if input_text else 0
+        logger.info(f"Step 3: Market research data available ({market_research_length} chars), press release draft ({input_length} chars)")
+        
+        # Format prompt with press_release_draft and market_research (step 3 specific format)
+        formatted_prompt = step["user_prompt"].format(
+            press_release_draft=input_text,
+            market_research=step_data['market_research']
+        )
+        
+        return self._call_claude_api(step, formatted_prompt, progress_callback, step_id=3)
+
     def _handle_step_with_market_research(self, step_id, input_text, step_data, progress_callback=None):
         """Handle steps that need both input text and market research context"""
         logger.info(f"Handling step {step_id} with market research")
@@ -144,11 +174,19 @@ class LLMProcessor:
         input_length = len(input_text) if input_text else 0
         logger.info(f"Step {step_id}: Market research data available ({market_research_length} chars), input text ({input_length} chars)")
         
-        # Format prompt with input text and market research
-        formatted_prompt = step["user_prompt"].format(
-            input=input_text,
-            market_research=step_data['market_research']
-        )
+        # Format prompt with correct parameter names based on step
+        if step_id in [4, 5]:
+            # Steps 4 and 5 expect 'press_release' parameter
+            formatted_prompt = step["user_prompt"].format(
+                press_release=input_text,
+                market_research=step_data['market_research']
+            )
+        else:
+            # Other steps expect 'input' parameter
+            formatted_prompt = step["user_prompt"].format(
+                input=input_text,
+                market_research=step_data['market_research']
+            )
         
         return self._call_claude_api(step, formatted_prompt, progress_callback, step_id)
 
