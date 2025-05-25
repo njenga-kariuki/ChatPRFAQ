@@ -41,49 +41,69 @@ const LandingPage: React.FC<LandingPageProps> = ({ onStartEvaluation }) => {
           </h1>
           {/* Extended Subheadline */}
           <p className="subheadline">
-            You know the pain: Draft. Review. Politics. Rewrite. Repeat. There's gotta be a better way. Amazon's Working Backwards methodology, automated by 7 specialized AI agents. One input, skip straight to approval. Built by a 10-year Amazon PM & Stanford GSB grad.
+            You know the pain: Draft. Review. Politics. Rewrite. Repeat. There's gotta be a better way. Amazon's Working Backwards methodology, automated by 10 specialized AI agents. One input, skip straight to approval. Built by a 10-year Amazon PM & Stanford GSB grad.
           </p>
         </div>
       </section>
 
       {/* Agent Framework Section */}
       <div className="max-w-4xl mx-auto">
-        <div className="bg-white rounded-2xl p-8 my-8 border border-gray-100">
+        <div className="bg-white rounded-2xl pt-6 px-8 pb-8 my-8 border border-gray-100">
           
           {/* Framework Header */}
           <div style={{textAlign: 'center', marginBottom: '32px'}}>
             <h2 className="text-2xl md:text-3xl font-semibold mb-2 text-gray-900">
-             Your Team & Review Board
+              Your AI Team
             </h2>
             <p className="text-base text-gray-500 leading-relaxed">
-              Elite perspective from every function—minus the ego.<br />
+              Elite perspective from every role—minus the ego.<br />
               We test new models daily and optimize for each role.
             </p>
           </div>
 
-          {/* Your Team Section */}
-          <div className="text-center mb-8">
+          {/* Working Group Section */}
+          <div className="text-center">
             <h4 className="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-4">
-              Your Team
+              Working Group
             </h4>
             <div className="flex flex-wrap justify-center items-center gap-2 text-gray-900 text-lg">
               <span className="font-medium">Market Analyst</span>
               <span className="text-gray-400">•</span>
               <span className="font-medium">User Researcher</span>
+              <span className="text-gray-400">•</span>
+              <span className="font-medium">PM</span>
             </div>
             <div className="flex flex-wrap justify-center items-center gap-2 text-gray-900 text-lg mt-2">
-              <span className="font-medium">Product Manager</span>
-              <span className="text-gray-400">•</span>
               <span className="font-medium">Tech Lead</span>
               <span className="text-gray-400">•</span>
               <span className="font-medium">Editor</span>
             </div>
           </div>
 
-          {/* Your Reviewers Section */}
+          {/* Visual Separator */}
+          <div className="w-16 h-px bg-gray-200 mx-auto mt-6 mb-6"></div>
+
+          {/* Functional Input Section */}
           <div className="text-center">
-            <h4 className="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-4">
-              Your Reviewers
+            <h4 className="text-sm font-medium text-gray-600 uppercase tracking-wide mb-4">
+              Functional Input
+            </h4>
+            <div className="flex justify-center items-center gap-2 text-gray-900 text-lg">
+              <span className="font-medium">Marketing</span>
+              <span className="text-gray-400">•</span>
+              <span className="font-medium">Finance</span>
+              <span className="text-gray-400">•</span>
+              <span className="font-medium">Legal</span>
+            </div>
+          </div>
+
+          {/* Visual Separator */}
+          <div className="w-16 h-px bg-gray-200 mx-auto mt-6 mb-6"></div>
+
+          {/* Exec Reviewers Section */}
+          <div className="text-center">
+            <h4 className="text-sm font-semibold text-gray-900 uppercase tracking-wide mb-4">
+              Exec Reviewers
             </h4>
             <div className="flex justify-center items-center gap-2 text-gray-900 text-lg">
               <span className="font-medium">VP Product</span>
@@ -104,7 +124,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onStartEvaluation }) => {
             </h3>
             <div className="mb-4">
               <textarea
-                className="w-full p-6 border border-gray-200 rounded-xl resize-none focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent bg-white text-gray-900 text-lg"
+                className="w-full p-6 border border-gray-200 rounded-xl resize-none focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent bg-white text-gray-900"
                 rows={6}
                 placeholder="Example: A WhatsApp-based inventory system that lets small retailers track stock levels and automatically reorder from suppliers when running low..."
                 value={productIdea}
