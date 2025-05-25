@@ -561,15 +561,14 @@ function App() {
           <header className="w-full max-w-6xl mb-12 text-center">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4 leading-tight">
               <span className="text-black">
-                Work Backwards
+                Working Backwards AI
               </span>
-              <span className="text-gray-400 mx-3">×</span>
-              <span className="text-gray-400">Agent</span>
             </h1>
             
-            <p className="text-xl text-gray-600 mt-2 max-w-2xl mx-auto leading-relaxed">
-              Turn product ideas into C-Suite ready briefs in less than 5 minutes
+            <p className="subheadline">
+              Turn product ideas into C-Suite ready PRFAQs in 3 minutes
             </p>
+            <p className="text-sm text-gray-500 mt-2">Powered by 10 specialized AI agents</p>
           </header>
 
           {generalError && (
@@ -588,7 +587,7 @@ function App() {
           <main className="w-full max-w-6xl space-y-8">
             <section id="product-idea-section" className="py-12 md:py-16">
               <div className="bg-white rounded-2xl p-8 border border-gray-100">
-                <h2 className="text-2xl font-semibold text-gray-900 mb-6">Enter Your Product Idea</h2>
+                <h2 className="text-2xl font-semibold text-gray-900 mb-6">Describe your product idea</h2>
                 <ProductIdeaForm 
                   onSubmit={handleFormSubmit} 
                   isProcessing={isProcessing}
