@@ -69,7 +69,7 @@ class PerplexityProcessor:
                 progress_callback({
                     "step": 1,
                     "status": "processing",
-                    "message": "Agent researching market landscape and competitive intelligence...",
+                    "message": "Market analyst pulling competitive intelligence...",
                     "progress": 5
                 })
             

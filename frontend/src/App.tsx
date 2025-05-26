@@ -109,11 +109,21 @@ const useSmartScroll = () => {
 
 const extractKeyInsight = (output: string, stepId: number): string | null => {
   if (stepId === 2) { // Problem validation
-    const match = output.match(/High Priority Pain Points.*?[-•]\s*(.+?)(?:\n|$)/);
-    return match ? match[1].trim().substring(0, 100) + '...' : null;
+    // Look specifically for "High Priority Pain Points" under Severity Assessment
+    const match = output.match(/#### Severity Assessment[\s\S]*?- High Priority Pain Points[^\n]*\n\s*- (.+?)(?:\n|$)/i);
+    if (match) return match[1].trim().substring(0, 100) + '...';
+    
+    // Fallback: look for any bullet under "High Priority Pain Points"
+    const fallback = output.match(/High Priority Pain Points[^\n]*\n\s*- (.+?)(?:\n|$)/i);
+    return fallback ? fallback[1].trim().substring(0, 100) + '...' : null;
   } else if (stepId === 6) { // Concept validation
-    const match = output.match(/What Resonated Most.*?[-•]\s*(.+?)(?:\n|$)/);
-    return match ? match[1].trim().substring(0, 100) + '...' : null;
+    // Look specifically for "What Resonated Most" section
+    const match = output.match(/### What Resonated Most[^\n]*\n[\s\S]*?[-•*]\s*(.+?)(?:\n|$)/i);
+    if (match) return match[1].trim().substring(0, 100) + '...';
+    
+    // Fallback: look for any bullet under resonated/insights
+    const fallback = output.match(/(?:resonated|insights)[\s\S]*?[-•*]\s*(.+?)(?:\n|$)/i);
+    return fallback ? fallback[1].trim().substring(0, 100) + '...' : null;
   }
   return null;
 };
@@ -260,7 +270,6 @@ function App() {
     setAnalysisPhase('analyzing');
     setIsProcessing(true); // Set processing immediately for UI feedback
     setProgress(5); // Set initial progress for visual feedback
-    setCurrentStepText('Analyzing product concept...');
 
     try {
       // Step 0: Analyze Product Idea
@@ -489,6 +498,26 @@ function App() {
         // setStepsData(prev => prev.map(s => s.id === 1 ? { ...s, isActive: true } : { ...s, isActive: false }));
     }
   }, [isProcessing, progress, stepsData]);
+
+  // Team dynamics progression for Step 0 analysis
+  useEffect(() => {
+    if (analysisPhase === 'analyzing' && isProcessing) {
+      const step0Messages = [
+        "PM reviewing idea...",
+        "Preparing initial brief for alignment..."
+      ];
+      
+      let messageIndex = 0;
+      setCurrentStepText(step0Messages[0]);
+      
+      const messageTimer = setInterval(() => {
+        messageIndex = (messageIndex + 1) % step0Messages.length;
+        setCurrentStepText(step0Messages[messageIndex]);
+      }, 3000); // Change message every 3 seconds
+      
+      return () => clearInterval(messageTimer);
+    }
+  }, [analysisPhase, isProcessing]);
 
   // Unified scroll management with smart behavior
   useEffect(() => {

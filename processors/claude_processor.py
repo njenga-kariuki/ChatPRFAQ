@@ -27,7 +27,7 @@ class ClaudeProcessor:
         # Step-specific activity messages for enhanced progress tracking
         self.step_activity_messages = {
             0: [
-                "Product strategist analyzing concept...",
+                "PM analyzing concept...",
                 "Sharing analysis with team for feedback..."
             ],
             1: [

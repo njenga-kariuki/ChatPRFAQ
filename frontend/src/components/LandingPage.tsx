@@ -35,13 +35,13 @@ const LandingPage: React.FC<LandingPageProps> = ({ onStartEvaluation }) => {
       <section className="w-full px-4 py-8 md:px-8 md:py-12">
         <div className="max-w-4xl mx-auto text-center">
           {/* Hero Headline */}
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
+          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 leading-tight">
             <span className="text-black">C-Suite Ready PRFAQs in 3 Minutes</span><br />
             {/* <span className="text-gray-500 strikethrough">Not 6 Weeks</span> */}
           </h1>
           {/* Extended Subheadline */}
           <p className="subheadline">
-            You know the pain: Draft. Review. Politics. Rewrite. Repeat. There's gotta be a better way. Amazon's Working Backwards methodology, automated by 10 specialized AI agents. 
+            You know the pain: Draft. Review. Politics. Rewrite. Repeat. Your AI toolkit helps, but orchestrating them is a job itself. There's <em>gotta</em> be a better way.<br /><br />Amazon's Working Backwards methodology, automated by 10 specialized AI agents. 
             One input, straight to approval. Built by a 10-year Amazon PM & Stanford GSB alum.
           </p>
         </div>
@@ -49,7 +49,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onStartEvaluation }) => {
 
       {/* Agent Framework Section */}
       <div className="max-w-4xl mx-auto">
-        <div className="bg-white rounded-2xl pt-6 px-8 pb-8 my-8 border border-gray-100">
+        <div className="bg-white rounded-2xl pt-6 px-8 pb-8 my-6 border border-gray-100">
           
           {/* Framework Header */}
           <div style={{textAlign: 'center', marginBottom: '32px'}}>
@@ -57,8 +57,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onStartEvaluation }) => {
               Your AI Team
             </h2>
             <p className="text-base text-gray-500 leading-relaxed">
-              Elite perspective from every role—minus the ego.<br />
-              We test new models daily and optimize for each role.
+              Elite perspective from every role—minus the ego.
             </p>
           </div>
 
@@ -86,7 +85,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onStartEvaluation }) => {
 
           {/* Functional Input Section */}
           <div className="text-center">
-            <h4 className="text-sm font-medium text-gray-600 uppercase tracking-wide mb-4">
+            <h4 className="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-4">
               Functional Input
             </h4>
             <div className="flex justify-center items-center gap-2 text-gray-900 text-lg">
@@ -103,7 +102,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onStartEvaluation }) => {
 
           {/* Exec Reviewers Section */}
           <div className="text-center">
-            <h4 className="text-sm font-semibold text-gray-900 uppercase tracking-wide mb-4">
+            <h4 className="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-4">
               Exec Reviewers
             </h4>
             <div className="flex justify-center items-center gap-2 text-gray-900 text-lg">
