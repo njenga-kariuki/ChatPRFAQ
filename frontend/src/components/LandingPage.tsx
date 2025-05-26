@@ -32,16 +32,30 @@ const LandingPage: React.FC<LandingPageProps> = ({ onStartEvaluation }) => {
   return (
     <div className="min-h-screen bg-gray-50 text-gray-900">
       {/* Hero Section */}
-      <section className="w-full px-4 py-8 md:px-8 md:py-12">
+      <section className="w-full px-4 py-8 md:px-8 md:py-8">
         <div className="max-w-4xl mx-auto text-center">
           {/* Hero Headline */}
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 leading-tight">
-            <span className="text-black">C-Suite Ready PRFAQs in 3 Minutes</span><br />
-            {/* <span className="text-gray-500 strikethrough">Not 6 Weeks</span> */}
+          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-5 leading-tight">
+            <span className="text-black">C-Suite Ready PRFAQs in 3 Minutes</span>
           </h1>
-          {/* Extended Subheadline */}
+          
+          {/* First Subheadline - Tighter spacing */}
+          <p className="subheadline mb-12">
+            You know the pain: Draft. Review. Politics. Rewrite. Repeat. ChatGPT, Claude, docs, Slack, and back. There's <em>gotta</em> be a better way.
+          </p>
+          
+          {/* NEW ENHANCED SOLUTION PILL - This is the main visual change */}
+          <div className="inline-flex items-center gap-3 bg-gray-900 text-white px-7 py-3.5 rounded-full font-semibold text-base shadow-lg mt-8 mb-8 hover:shadow-xl transition-shadow duration-200">
+            <span>Idea</span>
+            <span className="text-[#4B7CF3] text-lg">→</span>
+            <span>AI Team</span>
+            <span className="text-[#4B7CF3] text-lg">→</span>
+            <span>C-Suite PRFAQ</span>
+          </div>
+          
+          {/* Second Subheadline */}
           <p className="subheadline">
-            You know the pain: Draft. Review. Politics. Rewrite. Repeat. Your AI toolkit helps, but orchestrating them is a job itself. There's <em>gotta</em> be a better way.<br /><br />Amazon's Working Backwards methodology, automated by 10 specialized AI agents. 
+            Amazon's Working Backwards methodology, automated by 10 specialized AI agents. 
             One input, straight to approval. Built by a 10-year Amazon PM & Stanford GSB alum.
           </p>
         </div>
@@ -49,7 +63,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onStartEvaluation }) => {
 
       {/* Agent Framework Section */}
       <div className="max-w-4xl mx-auto">
-        <div className="bg-white rounded-2xl pt-6 px-8 pb-8 my-6 border border-gray-100">
+        <div className="bg-white rounded-2xl pt-6 px-8 pb-8 mt-4 mb-6 border border-gray-100">
           
           {/* Framework Header */}
           <div style={{textAlign: 'center', marginBottom: '32px'}}>
@@ -63,20 +77,20 @@ const LandingPage: React.FC<LandingPageProps> = ({ onStartEvaluation }) => {
 
           {/* Working Group Section */}
           <div className="text-center">
-            <h4 className="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-4">
+            <h4 className="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-4 relative inline-block group">
               Working Group
+              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#4B7CF3] group-hover:w-full transition-all duration-300"></span>
             </h4>
             <div className="flex flex-wrap justify-center items-center gap-2 text-gray-900 text-lg">
-              <span className="font-medium">Market Analyst</span>
-              <span className="text-gray-400">•</span>
-              <span className="font-medium">User Researcher</span>
-              <span className="text-gray-400">•</span>
-              <span className="font-medium">PM</span>
-            </div>
-            <div className="flex flex-wrap justify-center items-center gap-2 text-gray-900 text-lg mt-2">
-              <span className="font-medium">Tech Lead</span>
-              <span className="text-gray-400">•</span>
-              <span className="font-medium">Editor</span>
+              <span className="font-medium whitespace-nowrap hover:text-[#4B7CF3] transition-colors duration-200 cursor-default">Market Analyst</span>
+              <span className="text-[#4B7CF3]">•</span>
+              <span className="font-medium whitespace-nowrap hover:text-[#4B7CF3] transition-colors duration-200 cursor-default">User Researcher</span>
+              <span className="text-[#4B7CF3]">•</span>
+              <span className="font-medium whitespace-nowrap hover:text-[#4B7CF3] transition-colors duration-200 cursor-default">PM</span>
+              <span className="text-[#4B7CF3]">•</span>
+              <span className="font-medium whitespace-nowrap hover:text-[#4B7CF3] transition-colors duration-200 cursor-default">Tech Lead</span>
+              <span className="text-[#4B7CF3]">•</span>
+              <span className="font-medium whitespace-nowrap hover:text-[#4B7CF3] transition-colors duration-200 cursor-default">Editor</span>
             </div>
           </div>
 
@@ -85,15 +99,16 @@ const LandingPage: React.FC<LandingPageProps> = ({ onStartEvaluation }) => {
 
           {/* Functional Input Section */}
           <div className="text-center">
-            <h4 className="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-4">
+            <h4 className="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-4 relative inline-block group">
               Functional Input
+              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#4B7CF3] group-hover:w-full transition-all duration-300"></span>
             </h4>
             <div className="flex justify-center items-center gap-2 text-gray-900 text-lg">
-              <span className="font-medium">Marketing</span>
-              <span className="text-gray-400">•</span>
-              <span className="font-medium">Finance</span>
-              <span className="text-gray-400">•</span>
-              <span className="font-medium">Legal</span>
+              <span className="font-medium whitespace-nowrap hover:text-[#4B7CF3] transition-colors duration-200 cursor-default">Marketing</span>
+              <span className="text-[#4B7CF3]">•</span>
+              <span className="font-medium whitespace-nowrap hover:text-[#4B7CF3] transition-colors duration-200 cursor-default">Finance</span>
+              <span className="text-[#4B7CF3]">•</span>
+              <span className="font-medium whitespace-nowrap hover:text-[#4B7CF3] transition-colors duration-200 cursor-default">Legal</span>
             </div>
           </div>
 
@@ -102,13 +117,14 @@ const LandingPage: React.FC<LandingPageProps> = ({ onStartEvaluation }) => {
 
           {/* Exec Reviewers Section */}
           <div className="text-center">
-            <h4 className="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-4">
+            <h4 className="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-4 relative inline-block group">
               Exec Reviewers
+              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#4B7CF3] group-hover:w-full transition-all duration-300"></span>
             </h4>
             <div className="flex justify-center items-center gap-2 text-gray-900 text-lg">
-              <span className="font-medium">VP Product</span>
-              <span className="text-gray-400">•</span>
-              <span className="font-medium">VP Engineering</span>
+              <span className="font-medium whitespace-nowrap hover:text-[#4B7CF3] transition-colors duration-200 cursor-default">VP Product</span>
+              <span className="text-[#4B7CF3]">•</span>
+              <span className="font-medium whitespace-nowrap hover:text-[#4B7CF3] transition-colors duration-200 cursor-default">VP Engineering</span>
             </div>
           </div>
         </div>
@@ -124,7 +140,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onStartEvaluation }) => {
             </h3>
             <div className="mb-4">
               <textarea
-                className="w-full p-6 border border-gray-200 rounded-xl resize-none focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent bg-white text-gray-900"
+                className="w-full p-6 border border-gray-200 rounded-xl resize-none focus:outline-none focus:ring-2 focus:ring-[#4B7CF3] focus:border-[#4B7CF3] bg-white text-gray-900 transition-all duration-200"
                 rows={6}
                 placeholder="Example: A WhatsApp-based inventory system that lets small retailers track stock levels and automatically reorder from suppliers when running low..."
                 value={productIdea}
@@ -135,7 +151,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onStartEvaluation }) => {
             </div>
             <button
               onClick={handleStartClick}
-              className="w-full px-8 py-4 bg-black text-white font-semibold rounded-xl hover:bg-gray-800 transition-colors text-lg"
+              className="w-full px-8 py-4 bg-black text-white font-semibold rounded-xl transition-all duration-200 hover:bg-gray-800 hover:shadow-lg hover:shadow-[#4B7CF3]/20 hover:transform hover:-translate-y-0.5 text-lg focus:outline-none focus:ring-2 focus:ring-[#4B7CF3] focus:ring-offset-2"
             >
               Get My PRFAQ
             </button>

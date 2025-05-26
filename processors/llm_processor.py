@@ -297,12 +297,46 @@ class LLMProcessor:
         
         step = next((s for s in self.steps if s["id"] == 8), None)
         if not step:
+            logger.error("Step 8 configuration not found in steps list")
             return {"error": "External FAQ step configuration not found"}
         
-        formatted_prompt = step["user_prompt"].format(
-            solution_refined_press_release=press_release,
-            concept_validation_feedback=step_data.get('concept_validation', '')
-        )
+        # Enhanced validation for step 8 dependencies
+        if not step_data:
+            logger.error("Step 8: No step_data provided")
+            return {"error": "Step 8 requires previous step data"}
+        
+        concept_validation = step_data.get('concept_validation', '')
+        if not concept_validation:
+            logger.error("Step 8: Missing concept_validation data from step 6")
+            return {"error": "Step 8 requires concept validation data from step 6"}
+        
+        if not press_release:
+            logger.error("Step 8: No press release provided")
+            return {"error": "Step 8 requires refined press release from step 7"}
+        
+        # Log data availability for debugging
+        logger.info(f"Step 8: Press release length: {len(press_release)} chars")
+        logger.info(f"Step 8: Concept validation length: {len(concept_validation)} chars")
+        
+        try:
+            formatted_prompt = step["user_prompt"].format(
+                solution_refined_press_release=press_release,
+                concept_validation_feedback=concept_validation
+            )
+            
+            logger.info("Step 8: Calling Claude API for External FAQ generation")
+            result = self._call_claude_api(step, formatted_prompt, progress_callback, step_id=8)
+            
+            if "error" in result:
+                logger.error(f"Step 8: Claude API call failed: {result['error']}")
+                return result
+            
+            logger.info(f"Step 8: Successfully generated External FAQ ({len(result.get('output', ''))} chars)")
+            return result
+            
+        except Exception as e:
+            logger.exception("Step 8: Unexpected error during External FAQ generation")
+            return {"error": f"Step 8 failed: {str(e)}"}
         
         return self._call_claude_api(step, formatted_prompt, progress_callback, step_id=8)
 

@@ -1,5 +1,14 @@
 @import 'tailwindcss';
 
+:root {
+  /* Soft Electric Blue System */
+  --primary-blue: #4B7CF3;
+  --primary-blue-hover: #3D6FE8;
+  --primary-blue-light: #EFF6FF;
+  --primary-blue-alpha-10: rgba(75, 124, 243, 0.1);
+  --primary-blue-alpha-20: rgba(75, 124, 243, 0.2);
+}
+
 /* Smooth scroll behavior */
 html {
   scroll-behavior: smooth;
@@ -478,4 +487,98 @@ body {
 /* FAQ Formatting */
 .faq-pair {
   @apply mb-10 last:mb-0;
+}
+
+/* Mobile styles for enhanced pill and new interactions */
+@media (max-width: 768px) {
+  /* Adjust hero text sizes */
+  .text-3xl {
+    font-size: 28px !important;
+  }
+  
+  .subheadline {
+    font-size: 16px !important;
+    margin-bottom: 24px !important;
+  }
+  
+  /* Make solution pill responsive */
+  .inline-flex.rounded-full {
+    font-size: 14px !important;
+    padding: 12px 20px !important;
+    gap: 8px !important;
+  }
+  
+  /* Smaller arrows on mobile */
+  .text-\[\#4B7CF3\] {
+    font-size: 16px !important;
+  }
+  
+  /* Adjust role text size */
+  .flex.flex-wrap.justify-center.items-center.gap-2.text-gray-900.text-lg {
+    font-size: 16px !important;
+  }
+  
+  /* Tighter bullet spacing on mobile */
+  .text-gray-400 {
+    margin: 0 4px !important;
+  }
+  
+  /* Section titles smaller on mobile */
+  .text-sm.font-semibold.text-gray-700.uppercase {
+    font-size: 11px !important;
+  }
+}
+
+/* Very small screens - stack the pill vertically */
+@media (max-width: 480px) {
+  .inline-flex.rounded-full {
+    flex-direction: column !important;
+    gap: 4px !important;
+    padding: 16px 24px !important;
+  }
+  
+  /* Rotate arrows for vertical layout */
+  .text-\[\#4B7CF3\] {
+    transform: rotate(90deg);
+    display: inline-block;
+  }
+}
+
+/* Prevent iOS zoom on input focus */
+@media (max-width: 768px) {
+  textarea,
+  input[type="text"],
+  input[type="email"] {
+    font-size: 16px !important;
+  }
+}
+
+/* CTA button mobile optimization */
+@media (max-width: 768px) {
+  button.w-full {
+    padding: 16px 32px !important;
+    font-size: 16px !important;
+  }
+}
+
+/* Container padding adjustments */
+@media (max-width: 768px) {
+  .max-w-4xl {
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+  }
+  
+  section {
+    padding-top: 32px !important;
+    padding-bottom: 32px !important;
+  }
+}
+
+/* Very small screens */
+@media (max-width: 380px) {
+  /* Force more aggressive wrapping */
+  .flex.flex-wrap {
+    max-width: 320px !important;
+    margin: 0 auto !important;
+  }
 }

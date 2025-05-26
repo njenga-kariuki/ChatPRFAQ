@@ -150,7 +150,6 @@ function App() {
   // App State Management - initialize based on current URL
   const [appState, setAppState] = useState<'landing' | 'app' | 'processing'>(() => {
     const initialState = location.pathname === '/app' ? 'app' : 'landing';
-    console.log('🚀 INITIAL STATE:', { pathname: location.pathname, initialState });
     return initialState;
   });
   
@@ -159,11 +158,15 @@ function App() {
     if (typeof newState === 'function') {
       setAppState(prev => {
         const result = newState(prev);
-        console.log('📱 STATE CHANGE (function):', { from: prev, to: result, pathname: location.pathname });
+        if (prev !== result) {
+          logToStorage('info', '📱 STATE CHANGE', { from: prev, to: result });
+        }
         return result;
       });
     } else {
-      console.log('📱 STATE CHANGE:', { from: appState, to: newState, pathname: location.pathname });
+      if (appState !== newState) {
+        logToStorage('info', '📱 STATE CHANGE', { from: appState, to: newState });
+      }
       setAppState(newState);
     }
   };
@@ -196,23 +199,84 @@ function App() {
   // Initialize smart scroll hook
   const { smartScroll } = useSmartScroll();
 
+  // Add state for recovery mechanism
+  const [canResumeFromFailure, setCanResumeFromFailure] = useState(false);
+  const [savedProgress, setSavedProgress] = useState<any>(null);
+
+  // Save progress to localStorage for recovery
+  const saveProgressToStorage = (currentStepsData: StepData[], currentProgress: number, currentIdea: string) => {
+    try {
+      const progressData = {
+        stepsData: currentStepsData,
+        progress: currentProgress,
+        productIdea: currentIdea,
+        timestamp: Date.now()
+      };
+      localStorage.setItem('workingBackwardsProgress', JSON.stringify(progressData));
+    } catch (error) {
+      console.warn('Failed to save progress to localStorage:', error);
+    }
+  };
+
+  // Load progress from localStorage
+  const loadProgressFromStorage = () => {
+    try {
+      const saved = localStorage.getItem('workingBackwardsProgress');
+      if (saved) {
+        const progressData = JSON.parse(saved);
+        // Only load if it's recent (within last hour)
+        if (Date.now() - progressData.timestamp < 3600000) {
+          return progressData;
+        }
+      }
+    } catch (error) {
+      console.warn('Failed to load progress from localStorage:', error);
+    }
+    return null;
+  };
+
+  // Clear saved progress
+  const clearSavedProgress = () => {
+    try {
+      localStorage.removeItem('workingBackwardsProgress');
+      setCanResumeFromFailure(false);
+      setSavedProgress(null);
+    } catch (error) {
+      console.warn('Failed to clear saved progress:', error);
+    }
+  };
+
+  // Check for saved progress on component mount
+  useEffect(() => {
+    const saved = loadProgressFromStorage();
+    if (saved && saved.stepsData.some((s: StepData) => s.status === 'completed')) {
+      setSavedProgress(saved);
+      setCanResumeFromFailure(true);
+    }
+  }, []);
+
+  // Save progress whenever steps are updated
+  useEffect(() => {
+    if (stepsData.some(s => s.status === 'completed') && productIdea) {
+      saveProgressToStorage(stepsData, progress, productIdea);
+    }
+  }, [stepsData, progress, productIdea]);
+
   // Handle browser back/forward navigation - ONLY update state to match URL
   useEffect(() => {
-    console.log('🌐 URL CHANGE EFFECT:', { pathname: location.pathname, appState });
-    
+    // Simplified logging - only log actual state changes
     if (location.pathname === '/' && appState !== 'landing') {
-      console.log('🏠 SETTING STATE TO LANDING:', { reason: 'pathname is /, appState is not landing' });
       setAppStateWithLogging('landing');
     } else if (location.pathname === '/app' && appState === 'landing') {
-      console.log('📱 SETTING STATE TO APP:', { reason: 'pathname is /app, appState is landing' });
       setAppStateWithLogging('app');
-    } else {
-      console.log('✅ NO STATE CHANGE NEEDED');
     }
   }, [location.pathname, appState]);
 
   const resetState = () => {
-    console.log('🔄 RESET STATE CALLED');
+    logToStorage('info', '🔄 RESET STATE CALLED');
+    // Clear saved progress when explicitly resetting
+    clearSavedProgress();
+    
     // Don't change appState here - let the navigation handle it
     setProductIdea('');
     setIsProcessing(false);
@@ -238,8 +302,39 @@ function App() {
     // setStepsData(prev => prev.map(s => s.id === 1 ? { ...s, isActive: true } : { ...s, isActive: false }));
   };
 
+  const resumeFromSavedProgress = () => {
+    if (!savedProgress) return;
+    
+    logToStorage('info', '🔄 RESUMING FROM SAVED PROGRESS', { 
+      completedSteps: savedProgress.stepsData.filter((s: StepData) => s.status === 'completed').length 
+    });
+    
+    // Restore the saved state
+    setProductIdea(savedProgress.productIdea);
+    setOriginalProductIdea(savedProgress.productIdea);
+    setStepsData(savedProgress.stepsData);
+    setProgress(savedProgress.progress);
+    setShowWorkingBackwards(true);
+    setAnalysisPhase('complete');
+    
+    // Find the last completed step and try to resume from the next one
+    const completedSteps = savedProgress.stepsData.filter((s: StepData) => s.status === 'completed');
+    const lastCompletedStep = completedSteps[completedSteps.length - 1];
+    
+    if (lastCompletedStep && lastCompletedStep.id < 10) {
+      setCurrentStepText(`Resuming from Step ${lastCompletedStep.id + 1}...`);
+      // Try to continue the process from where it left off
+      proceedToMainWorkflow(savedProgress.productIdea);
+    } else {
+      setCurrentStepText('Review your previous progress below.');
+    }
+    
+    // Clear the saved progress since we're resuming
+    clearSavedProgress();
+  };
+
   const handleStartEvaluation = (productIdea?: string) => {
-    console.log('🚀 HANDLE START EVALUATION CALLED:', { productIdea });
+    logToStorage('info', '🚀 HANDLE START EVALUATION CALLED', { hasProductIdea: !!productIdea });
     // Navigate to app route first
     navigate('/app');
     // If a product idea was provided from the landing page, automatically submit it
@@ -262,7 +357,7 @@ function App() {
   };
 
   const handleFormSubmit = async (idea: string) => {
-    console.log('📝 HANDLE FORM SUBMIT CALLED:', { idea });
+    logToStorage('info', '📝 HANDLE FORM SUBMIT CALLED', { ideaLength: idea.length });
     resetState();
     setAppStateWithLogging('processing'); // Set processing state
     setProductIdea(idea);
@@ -396,11 +491,35 @@ function App() {
         const { done, value } = await reader.read();
         if (done) {
           // Check if processing wasn't marked complete by a final SSE event
-          if (isProcessing) { // isProcessing should be a local var or check a ref
-            setCurrentStepText('Stream ended, finalizing...');
-            // Potentially mark all as complete if not already done
-            setIsProcessing(false); 
-            if (progress < 100) setProgress(100); // Ensure progress is full if stream ends early but successfully
+          if (isProcessing) {
+            const errorData = {
+              currentStep: stepsData.find(s => s.status === 'processing')?.id || 'unknown',
+              completedSteps: stepsData.filter(s => s.status === 'completed').length,
+              progress: progress,
+              timestamp: new Date().toISOString()
+            };
+            
+            logToStorage('error', '🚨 STREAM ENDED UNEXPECTEDLY', errorData);
+            
+            // Provide better user feedback about what happened
+            const currentStep = stepsData.find(s => s.status === 'processing');
+            if (currentStep) {
+              const errorMsg = `Connection lost during Step ${currentStep.id} (${currentStep.name}). This might be due to a network issue or server timeout. Please try again.`;
+              logToStorage('error', 'Step-specific connection loss', { step: currentStep.id, stepName: currentStep.name });
+              setGeneralError(errorMsg);
+              setStepsData(prev => prev.map(s => 
+                s.id === currentStep.id 
+                  ? { ...s, status: 'error', error: 'Connection lost', isActive: true }
+                  : s
+              ));
+            } else {
+              logToStorage('error', 'General connection loss - no active step found');
+              setGeneralError('Connection lost during processing. Please try again.');
+            }
+            
+            setCurrentStepText('Connection lost - please try again');
+            setIsProcessing(false);
+            // Don't set progress to 100 if we failed
           }
           break;
         }
@@ -415,6 +534,15 @@ function App() {
               const eventData = JSON.parse(line.substring(5));
 
               if (eventData.error) {
+                const errorData = {
+                  step: eventData.step,
+                  error: eventData.error,
+                  timestamp: new Date().toISOString(),
+                  currentProgress: progress
+                };
+                
+                logToStorage('error', '🚨 STEP ERROR RECEIVED', errorData);
+                
                 setGeneralError(eventData.error);
                 if (eventData.step) {
                     setStepsData(prev => prev.map(s => s.id === eventData.step ? { ...s, status: 'error', error: eventData.error, isActive: true } : s));
@@ -434,6 +562,17 @@ function App() {
 
               if (eventData.step && eventData.status) {
                 const stepId = eventData.step;
+                
+                // Log step progress for debugging (only important transitions)
+                if (eventData.status === 'processing' || eventData.status === 'completed' || eventData.status === 'error') {
+                  logToStorage('info', `📊 STEP ${eventData.status.toUpperCase()}`, {
+                    stepId: stepId,
+                    stepName: initialStepsData.find(s => s.id === stepId)?.name,
+                    status: eventData.status,
+                    progress: progress
+                  });
+                }
+                
                 setStepsData(prev => prev.map(s => {
                   if (s.id === stepId) {
                     let updatedStep: Partial<StepData> = { status: eventData.status, isActive: true };
@@ -453,9 +592,18 @@ function App() {
                 }));
 
                 if (eventData.status === 'completed') {
+                    logToStorage('info', '✅ STEP COMPLETED - ACTIVATING NEXT', {
+                      completedStepId: stepId,
+                      completedStepName: initialStepsData.find(s => s.id === stepId)?.name
+                    });
+                    
                     const currentIndex = initialStepsData.findIndex(s => s.id === stepId);
                     if (currentIndex !== -1 && currentIndex < initialStepsData.length - 1) {
                         const nextStepId = initialStepsData[currentIndex + 1].id;
+                        logToStorage('info', '🔄 ACTIVATING NEXT STEP', {
+                          nextStepId: nextStepId,
+                          nextStepName: initialStepsData.find(s => s.id === nextStepId)?.name
+                        });
                         setStepsData(prev => prev.map(s => s.id === nextStepId ? { ...s, isActive: true } : s));
                     }
                 }
@@ -641,6 +789,85 @@ function App() {
     URL.revokeObjectURL(link.href);
   };
 
+  // Add persistent logging system
+  const logToStorage = (level: 'info' | 'error' | 'warn', message: string, data?: any) => {
+    const timestamp = new Date().toISOString();
+    const logEntry = {
+      timestamp,
+      level,
+      message,
+      data: data ? JSON.stringify(data) : undefined
+    };
+    
+    try {
+      const existingLogs = JSON.parse(localStorage.getItem('debugLogs') || '[]');
+      
+      // Clean up logs older than 24 hours
+      const oneDayAgo = Date.now() - (24 * 60 * 60 * 1000);
+      const recentLogs = existingLogs.filter((log: any) => 
+        new Date(log.timestamp).getTime() > oneDayAgo
+      );
+      
+      recentLogs.push(logEntry);
+      
+      // Keep only last 100 entries to prevent storage bloat
+      if (recentLogs.length > 100) {
+        recentLogs.splice(0, recentLogs.length - 100);
+      }
+      
+      localStorage.setItem('debugLogs', JSON.stringify(recentLogs));
+      
+      // Also log to console for immediate viewing
+      console.log(`[${level.toUpperCase()}] ${message}`, data || '');
+    } catch (error) {
+      console.warn('Failed to save debug log:', error);
+    }
+  };
+
+  // Function to download debug logs
+  const downloadDebugLogs = () => {
+    try {
+      const logs = JSON.parse(localStorage.getItem('debugLogs') || '[]');
+      const logText = logs.map((log: any) => 
+        `[${log.timestamp}] ${log.level.toUpperCase()}: ${log.message}${log.data ? '\nData: ' + log.data : ''}`
+      ).join('\n\n');
+      
+      const blob = new Blob([logText], { type: 'text/plain' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = `debug-logs-${new Date().toISOString().split('T')[0]}.txt`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(link.href);
+    } catch (error) {
+      console.error('Failed to download logs:', error);
+    }
+  };
+
+  // Function to clear debug logs
+  const clearDebugLogs = () => {
+    localStorage.removeItem('debugLogs');
+    console.clear();
+    logToStorage('info', 'Debug logs cleared');
+  };
+
+  // Debug panel state
+  const [showDebugPanel, setShowDebugPanel] = useState(false);
+
+  // Add keyboard shortcut to toggle debug panel (Ctrl+Shift+D)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.ctrlKey && e.shiftKey && e.key === 'D') {
+        e.preventDefault();
+        setShowDebugPanel(prev => !prev);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
   return (
     <Routes>
       <Route path="/" element={
@@ -667,12 +894,91 @@ function App() {
               <div className="w-full max-w-6xl mb-4 p-4 bg-red-50 border border-red-200 rounded-xl text-center">
                 <h3 className="text-xl font-semibold text-red-700 mb-2">An Error Occurred</h3>
                 <p className="text-red-600 whitespace-pre-wrap">{generalError}</p>
-                <button 
-                  onClick={resetState} 
-                  className="mt-3 px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg transition-colors"
-                >
-                  Try Again / Reset
-                </button>
+                
+                <div className="mt-4 flex flex-col sm:flex-row gap-3 justify-center">
+                  <button 
+                    onClick={resetState} 
+                    className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg transition-colors"
+                  >
+                    Try Again / Reset
+                  </button>
+                  
+                  {canResumeFromFailure && savedProgress && (
+                    <button 
+                      onClick={resumeFromSavedProgress}
+                      className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors"
+                    >
+                      Resume from Step {savedProgress.stepsData.filter((s: StepData) => s.status === 'completed').length + 1}
+                    </button>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Recovery Banner - Show when saved progress is available but no error */}
+            {canResumeFromFailure && savedProgress && !generalError && !isProcessing && (
+              <div className="w-full max-w-6xl mb-4 p-4 bg-blue-50 border border-blue-200 rounded-xl text-center">
+                <h3 className="text-xl font-semibold text-blue-700 mb-2">Previous Session Found</h3>
+                <p className="text-blue-600 mb-3">
+                  We found a previous session with {savedProgress.stepsData.filter((s: StepData) => s.status === 'completed').length} completed steps. 
+                  Would you like to resume where you left off?
+                </p>
+                
+                <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                  <button 
+                    onClick={resumeFromSavedProgress}
+                    className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors"
+                  >
+                    Resume Previous Session
+                  </button>
+                  
+                  <button 
+                    onClick={clearSavedProgress}
+                    className="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white font-semibold rounded-lg transition-colors"
+                  >
+                    Start Fresh
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Debug Panel - Toggle with Ctrl+Shift+D */}
+            {showDebugPanel && (
+              <div className="fixed top-4 right-4 bg-gray-900 text-white p-4 rounded-lg shadow-lg z-50 max-w-sm">
+                <div className="flex justify-between items-center mb-3">
+                  <h3 className="font-semibold">Debug Panel</h3>
+                  <button 
+                    onClick={() => setShowDebugPanel(false)}
+                    className="text-gray-400 hover:text-white"
+                  >
+                    ✕
+                  </button>
+                </div>
+                
+                <div className="space-y-2 text-sm">
+                  <p className="text-gray-300">Logs are automatically saved to localStorage</p>
+                  
+                  <div className="flex flex-col gap-2">
+                    <button 
+                      onClick={clearDebugLogs}
+                      className="px-3 py-1 bg-red-600 hover:bg-red-700 rounded text-xs"
+                    >
+                      Clear Console & Logs
+                    </button>
+                    
+                    <button 
+                      onClick={downloadDebugLogs}
+                      className="px-3 py-1 bg-blue-600 hover:bg-blue-700 rounded text-xs"
+                    >
+                      Download Debug Logs
+                    </button>
+                    
+                    <div className="text-xs text-gray-400 mt-2">
+                      Logs persist across page reloads.<br/>
+                      Press Ctrl+Shift+D to toggle this panel.
+                    </div>
+                  </div>
+                </div>
               </div>
             )}
 

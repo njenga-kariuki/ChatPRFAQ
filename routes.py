@@ -169,10 +169,20 @@ def process_product_idea_stream():
             
             # Stream progress updates
             update_count = 0
+            last_step_time = time.time()
+            
             while True:
                 try:
                     update = progress_queue.get(timeout=60)  # 60 second timeout
                     update_count += 1
+                    current_time = time.time()
+                    
+                    # Log step timing for debugging
+                    if update.get('step'):
+                        step_duration = current_time - last_step_time
+                        logger.info(f"[{request_id}] Step {update.get('step')} update after {step_duration:.1f}s | Status: {update.get('status', 'unknown')}")
+                        last_step_time = current_time
+                    
                     logger.debug(f"[{request_id}] Streaming update #{update_count}: {update.get('status', 'unknown')}")
                     
                     if update.get('done'):
@@ -180,8 +190,11 @@ def process_product_idea_stream():
                         # Send final result
                         if 'result' in result_container:
                             if 'error' in result_container['result']:
-                                yield f"data: {json.dumps({'error': result_container['result']['error'], 'step': result_container['result'].get('step', 'unknown')})}\n\n"
+                                error_step = result_container['result'].get('step', 'unknown')
+                                logger.error(f"[{request_id}] Final result contains error at step {error_step}: {result_container['result']['error']}")
+                                yield f"data: {json.dumps({'error': result_container['result']['error'], 'step': error_step})}\n\n"
                             else:
+                                logger.info(f"[{request_id}] Sending successful completion result")
                                 yield f"data: {json.dumps({'complete': True, 'result': result_container['result']})}\n\n"
                         break
                     elif update.get('error'):
@@ -193,9 +206,17 @@ def process_product_idea_stream():
                         yield f"data: {json.dumps(update)}\n\n"
                         
                 except queue.Empty:
-                    # Timeout - send keepalive
-                    logger.debug(f"[{request_id}] Stream timeout - sending keepalive")
-                    yield f"data: {json.dumps({'keepalive': True})}\n\n"
+                    # Timeout - send keepalive and check for stuck processing
+                    elapsed_time = time.time() - last_step_time
+                    logger.warning(f"[{request_id}] Stream timeout after {elapsed_time:.1f}s - sending keepalive")
+                    
+                    # If we've been stuck for too long, consider it a failure
+                    if elapsed_time > 120:  # 2 minutes without progress
+                        logger.error(f"[{request_id}] Processing appears stuck - terminating stream")
+                        yield f"data: {json.dumps({'error': 'Processing timeout - the operation took too long to complete. Please try again.'})}\n\n"
+                        break
+                    
+                    yield f"data: {json.dumps({'keepalive': True, 'message': 'Processing continues...'})}\n\n"
                     continue
                 except Exception as e:
                     logger.exception(f"[{request_id}] Error in stream generator")
@@ -451,3 +472,46 @@ def test_perplexity_api():
         status_code = 500
     
     return jsonify(results), status_code
+
+@app.route('/api/debug/status', methods=['GET'])
+def debug_status():
+    """Debug endpoint to check system status"""
+    try:
+        from config import ANTHROPIC_API_KEY, PERPLEXITY_API_KEY
+        
+        status = {
+            "timestamp": time.time(),
+            "anthropic_configured": bool(ANTHROPIC_API_KEY),
+            "perplexity_configured": bool(PERPLEXITY_API_KEY),
+            "steps_configured": len(llm_processor.steps),
+            "processor_ready": hasattr(llm_processor, 'claude_processor') and llm_processor.claude_processor is not None
+        }
+        
+        return jsonify(status)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/debug/test-step/<int:step_id>', methods=['POST'])
+def debug_test_step(step_id):
+    """Debug endpoint to test individual steps"""
+    try:
+        data = request.get_json()
+        if not data or 'input' not in data:
+            return jsonify({'error': 'Missing input in request body'}), 400
+        
+        input_text = data['input']
+        step_data = data.get('step_data', {})
+        
+        logger.info(f"Debug: Testing step {step_id} with input length {len(input_text)}")
+        
+        result = llm_processor.generate_step_response(step_id, input_text, step_data)
+        
+        return jsonify({
+            "step_id": step_id,
+            "success": "error" not in result,
+            "result": result
+        })
+        
+    except Exception as e:
+        logger.exception(f"Debug: Error testing step {step_id}")
+        return jsonify({"error": str(e)}), 500
