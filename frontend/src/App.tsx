@@ -553,7 +553,10 @@ function App() {
               if (eventData.progress !== undefined) {
                 // Adjust progress to account for analysis phase (15-100% for main workflow)
                 const adjustedProgress = 15 + (eventData.progress * 0.85);
-                setProgress(Math.round(adjustedProgress));
+                
+                // Cap at 99% to prevent showing 100% before final completion
+                const cappedProgress = Math.min(Math.round(adjustedProgress), 99);
+                setProgress(cappedProgress);
               }
 
               if (eventData.message) {
@@ -615,7 +618,10 @@ function App() {
                 setFinalMlpPlan(eventData.result.mlp_plan || 'Not available');
                 setStepsData(prev => prev.map(s => ({...s, status: (s.status === 'pending' || s.status === 'processing') ? 'completed' : s.status, isActive: s.id === initialStepsData[initialStepsData.length -1].id })));
                 setIsProcessing(false);
+                
+                // Smooth transition to 100% on true completion
                 setProgress(100);
+                
                 setShowFinalTab(true);
                 // Delay notification for smoother experience
                 setTimeout(() => {
@@ -1039,14 +1045,14 @@ function App() {
                           )}
                           <span className="text-gray-700 font-medium">{currentStepText}</span>
                         </div>
-                        <span className="text-sm text-gray-500 font-mono">{Math.min(Math.round(progress), 100)}%</span>
+                        <span className="text-sm text-gray-500 font-mono">{Math.round(progress)}%</span>
                       </div>
                       
                       {/* Main progress bar */}
                       <div className="w-full bg-gray-200 rounded-full h-0.5 mb-3">
                         <div 
                           className="bg-black h-0.5 rounded-full transition-all duration-500 ease-out"
-                          style={{ width: `${Math.min(progress, 100)}%` }}
+                          style={{ width: `${Math.round(progress)}%` }}
                         ></div>
                       </div>
                       
