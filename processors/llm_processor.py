@@ -31,13 +31,20 @@ class LLMProcessor:
             logger.info("ANTHROPIC_API_KEY is properly configured")
 
         # Initialize Gemini for insight extraction
+        self.gemini_flash_model = None # Initialize to None
         if GEMINI_API_KEY:
-            genai.configure(api_key=GEMINI_API_KEY)
-            self.gemini_flash_model = genai.GenerativeModel(GEMINI_FLASH_MODEL)
-            logger.info(f"Gemini Flash initialized for insight extraction: {GEMINI_FLASH_MODEL}")
+            logger.info("GEMINI_API_KEY found, attempting to initialize Gemini Flash.")
+            try:
+                logger.debug("Calling genai.configure()...")
+                genai.configure(api_key=GEMINI_API_KEY)
+                logger.debug(f"Successfully configured Gemini. Attempting to initialize GenerativeModel with model: {GEMINI_FLASH_MODEL}")
+                self.gemini_flash_model = genai.GenerativeModel(GEMINI_FLASH_MODEL)
+                logger.info(f"Gemini Flash initialized successfully for insight extraction: {GEMINI_FLASH_MODEL}")
+            except Exception as e:
+                logger.error(f"Failed to initialize Gemini Flash model: {e}", exc_info=True)
+                # self.gemini_flash_model remains None
         else:
-            logger.warning("GEMINI_API_KEY not set - insight extraction will not work")
-            self.gemini_flash_model = None
+            logger.warning("GEMINI_API_KEY not set - insight extraction will not work (gemini_flash_model remains None).")
             
     def generate_step_response(self, step_id, input_text, step_data=None, progress_callback=None, request_id=None):
         """

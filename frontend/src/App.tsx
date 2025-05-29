@@ -357,10 +357,12 @@ function App() {
       
     } catch (error) {
       console.error('Product analysis error:', error);
-      setGeneralError(error instanceof Error ? error.message : "Analysis failed. Proceeding with original idea.");
+      const errorMessage = error instanceof Error ? error.message : "Product analysis failed. Please try again or proceed with the original idea.";
+      setGeneralError(errorMessage);
+      setAnalysisPhase('reviewing'); // Keep user on review phase to see error
       setIsProcessing(false); // Stop processing on error
-      // Fallback: proceed directly to main workflow
-      proceedToMainWorkflow(idea);
+      setCurrentStepText(errorMessage); // Show error
+      // REMOVED: proceedToMainWorkflow(idea); 
     }
   };
 
@@ -424,6 +426,7 @@ function App() {
   };
 
   const proceedToMainWorkflow = async (inputIdea: string) => {
+    setAnalysisPhase('complete'); // Ensure analysis phase effects are deactivated
     setIsProcessing(true);
     setGeneralError(null);
     setCurrentStepText('Initializing process...');
@@ -508,20 +511,24 @@ function App() {
               }
 
               if (eventData.error) {
-                const errorData = {
+                const errorDataLog = {
                   step: eventData.step,
                   error: eventData.error,
                   timestamp: new Date().toISOString(),
                   currentProgress: progress
                 };
                 
-                logToStorage('error', '🚨 STEP ERROR RECEIVED', errorData);
+                logToStorage('error', '🚨 STEP ERROR RECEIVED', errorDataLog);
                 
                 setGeneralError(eventData.error);
                 if (eventData.step) {
                     setStepsData(prev => prev.map(s => s.id === eventData.step ? { ...s, status: 'error', error: eventData.error, isActive: true } : s));
+                    setCurrentStepText(`Error in Step ${eventData.step}: ${(eventData.error || 'Unknown error').substring(0,100)}...`);
+                } else {
+                    setCurrentStepText(`An error occurred: ${(eventData.error || 'Unknown error').substring(0,100)}...`);
                 }
-                continue;
+                setIsProcessing(false); // Stop processing on error
+                break; // Exit SSE loop on definitive error
               }
 
               if (eventData.progress !== undefined) {

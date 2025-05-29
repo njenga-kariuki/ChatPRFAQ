@@ -47,5 +47,4 @@ CORS(app, resources={r"/api/*": {"origins": "*"}})
 # Import routes after app is created to avoid circular imports
 from routes import *
 
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, debug=True)
+# Remove direct execution - use run_dev.py for development
