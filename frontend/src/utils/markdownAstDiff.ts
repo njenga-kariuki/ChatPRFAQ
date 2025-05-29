@@ -1,14 +1,15 @@
 import { Root, Content, Parent } from 'mdast';
 import { visit } from 'unist-util-visit';
 import { Node as UnistNode } from 'unist';
-import { remark } from 'remark';
+import { unified } from 'unified';
+import remarkParse from 'remark-parse';
 import { MergedAstNode, AstNodeStatus } from '../types';
 import DiffMatchPatch from 'diff-match-patch';
 
 const dmp = new DiffMatchPatch();
 
 export function parseMarkdownToAst(markdownText: string): Root {
-  return remark.parse(markdownText) as Root;
+  return unified().use(remarkParse).parse(markdownText) as Root;
 }
 
 /**

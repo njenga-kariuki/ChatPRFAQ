@@ -9,15 +9,30 @@ interface AstDiffRendererNodeProps {
   node: MergedAstNode;
 }
 
-/**
- * Helper to render text with inline formatting, applying charDiff.
- */
+// Helper to get plain text from a single AST node, including its children if any (for inline elements)
+function getUnistNodeTextContent(node: MergedAstNode): string {
+  if (node.type === 'text' && node.value) {
+    return node.value;
+  }
+  let text = '';
+  if (node.children) {
+    for (const child of node.children) {
+      text += getUnistNodeTextContent(child);
+    }
+  }
+  return text;
+}
+
+interface StyleStackEntry {
+  type: string; // 'strong', 'emphasis'
+  // Potentially add other style attributes if needed
+}
+
 function renderTextWithInlineFormattingAndDiff(
-  inlineChildren: MergedAstNode[] | undefined,
+  inlineChildrenOfParent: MergedAstNode[] | undefined,
   charDiffInput: Array<[number, string]> | undefined
 ): React.ReactNode[] {
-  if (!charDiffInput || !inlineChildren || inlineChildren.length === 0) {
-    // If no charDiff or no inline children, render charDiff directly or nothing
+  if (!charDiffInput || !inlineChildrenOfParent || inlineChildrenOfParent.length === 0) {
     return charDiffInput ? charDiffInput.map(([op, text], i) => {
       let style: React.CSSProperties = {};
       if (op === 1) style = { backgroundColor: '#ddfadd', textDecoration: 'none' };
@@ -26,91 +41,97 @@ function renderTextWithInlineFormattingAndDiff(
     }) : [];
   }
 
-  const resultElements: React.ReactNode[] = [];
-  let charDiff = [...charDiffInput]; // Clone to allow modification (consuming segments)
+  const outputNodes: React.ReactNode[] = [];
+  let charDiff = [...charDiffInput]; // Consumable copy
   let keyCounter = 0;
 
-  function getAstNodeTextContent(node: MergedAstNode): string {
-    let text = '';
-    if (node.value) text += node.value;
-    if (node.children) {
+  // Function to apply styles from the stack to a piece of text
+  const applyStyles = (text: string, styleStack: StyleStackEntry[], diffOp: number) => {
+    let element: React.ReactNode = text;
+    if (diffOp === -1 && text.trim() !== '') { // Don't wrap empty removed spaces in strikethrough
+        // For removed text, apply inline styles first, then strikethrough for the whole segment
+        // This ensures bold/italic removed text looks right.
+        for (let i = styleStack.length - 1; i >= 0; i--) {
+            const style = styleStack[i];
+            if (style.type === 'strong') element = <strong>{element}</strong>;
+            if (style.type === 'emphasis') element = <em>{element}</em>;
+        }
+        return <span style={{ textDecoration: 'line-through' }}>{element}</span>;
+    } else if (diffOp === -1 && text.trim() === '') { // Empty removed text (e.g. space)
+        return <span style={{ textDecoration: 'line-through' }}>{text}</span>; // Still show it was there
+    }
+    
+    // For added or unchanged text, apply styles from innermost to outermost
+    for (let i = styleStack.length - 1; i >= 0; i--) {
+      const style = styleStack[i];
+      if (style.type === 'strong') element = <strong>{element}</strong>;
+      if (style.type === 'emphasis') element = <em>{element}</em>;
+      // Add other styles if necessary
+    }
+    return element;
+  };
+
+  // Recursive function to traverse inline AST nodes and consume charDiff segments
+  function processInlineNode(node: MergedAstNode, styleStack: StyleStackEntry[]) {
+    const nodeType = node.type;
+    let newStyleStack = [...styleStack];
+
+    if (nodeType === 'strong' || nodeType === 'emphasis') {
+      newStyleStack.push({ type: nodeType });
+    }
+
+    if (nodeType === 'text' && node.value) {
+      let remainingNodeText = node.value;
+      while (remainingNodeText.length > 0 && charDiff.length > 0) {
+        const [op, diffText] = charDiff[0];
+        const currentDiffStyle: React.CSSProperties = {};
+        if (op === 1) currentDiffStyle.backgroundColor = '#ddfadd';
+        // For op === -1 (removed), background is less important than strikethrough applied by applyStyles
+        // For op === 0 (unchanged), no background needed.
+
+        if (diffText.length <= remainingNodeText.length) {
+          const styledSegment = applyStyles(diffText, newStyleStack, op);
+          outputNodes.push(<span key={keyCounter++} style={currentDiffStyle}>{styledSegment}</span>);
+          remainingNodeText = remainingNodeText.substring(diffText.length);
+          charDiff.shift(); // Consumed this diff segment
+        } else {
+          const part = diffText.substring(0, remainingNodeText.length);
+          const styledSegment = applyStyles(part, newStyleStack, op);
+          outputNodes.push(<span key={keyCounter++} style={currentDiffStyle}>{styledSegment}</span>);
+          charDiff[0][1] = diffText.substring(remainingNodeText.length); // Update current diff segment
+          remainingNodeText = ''; // This text node is fully processed
+        }
+      }
+      // If nodeText remains but charDiff is exhausted (shouldn't typically happen if diff is complete)
+      if (remainingNodeText.length > 0) {
+        const styledSegment = applyStyles(remainingNodeText, newStyleStack, 0); // Treat as unchanged
+        outputNodes.push(<span key={keyCounter++}>{styledSegment}</span>);
+      }
+    } else if (node.children) {
       for (const child of node.children) {
-        text += getAstNodeTextContent(child);
+        processInlineNode(child, newStyleStack);
       }
     }
-    return text;
   }
 
-  for (const astNode of inlineChildren) {
-    let astNodeText = getAstNodeTextContent(astNode);
-    if (astNode.diffStatus === 'removed') { // If the inline AST node itself was part of a removal (e.g. whole bold section removed)
-        // This case should be handled by parent marking it removed. 
-        // If charDiff is being processed, it implies the parent paragraph is 'changed', not fully removed.
-        // However, if we want to show removed inline elements distinctly:
-        // resultElements.push(<span key={keyCounter++} style={{textDecoration: 'line-through', backgroundColor: '#fadddd'}}>{renderNodeRecursive(astNode)}</span>);
-        // continue;
-    }
-
-    const processNode = (currentNode: MergedAstNode, currentTextContent: string, activeStyles: string[] = []) => {
-        if (currentNode.type === 'text' || !currentNode.children || currentNode.children.length === 0) {
-            let remainingNodeText = currentTextContent;
-            while (remainingNodeText.length > 0 && charDiff.length > 0) {
-                const [op, diffText] = charDiff[0];
-                const currentStyle: React.CSSProperties = {};
-                if (op === 1) currentStyle.backgroundColor = '#ddfadd';
-                if (op === -1) currentStyle.backgroundColor = '#fadddd'; 
-                                
-                let element = <span key={keyCounter++} style={currentStyle}>{/* placeholder */}</span>;
-                
-                // Apply active styles (strong, em)
-                let styledElement = <>{diffText}</>; // Default to just text
-                if (op !== -1) { // Don't show content for purely removed segments in this model yet for simplicity
-                    activeStyles.forEach(styleType => {
-                        if (styleType === 'strong') styledElement = <strong>{styledElement}</strong>;
-                        if (styleType === 'emphasis') styledElement = <em>{styledElement}</em>;
-                    });
-                }
-                if (op === -1) {
-                     activeStyles.forEach(styleType => {
-                        if (styleType === 'strong') styledElement = <strong>{styledElement}</strong>;
-                        if (styleType === 'emphasis') styledElement = <em>{styledElement}</em>;
-                    });
-                    styledElement = <span style={{textDecoration: 'line-through'}}>{styledElement}</span>
-                }
-
-                if (diffText.length <= remainingNodeText.length) {
-                    resultElements.push(React.cloneElement(element, {style: currentStyle}, styledElement));
-                    remainingNodeText = remainingNodeText.substring(diffText.length);
-                    charDiff.shift(); // Consumed this diff segment
-                } else { // Diff segment is longer than current text node part
-                    resultElements.push(React.cloneElement(element, {style: currentStyle}, React.cloneElement(styledElement, {}, diffText.substring(0, remainingNodeText.length))));
-                    charDiff[0][1] = diffText.substring(remainingNodeText.length); // Update current diff segment
-                    remainingNodeText = '';
-                }
-            }
-        } else if (currentNode.children) { // e.g. strong, emphasis
-            const newActiveStyles = [...activeStyles];
-            if (currentNode.type === 'strong' || currentNode.type === 'emphasis') {
-                newActiveStyles.push(currentNode.type);
-            }
-            for (const child of currentNode.children) {
-                processNode(child, getAstNodeTextContent(child), newActiveStyles);
-            }
-        }
-    };
-    processNode(astNode, astNodeText);
+  for (const childNode of inlineChildrenOfParent) {
+    processInlineNode(childNode, []);
   }
   
-  // If any charDiff segments remain (e.g. trailing additions not part of any inline node), render them.
-  while(charDiff.length > 0){
+  // Render any remaining charDiff segments (e.g., pure additions at the end)
+  while (charDiff.length > 0) {
     const [op, text] = charDiff.shift()!;
-    let style: React.CSSProperties = {};
-    if (op === 1) style = { backgroundColor: '#ddfadd', textDecoration: 'none' };
-    if (op === -1) style = { backgroundColor: '#fadddd', textDecoration: 'line-through' }; 
-    resultElements.push(<span key={`trailing-char-${keyCounter++}`} style={style}>{text}</span>);
+    const style: React.CSSProperties = {};
+    let styledText: React.ReactNode = text;
+    if (op === 1) style.backgroundColor = '#ddfadd';
+    if (op === -1) {
+        style.backgroundColor = '#fadddd'; // Can add background for purely removed sections if desired
+        styledText = <span style={{textDecoration: 'line-through'}}>{text}</span>
+    }
+    outputNodes.push(<span key={`trailing-${keyCounter++}`} style={style}>{styledText}</span>);
   }
 
-  return resultElements;
+  return outputNodes;
 }
 
 const AstDiffRendererNode: React.FC<AstDiffRendererNodeProps> = ({ node }) => {
@@ -125,28 +146,26 @@ const AstDiffRendererNode: React.FC<AstDiffRendererNodeProps> = ({ node }) => {
     } else {
       content = originalValue || ''; 
     }
-  } else if (type === 'paragraph' && diffStatus === 'changed' && charDiff) {
+  } else if ((type === 'paragraph' || type === 'heading' || type ==='listItem') && diffStatus === 'changed' && charDiff) {
+    // Pass direct children of the block to the renderer, it will handle inline structures.
     content = renderTextWithInlineFormattingAndDiff(children, charDiff);
   } else if (children && children.length > 0) {
     content = children.map((child, idx) => <AstDiffRendererNode key={idx} node={child} />);
   } else if (value !== undefined) {
-    if (diffStatus === 'changed' && charDiff) { // For non-paragraph nodes with charDiff
-        content = charDiff.map(([op, text], i) => {
-            let style: React.CSSProperties = {};
-            if (op === 1) style = { backgroundColor: '#ddfadd', textDecoration: 'none' };
-            if (op === -1) style = { backgroundColor: '#fadddd', textDecoration: 'line-through' };
-            return <span key={i} style={style}>{text}</span>;
-        });
-    } else {
-        content = value;
-    }
+    // This handles text nodes that are part of an unchanged block, or simple added/removed value nodes.
+    // Or text nodes whose parent block was changed but this specific text child doesn't have its own charDiff.
+    content = value;
   }
 
   const wrapperStyle: React.CSSProperties = {};
   if (diffStatus === 'added') wrapperStyle.backgroundColor = '#e6ffed';
   if (diffStatus === 'removed') {
     wrapperStyle.backgroundColor = '#ffebe9';
-    wrapperStyle.textDecoration = 'line-through';
+    // Strikethrough for removed blocks is applied here. 
+    // Text content within will just be the originalValue or its children rendered (already marked removed).
+    if (!children || children.length === 0) { // Only apply strikethrough to leaf-like removed nodes or text values
+         wrapperStyle.textDecoration = 'line-through';
+    }
     wrapperStyle.color = '#990000'; 
   }
 
@@ -154,11 +173,13 @@ const AstDiffRendererNode: React.FC<AstDiffRendererNodeProps> = ({ node }) => {
     case 'root':
       return <div style={wrapperStyle}>{content}</div>;
     case 'paragraph':
-      return <p style={wrapperStyle}>{content}</p>;
+    case 'heading': // Add heading tags later
+      return <p style={wrapperStyle}>{content}</p>; // Using <p> for headings for now
     case 'text':
-      // Text node content is handled by its parent (if parent has charDiff) or directly if it has its own value.
-      // If it's part of a removed block, it gets styled by parent. Standalone text shouldn't have wrapperStyle here unless it itself is added/removed.
-      return <span style={diffStatus === 'removed' && !children ? wrapperStyle : undefined}>{content}</span>;
+      // If a text node is part of a 'removed' parent, it gets styled by parent.
+      // If rendered via renderTextWithInlineFormattingAndDiff, it won't be wrapped by this case directly.
+      // This handles text nodes that are direct children of unchanged or added blocks.
+      return <span style={diffStatus === 'removed' && !children ? wrapperStyle : {}}>{content}</span>;
     case 'list':
       const ListTag = ordered ? 'ol' : 'ul';
       const listStyle = spread ? { marginBottom: '1em' } : {}; 
