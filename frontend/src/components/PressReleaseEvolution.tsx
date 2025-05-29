@@ -34,7 +34,7 @@ const PressReleaseEvolution: React.FC<PressReleaseEvolutionProps> = ({ versions 
     if (showRedlinesToggled) {
       if (!showRedlines) {
         // When redlines are turned OFF
-        setSelectedVersion(fromVersion); // Set selectedVersion to the 'from' part of the previous range
+        setSelectedVersion(fromVersion); 
       } else {
         // When redlines are turned ON
         // Use the current selectedVersion (from single mode) as the new fromVersion

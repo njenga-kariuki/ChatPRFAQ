@@ -906,7 +906,6 @@ function App() {
                 <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight tracking-tight text-gray-900">
                   ChatPRFAQ
                 </h1>
-                
                 <p className="text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed">
                   Turn product ideas into C-Suite ready PRFAQs in 3 minutes.
                   <br />
