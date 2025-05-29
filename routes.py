@@ -9,6 +9,9 @@ import queue
 import os
 import uuid
 
+# Import cache utilities from the new location
+from utils.raw_output_cache import store_raw_llm_output, get_raw_llm_output
+
 # Configure logging
 logger = logging.getLogger(__name__)
 
@@ -77,7 +80,7 @@ def process_product_idea():
         # Process the product idea through all steps
         logger.info(f"[{request_id}] Starting LLM processing...")
         start_time = time.time()
-        results = llm_processor.process_all_steps(product_idea)
+        results = llm_processor.process_all_steps(product_idea, request_id=request_id)
         end_time = time.time()
         
         logger.info(f"[{request_id}] LLM processing completed in {end_time - start_time:.2f} seconds")
@@ -86,17 +89,21 @@ def process_product_idea():
             logger.error(f"[{request_id}] LLM processing failed: {results['error']}")
             return jsonify({
                 'error': results['error'],
-                'step': results.get('step', 'unknown')
+                'step': results.get('step', 'unknown'),
+                'request_id': request_id
             }), 500
             
         logger.info(f"[{request_id}] Returning successful results")
         logger.debug(f"[{request_id}] Results contain {len(results.get('steps', []))} steps")
-        return jsonify(results)
+        final_response = results.copy()
+        final_response['request_id'] = request_id
+        return jsonify(final_response)
         
     except Exception as e:
         logger.exception(f"[{request_id}] Unexpected error in process_product_idea")
         return jsonify({
-            'error': f'Server error: {str(e)}'
+            'error': f'Server error: {str(e)}',
+            'request_id': request_id
         }), 500
 
 @app.route('/api/process_stream', methods=['POST'])
@@ -145,7 +152,7 @@ def process_product_idea_stream():
             def process_in_thread():
                 try:
                     logger.info(f"[{request_id}] Background processing thread started")
-                    result = llm_processor.process_all_steps(product_idea, progress_callback)
+                    result = llm_processor.process_all_steps(product_idea, progress_callback, request_id=request_id)
                     result_container['result'] = result
                     progress_queue.put({'done': True})
                     logger.info(f"[{request_id}] Background processing thread completed")
@@ -162,8 +169,8 @@ def process_product_idea_stream():
             thread.start()
             logger.info(f"[{request_id}] Background thread started")
             
-            # Send initial status
-            initial_update = {'status': 'started', 'message': 'Starting evaluation...', 'progress': 0}
+            # Send initial status, including request_id
+            initial_update = {'status': 'started', 'message': 'Starting evaluation...', 'progress': 0, 'request_id': request_id}
             logger.debug(f"[{request_id}] Sending initial update: {initial_update}")
             yield f"data: {json.dumps(initial_update)}\n\n"
             
@@ -192,14 +199,14 @@ def process_product_idea_stream():
                             if 'error' in result_container['result']:
                                 error_step = result_container['result'].get('step', 'unknown')
                                 logger.error(f"[{request_id}] Final result contains error at step {error_step}: {result_container['result']['error']}")
-                                yield f"data: {json.dumps({'error': result_container['result']['error'], 'step': error_step})}\n\n"
+                                yield f"data: {json.dumps({'error': result_container['result']['error'], 'step': error_step, 'request_id': request_id})}\n\n"
                             else:
                                 logger.info(f"[{request_id}] Sending successful completion result")
-                                yield f"data: {json.dumps({'complete': True, 'result': result_container['result']})}\n\n"
+                                yield f"data: {json.dumps({'complete': True, 'result': result_container['result'], 'request_id': request_id})}\n\n"
                         break
                     elif update.get('error'):
                         logger.error(f"[{request_id}] Error in stream: {update['message']}")
-                        yield f"data: {json.dumps({'error': update['message']})}\n\n"
+                        yield f"data: {json.dumps({'error': update['message'], 'request_id': request_id})}\n\n"
                         break
                     else:
                         # Send progress update
@@ -213,14 +220,14 @@ def process_product_idea_stream():
                     # If we've been stuck for too long, consider it a failure
                     if elapsed_time > 120:  # 2 minutes without progress
                         logger.error(f"[{request_id}] Processing appears stuck - terminating stream")
-                        yield f"data: {json.dumps({'error': 'Processing timeout - the operation took too long to complete. Please try again.'})}\n\n"
+                        yield f"data: {json.dumps({'error': 'Processing timeout - the operation took too long to complete. Please try again.', 'request_id': request_id})}\n\n"
                         break
                     
-                    yield f"data: {json.dumps({'keepalive': True, 'message': 'Processing continues...'})}\n\n"
+                    yield f"data: {json.dumps({'keepalive': True, 'message': 'Processing continues...', 'request_id': request_id})}\n\n"
                     continue
                 except Exception as e:
                     logger.exception(f"[{request_id}] Error in stream generator")
-                    yield f"data: {json.dumps({'error': f'Stream error: {str(e)}'})}\n\n"
+                    yield f"data: {json.dumps({'error': f'Stream error: {str(e)}', 'request_id': request_id})}\n\n"
                     break
                     
             logger.info(f"[{request_id}] Stream generator completed after {update_count} updates")
@@ -240,7 +247,8 @@ def process_product_idea_stream():
     except Exception as e:
         logger.exception(f"[{request_id}] Error setting up stream")
         return jsonify({
-            'error': f'Server error: {str(e)}'
+            'error': f'Server error: {str(e)}',
+            'request_id': request_id
         }), 500
 
 @app.route('/api/process_step', methods=['POST'])
@@ -278,7 +286,7 @@ def process_single_step():
         
         # Process the single step
         start_time = time.time()
-        result = llm_processor.generate_step_response(step_id, input_text, step_data)
+        result = llm_processor.generate_step_response(step_id, input_text, step_data, request_id=request_id)
         end_time = time.time()
         
         logger.info(f"[{request_id}] Single step {step_id} completed in {end_time - start_time:.2f} seconds")
@@ -287,16 +295,20 @@ def process_single_step():
             logger.error(f"[{request_id}] Single step {step_id} failed: {result['error']}")
             return jsonify({
                 'error': result['error'],
-                'step': step_id
+                'step': step_id,
+                'request_id': request_id
             }), 500
             
         logger.info(f"[{request_id}] Single step {step_id} successful")
-        return jsonify(result)
+        final_response = result.copy()
+        final_response['request_id'] = request_id
+        return jsonify(final_response)
         
     except Exception as e:
         logger.exception(f"[{request_id}] Error processing single step {data.get('step_id', 'unknown')}")
         return jsonify({
-            'error': f'Server error: {str(e)}'
+            'error': f'Server error: {str(e)}',
+            'request_id': request_id
         }), 500
 
 @app.route('/api/analyze_product_idea', methods=['POST'])
@@ -318,45 +330,57 @@ def analyze_product_idea():
 
 @app.route('/api/refine_analysis', methods=['POST'])
 def refine_analysis():
+    request_id = generate_request_id()
+    logger.info(f"[{request_id}] API /refine_analysis endpoint called")
     try:
         data = request.get_json()
         required_fields = ['original_input', 'current_analysis', 'feedback']
         
         if not data or not all(field in data for field in required_fields):
-            return jsonify({'error': 'Missing required fields'}), 400
+            logger.warning(f"[{request_id}] Missing required fields for refine_analysis")
+            return jsonify({'error': 'Missing required fields', 'request_id': request_id}), 400
         
         result = llm_processor.refine_product_analysis(
             data['original_input'],
             data['current_analysis'], 
-            data['feedback']
+            data['feedback'],
+            request_id=request_id
         )
         
         if 'error' in result:
-            return jsonify({'error': result['error']}), 500
+            logger.error(f"[{request_id}] Refine analysis failed: {result['error']}")
+            return jsonify({'error': result['error'], 'request_id': request_id}), 500
         
-        return jsonify(result)
+        final_response = result.copy()
+        final_response['request_id'] = request_id
+        return jsonify(final_response)
         
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        logger.exception(f"[{request_id}] Unexpected error in refine_analysis")
+        return jsonify({'error': str(e), 'request_id': request_id}), 500
 
 @app.route('/api/create_enriched_brief', methods=['POST'])
 def create_enriched_brief():
+    request_id = generate_request_id()
+    logger.info(f"[{request_id}] API /create_enriched_brief endpoint called")
     try:
         data = request.get_json()
         required_fields = ['original_idea', 'analysis']
         
         if not data or not all(field in data for field in required_fields):
-            return jsonify({'error': 'Missing required fields'}), 400
+            logger.warning(f"[{request_id}] Missing required fields for create_enriched_brief")
+            return jsonify({'error': 'Missing required fields', 'request_id': request_id}), 400
         
         brief = llm_processor.create_enriched_product_brief(
             data['original_idea'],
             data['analysis']
         )
         
-        return jsonify({'brief': brief})
+        return jsonify({'brief': brief, 'request_id': request_id})
         
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        logger.exception(f"[{request_id}] Unexpected error in create_enriched_brief")
+        return jsonify({'error': str(e), 'request_id': request_id}), 500
 
 @app.route('/api/test-perplexity', methods=['GET'])
 def test_perplexity_api():
@@ -494,24 +518,52 @@ def debug_status():
 @app.route('/api/debug/test-step/<int:step_id>', methods=['POST'])
 def debug_test_step(step_id):
     """Debug endpoint to test individual steps"""
+    request_id = generate_request_id()
+    logger.info(f"[{request_id}] API /api/debug/test-step/{step_id} endpoint called")
     try:
         data = request.get_json()
         if not data or 'input' not in data:
-            return jsonify({'error': 'Missing input in request body'}), 400
+            logger.warning(f"[{request_id}] Missing input in request body for test-step")
+            return jsonify({'error': 'Missing input in request body', 'request_id': request_id}), 400
         
         input_text = data['input']
         step_data = data.get('step_data', {})
         
-        logger.info(f"Debug: Testing step {step_id} with input length {len(input_text)}")
+        logger.info(f"[{request_id}] Debug: Testing step {step_id} with input length {len(input_text)}")
         
-        result = llm_processor.generate_step_response(step_id, input_text, step_data)
+        result = llm_processor.generate_step_response(step_id, input_text, step_data, request_id=request_id)
         
-        return jsonify({
+        final_response = {
             "step_id": step_id,
             "success": "error" not in result,
-            "result": result
-        })
+            "result": result,
+            "request_id": request_id
+        }
+        return jsonify(final_response)
         
     except Exception as e:
-        logger.exception(f"Debug: Error testing step {step_id}")
-        return jsonify({"error": str(e)}), 500
+        logger.exception(f"[{request_id}] Debug: Error testing step {step_id}")
+        return jsonify({"error": str(e), 'request_id': request_id}), 500
+
+# --- BEGIN: New Raw LLM Output Debug Endpoint ---
+@app.route('/api/debug/get_raw_llm_output', methods=['GET'])
+def get_raw_llm_output_route():
+    """Endpoint to retrieve raw LLM output for a given request_id."""
+    query_request_id = request.args.get('request_id')
+    if not query_request_id:
+        return jsonify({"error": "request_id parameter is required"}), 400
+
+    output_entry = get_raw_llm_output(query_request_id)
+
+    if output_entry:
+        logger.info(f"[{query_request_id}] Retrieved raw LLM output for step '{output_entry['step_info']}' via debug API.")
+        return jsonify({
+            "request_id": query_request_id,
+            "step_info": output_entry['step_info'],
+            "raw_output": output_entry['data'],
+            "timestamp": output_entry['timestamp']
+        })
+    else:
+        logger.warn(f"[{query_request_id}] No raw LLM output found in cache for debug API.")
+        return jsonify({"error": "Raw output not found for this request_id (may have expired or not been stored)"}), 404
+# --- END: New Raw LLM Output Debug Endpoint ---

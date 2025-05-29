@@ -73,6 +73,18 @@ const StepCard: React.FC<StepCardProps> = ({ step, onToggle }) => {
             </div>
           </div>
           
+          {/* ADD THIS SECTION - Key insight display */}
+          {step.status === 'completed' && step.keyInsight && !step.isActive && (
+            <div className="flex items-center gap-1 flex-1 justify-end mx-4">
+              <span className="text-sm text-gray-600 italic truncate max-w-xl">
+                {step.insightLabel && (
+                  <span className="text-gray-500 font-medium not-italic mr-1">{step.insightLabel}</span>
+                )}
+                {step.keyInsight}
+              </span>
+            </div>
+          )}
+          
           {/* Animated chevron */}
           <svg className={`w-5 h-5 text-gray-400 transition-all duration-300 ${step.isActive ? 'rotate-180' : 'group-hover/header:translate-y-0.5'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />

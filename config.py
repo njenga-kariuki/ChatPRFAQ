@@ -5,8 +5,9 @@ ANTHROPIC_API_KEY = os.environ.get("ANTHROPIC_API_KEY", "")
 CLAUDE_MODEL = "claude-sonnet-4-20250514"  # Latest Claude Sonnet model
 
 # Google Gemini API Configuration (kept for potential future use)
-# GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "")
-# GEMINI_MODEL = "gemini-2.5-pro-preview-05-06"  
+GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "")
+GEMINI_FLASH_MODEL = "gemini-2.5-flash-preview-05-20"
+# GEMINI_MODEL = "gemini-2.5-pro-preview-05-06"
 
 # Perplexity API Configuration
 PERPLEXITY_API_KEY = os.environ.get("PERPLEXITY_API_KEY", "")

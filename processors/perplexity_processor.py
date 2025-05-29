@@ -2,6 +2,9 @@ import logging
 from openai import OpenAI
 from config import PERPLEXITY_API_KEY, PERPLEXITY_BASE_URL, PERPLEXITY_MODEL
 
+# Import store_raw_llm_output from the new utility location
+from utils.raw_output_cache import store_raw_llm_output
+
 logger = logging.getLogger(__name__)
 
 def format_response_summary(text: str, max_length: int = 150) -> str:
@@ -66,7 +69,7 @@ class PerplexityProcessor:
         # Cap at 97% to ensure we never exceed 99% with safety margins
         return min(base_progress + step_increment, 97)
     
-    def conduct_initial_market_research(self, product_idea, system_prompt, user_prompt, progress_callback=None):
+    def conduct_initial_market_research(self, product_idea, system_prompt, user_prompt, progress_callback=None, request_id=None, step_info=None):
         """
         Conduct initial market research using Perplexity's Sonar API on raw product idea
         
@@ -75,19 +78,22 @@ class PerplexityProcessor:
             system_prompt: The system prompt for the research analyst persona
             user_prompt: The user prompt template for research instructions
             progress_callback: Optional callback for progress updates
+            request_id: Optional request ID for caching raw output
+            step_info: Optional string describing the step for caching (e.g., "step_1_MarketResearch")
             
         Returns:
             Dict containing research results or error information
         """
-        logger.info("Starting initial Perplexity market research")
+        log_prefix = f"[{request_id or 'NO_REQ_ID'}]" if request_id else "[PerplexityResearch]"
+        logger.info(f"{log_prefix} Starting initial Perplexity market research")
         
         # Check if client was properly initialized
         if not self.client:
             error_msg = "Perplexity API client not initialized. Please set PERPLEXITY_API_KEY in Replit Secrets."
-            logger.error(error_msg)
+            logger.error(f"{log_prefix} {error_msg}")
             if progress_callback:
                 progress_callback({
-                    "step": 1,
+                    "step": 1, # Assuming step 1 for market research
                     "status": "error",
                     "message": "Market research failed: API key not configured",
                     "error": error_msg
@@ -100,14 +106,14 @@ class PerplexityProcessor:
             
             if progress_callback:
                 progress_callback({
-                    "step": 1,
+                    "step": 1, # Assuming step 1
                     "status": "processing",
                     "message": "Market analyst pulling competitive intelligence...",
                     "progress": self._calculate_step_progress(1)
                 })
             
-            logger.info("Calling Perplexity Sonar API for initial research...")
-            logger.debug(f"Using model: {self.model}")
+            logger.info(f"{log_prefix} Calling Perplexity Sonar API for initial research...")
+            logger.debug(f"{log_prefix} Using model: {self.model}")
             
             response = self.client.chat.completions.create(
                 model=self.model,
@@ -121,30 +127,37 @@ class PerplexityProcessor:
             )
             
             if not response or not response.choices or not response.choices[0].message.content:
-                logger.error("Invalid response from Perplexity API")
+                logger.error(f"{log_prefix} Invalid response from Perplexity API")
                 return {"error": "Invalid response from Perplexity API"}
             
             research_output = response.choices[0].message.content
-            logger.info(f"Perplexity response: {format_response_summary(research_output)}")
+            logger.info(f"{log_prefix} Perplexity response: {format_response_summary(research_output)}")
+
+            # Store raw output if request_id is provided
+            if request_id and step_info:
+                try:
+                    store_raw_llm_output(request_id, step_info, research_output)
+                except Exception as e_store:
+                    logger.error(f"{log_prefix} Failed to store raw LLM output for {step_info}: {e_store}")
             
             # Quality validation
             if len(research_output.strip()) < 500:
-                logger.warning(f"Perplexity response seems unusually short: {len(research_output)} chars")
+                logger.warning(f"{log_prefix} Perplexity response seems unusually short: {len(research_output)} chars")
             elif not any(keyword in research_output.lower() for keyword in ['market', 'competitive', 'customer', 'industry']):
-                logger.warning("Perplexity response may not contain expected research sections")
+                logger.warning(f"{log_prefix} Perplexity response may not contain expected research sections")
             else:
-                logger.info("Perplexity response appears to contain expected research sections")
+                logger.info(f"{log_prefix} Perplexity response appears to contain expected research sections")
             
             if progress_callback:
                 progress_callback({
-                    "step": 1,
+                    "step": 1, # Assuming step 1
                     "status": "completed",
                     "message": "Market research and competitive analysis complete",
                     "progress": self._calculate_step_progress(1, 7),
                     "output": research_output
                 })
             
-            logger.info("Initial market research completed successfully")
+            logger.info(f"{log_prefix} Initial market research completed successfully")
             
             return {
                 "output": research_output,
@@ -154,12 +167,12 @@ class PerplexityProcessor:
             }
             
         except Exception as e:
-            logger.error(f"API call failed | Model: {self.model}, Error: {type(e).__name__}: {str(e)}")
+            logger.error(f"{log_prefix} API call failed | Model: {self.model}, Error: {type(e).__name__}: {str(e)}")
             logger.exception("Full error traceback:")
             
             if progress_callback:
                 progress_callback({
-                    "step": 1,
+                    "step": 1, # Assuming step 1
                     "status": "error",
                     "message": f"Market research failed: {str(e)}",
                     "error": str(e)

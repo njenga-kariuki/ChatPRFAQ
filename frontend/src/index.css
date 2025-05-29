@@ -963,3 +963,34 @@ body {
     @apply grid-cols-1 gap-4;
   }
 }
+
+/* Step insight styling */
+.step-insight {
+  color: #6B7280;
+  font-style: italic;
+  font-size: 0.875rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 600px;
+}
+
+@media (max-width: 1024px) {
+  .step-insight {
+    max-width: 400px;
+  }
+}
+
+@media (max-width: 768px) {
+  .step-insight {
+    max-width: 250px;
+  }
+}
+
+/* Insight label styling */
+.insight-label {
+  color: #9CA3AF;
+  font-weight: 500;
+  font-style: normal;
+  margin-right: 0.25rem;
+}

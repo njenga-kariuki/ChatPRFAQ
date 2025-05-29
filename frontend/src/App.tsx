@@ -126,6 +126,7 @@ function App() {
   const [researchArtifacts, setResearchArtifacts] = useState<ResearchArtifacts>({});
   const [resultId, setResultId] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<'input' | 'processing' | 'results'>('input');
+  const [currentRequestId, setCurrentRequestId] = useState<string | null>(null);
 
   // Track if we're auto-submitting from landing page
   const [isAutoSubmitting, setIsAutoSubmitting] = useState(false);
@@ -223,6 +224,7 @@ function App() {
     logToStorage('info', '🔄 RESET STATE CALLED');
     // Clear saved progress when explicitly resetting
     clearSavedProgress();
+    setCurrentRequestId(null);
     
     // Don't change appState here - let the navigation handle it
     setProductIdea('');
@@ -341,6 +343,12 @@ function App() {
         throw new Error(analysisResult.error);
       }
 
+      if (analysisResult.request_id) {
+        setCurrentRequestId(analysisResult.request_id);
+        console.log("LLM Analysis Request ID:", analysisResult.request_id);
+        logToStorage('info', '🔍 LLM ANALYSIS REQUEST ID', { requestId: analysisResult.request_id });
+      }
+
       setProductAnalysis(analysisResult.analysis);
       setAnalysisPhase('reviewing');
       setIsProcessing(false); // Stop processing when analysis complete
@@ -393,6 +401,12 @@ function App() {
       
       if (refineResult.error) {
         throw new Error(refineResult.error);
+      }
+
+      if (refineResult.request_id) {
+        setCurrentRequestId(refineResult.request_id);
+        console.log("LLM Refinement Request ID:", refineResult.request_id);
+        logToStorage('info', '🔄 LLM REFINEMENT REQUEST ID', { requestId: refineResult.request_id });
       }
 
       setProductAnalysis(refineResult.analysis);
@@ -486,6 +500,12 @@ function App() {
           if (line.startsWith('data: ')) {
             try {
               const eventData = JSON.parse(line.substring(5));
+
+              if (eventData.request_id && !currentRequestId) {
+                setCurrentRequestId(eventData.request_id);
+                console.log("LLM Stream Request ID:", eventData.request_id);
+                logToStorage('info', '🌊 LLM STREAM REQUEST ID', { requestId: eventData.request_id });
+              }
 
               if (eventData.error) {
                 const errorData = {
@@ -665,6 +685,15 @@ function App() {
                 }
               }
 
+              // ADD THIS NEW HANDLER for insight-only updates
+              if (eventData.keyInsight && eventData.step && !eventData.status) {
+                setStepsData(prev => prev.map(s => 
+                  s.id === eventData.step 
+                    ? { ...s, keyInsight: eventData.keyInsight, insightLabel: eventData.insightLabel || null }
+                    : s
+                ));
+              }
+
               if (eventData.complete && eventData.result) {
                 setCurrentStepText('Evaluation Complete! All steps processed.');
                 setFinalPrfaq(eventData.result.prfaq || 'Not available');
@@ -682,6 +711,7 @@ function App() {
                 
                 logToStorage('info', '🎉 PROCESSING COMPLETE - SWITCHING TO RESULTS VIEW', {
                   resultId: newResultId,
+                  requestId: currentRequestId,
                   prVersionsCount: Object.keys(prVersions).length,
                   researchArtifactsCount: Object.keys(researchArtifacts).length
                 });
@@ -1387,6 +1417,13 @@ function App() {
                     Download Debug Logs
                   </button>
                   
+                  {currentRequestId && (
+                    <div className="mt-3 pt-3 border-t border-gray-700 text-xs">
+                      <p className="text-gray-400">Current Request ID (for raw LLM output):</p>
+                      <p className="text-sky-400 break-all">{currentRequestId}</p>
+                    </div>
+                  )}
+
                   <div className="text-xs text-gray-400 mt-3 pt-3 border-t border-gray-700">
                     Logs persist across page reloads.<br/>
                     Press Ctrl+Shift+D to toggle this panel.

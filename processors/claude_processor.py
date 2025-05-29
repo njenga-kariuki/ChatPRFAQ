@@ -3,6 +3,9 @@ import anthropic
 import httpx
 from config import ANTHROPIC_API_KEY, CLAUDE_MODEL
 
+# Import store_raw_llm_output from the new utility location
+from utils.raw_output_cache import store_raw_llm_output
+
 logger = logging.getLogger(__name__)
 
 def format_response_summary(text: str, max_length: int = 150) -> str:
@@ -125,7 +128,7 @@ class ClaudeProcessor:
         # Cap at 97% to ensure we never exceed 99% with safety margins
         return min(base_progress + step_increment, 97)
     
-    def generate_response(self, system_prompt, user_prompt, progress_callback=None, step_id=None):
+    def generate_response(self, system_prompt, user_prompt, progress_callback=None, step_id=None, request_id=None, step_info=None):
         """
         Generate a response from Claude API
         
@@ -134,16 +137,19 @@ class ClaudeProcessor:
             user_prompt: The user prompt for Claude
             progress_callback: Optional callback for progress updates
             step_id: Optional step ID for progress tracking
+            request_id: Optional request ID for caching raw output
+            step_info: Optional string describing the step for caching (e.g., "step_1_MarketResearch")
             
         Returns:
             Dict containing response or error information
         """
-        logger.info(f"Starting Claude API call for step {step_id}")
+        log_prefix = f"[{request_id or 'NO_REQ_ID'}]" if request_id else f"[Step {step_id or 'N/A'}]"
+        logger.info(f"{log_prefix} Starting Claude API call for step {step_id}")
         
         # Check if client was properly initialized
         if not self.client:
             error_msg = "Claude API client not initialized. Please set ANTHROPIC_API_KEY in Replit Secrets."
-            logger.error(error_msg)
+            logger.error(f"{log_prefix} {error_msg}")
             if progress_callback:
                 progress_callback({
                     "step": step_id,
@@ -180,9 +186,9 @@ class ClaudeProcessor:
                                 "progress": p
                             })).start()
             
-            logger.info(f"Calling Claude API with model: {self.model}")
-            logger.debug(f"System prompt length: {len(system_prompt)}")
-            logger.debug(f"User prompt length: {len(user_prompt)}")
+            logger.info(f"{log_prefix} Calling Claude API with model: {self.model}")
+            logger.debug(f"{log_prefix} System prompt length: {len(system_prompt)}")
+            logger.debug(f"{log_prefix} User prompt length: {len(user_prompt)}")
             
             response = self.client.messages.create(
                 model=self.model,
@@ -196,17 +202,24 @@ class ClaudeProcessor:
             )
             
             if not response or not response.content or not response.content[0].text:
-                logger.error("Invalid response from Claude API")
+                logger.error(f"{log_prefix} Invalid response from Claude API")
                 return {"error": "Invalid response from Claude API"}
             
             output = response.content[0].text
-            logger.info(f"Claude response: {format_response_summary(output)}")
+            logger.info(f"{log_prefix} Claude response: {format_response_summary(output)}")
+
+            # Store raw output if request_id is provided
+            if request_id and step_info:
+                try:
+                    store_raw_llm_output(request_id, step_info, output)
+                except Exception as e_store:
+                    logger.error(f"{log_prefix} Failed to store raw LLM output for step {step_info}: {e_store}")
             
             # Critical validation logging for response quality
             if len(output.strip()) < 100:
-                logger.warning(f"Claude response seems unusually short: {len(output)} chars")
+                logger.warning(f"{log_prefix} Claude response seems unusually short: {len(output)} chars")
             else:
-                logger.info("Claude response appears to be of appropriate length")
+                logger.info(f"{log_prefix} Claude response appears to be of appropriate length")
             
             # Send completion update via progress callback
             if progress_callback:
@@ -218,12 +231,12 @@ class ClaudeProcessor:
                     "output": output
                 })
             
-            logger.info("Claude API call completed successfully")
+            logger.info(f"{log_prefix} Claude API call completed successfully")
             return {"output": output}
             
         except Exception as e:
             error_msg = f"Claude API error: {str(e)}"
-            logger.error(f"API call failed | Model: {self.model}, Error: {type(e).__name__}: {str(e)}")
+            logger.error(f"{log_prefix} API call failed | Model: {self.model}, Error: {type(e).__name__}: {str(e)}")
             logger.exception("Full error traceback:")
             
             if progress_callback:
