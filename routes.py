@@ -24,8 +24,33 @@ def generate_request_id():
     """Generate a short request ID for tracking"""
     return str(uuid.uuid4())[:8]
 
-# Development mode: React served by Vite dev server
-# Static file serving disabled during development
+# Serve React app directly from Flask
+from flask import send_from_directory
+import os
+
+@app.route('/')
+def serve_react_app():
+    """Serve the React app's main page"""
+    try:
+        return send_from_directory('static/react', 'index.html')
+    except:
+        # If static files don't exist, show a helpful message
+        return '''
+        <h1>Development Server</h1>
+        <p>React app should be built first. Run: <code>cd frontend && npm run build</code></p>
+        <p>Or access the Vite dev server at <a href="http://localhost:3000">http://localhost:3000</a></p>
+        '''
+
+@app.route('/<path:path>')
+def serve_react_static_files(path):
+    """Serve React static files, or fallback to index.html for SPA routing"""
+    try:
+        if os.path.exists(os.path.join('static/react', path)):
+            return send_from_directory('static/react', path)
+        else:
+            return send_from_directory('static/react', 'index.html')
+    except:
+        return serve_react_app()
 
 # API routes start here
 @app.route('/api/process', methods=['POST'])
