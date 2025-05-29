@@ -24,23 +24,8 @@ def generate_request_id():
     """Generate a short request ID for tracking"""
     return str(uuid.uuid4())[:8]
 
-# Serve React app directly from Flask
-from flask import send_from_directory
-import os
-
-@app.route('/')
-def serve_react_app():
-    """Serve the React app's main page"""
-    return send_from_directory('static/react', 'index.html')
-
-@app.route('/<path:path>')
-def serve_react_static_files(path):
-    """Serve React static files, or fallback to index.html for SPA routing"""
-    if os.path.exists(os.path.join('static/react', path)):
-        return send_from_directory('static/react', path)
-    else:
-        # For SPA routing, serve index.html for unknown paths
-        return send_from_directory('static/react', 'index.html')
+# Development mode: React served by Vite dev server
+# Static file serving disabled during development
 
 # API routes start here
 @app.route('/api/process', methods=['POST'])
