@@ -17,5 +17,5 @@ if __name__ == "__main__":
         port=5000, 
         debug=True,
         threaded=True,  # Enable threading for better concurrency
-        use_reloader=True  # ENABLED auto-reload to prevent import issues - TESTING THIS
+        use_reloader=False  # Disabled to prevent orphaned processes in Replit workflows
     ) 
