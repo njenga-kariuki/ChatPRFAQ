@@ -73,12 +73,12 @@ const StepCard: React.FC<StepCardProps> = ({ step, onToggle }) => {
             </div>
           </div>
           
-          {/* ADD THIS SECTION - Key insight display */}
+          {/* Key insight display - updated with new classes and spacing */}
           {step.status === 'completed' && step.keyInsight && !step.isActive && (
-            <div className="flex items-center gap-1 flex-1 justify-end mx-4">
-              <span className="text-sm text-gray-600 italic truncate max-w-xl">
+            <div className="step-insight-container">
+              <span className="step-insight">
                 {step.insightLabel && (
-                  <span className="text-gray-500 font-medium not-italic mr-1">{step.insightLabel}</span>
+                  <span className="insight-label">{step.insightLabel}</span>
                 )}
                 {step.keyInsight}
               </span>

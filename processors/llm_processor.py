@@ -1,6 +1,8 @@
 import logging
 import threading
 import google.generativeai as genai
+from google.generativeai.types import HarmCategory, HarmBlockThreshold
+import anthropic
 # import google.generativeai as genai  # Kept for potential future use
 from config import ANTHROPIC_API_KEY, CLAUDE_MODEL, WORKING_BACKWARDS_STEPS, PRODUCT_ANALYSIS_STEP, GEMINI_API_KEY, GEMINI_FLASH_MODEL
 from .perplexity_processor import PerplexityProcessor
@@ -45,6 +47,21 @@ class LLMProcessor:
                 # self.gemini_flash_model remains None
         else:
             logger.warning("GEMINI_API_KEY not set - insight extraction will not work (gemini_flash_model remains None).")
+
+        # Initialize isolated Claude client specifically for insights only
+        self.insight_claude_client = None
+        self.insight_claude_model = "claude-3-5-haiku-20241022"
+        if ANTHROPIC_API_KEY:
+            logger.info("ANTHROPIC_API_KEY found, attempting to initialize isolated Claude client for insights.")
+            try:
+                self.insight_claude_client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
+                logger.info(f"Isolated Claude client initialized successfully for insight extraction: {self.insight_claude_model}")
+                logger.info("Insight extraction will use isolated Claude client (separate from main processing)")
+            except Exception as e:
+                logger.error(f"Failed to initialize isolated Claude client for insights: {e}", exc_info=True)
+                # self.insight_claude_client remains None
+        else:
+            logger.warning("ANTHROPIC_API_KEY not set - isolated Claude insight extraction will not work.")
             
     def generate_step_response(self, step_id, input_text, step_data=None, progress_callback=None, request_id=None):
         """
@@ -129,6 +146,20 @@ class LLMProcessor:
             request_id=request_id,
             step_info=f"step_{step_id_for_log}_{research_step.get('name', 'MarketResearch')}"
         )
+        
+        # Store Step 1 output and trigger insight extraction (if successful)
+        if "error" not in result and result.get("output"):
+            output = result["output"]
+            logger.info(f"[{request_id or 'NO_REQ_ID'}] Step {step_id_for_log} response received - length: {len(output)} characters")
+            
+            # Store output for potential use by comparative insights in later steps
+            self.step_outputs[step_id_for_log] = output
+            
+            # Trigger insight extraction in background thread (same as other steps)
+            logger.debug(f"[{request_id or 'NO_REQ_ID'}] Step {step_id_for_log}: Triggering insight extraction for market research")
+            self._trigger_insight_extraction(step_id_for_log, output, progress_callback, request_id)
+        else:
+            logger.warning(f"[{request_id or 'NO_REQ_ID'}] Step {step_id_for_log}: Skipping insight extraction due to error or missing output")
         
         return result
 
@@ -439,6 +470,9 @@ Concept Validation Key Findings:
         
         self.step_outputs[step_id] = output
         
+        # NEW: Fire-and-forget insight extraction
+        self._trigger_insight_extraction(step_id, output, progress_callback, request_id)
+        
         return {
             "output": output,
             "step": step["name"],
@@ -685,16 +719,87 @@ This enriched brief combines the original product idea with strategic insights t
             logger.error(f"Failed to create enriched brief: {str(e)}")
             return original_idea  # Fallback to original
 
+    def _trigger_insight_extraction(self, step_id, output, progress_callback, request_id=None):
+        """
+        Trigger insight extraction for any step in a background thread.
+        This method is used by both Claude-based steps and Perplexity-based Step 1.
+        """
+        def extract_async():
+            logger.info(f"[INSIGHT THREAD - Step {step_id}] Thread started.")
+            try:
+                insight = None
+                label = None
+                logger.debug(f"[INSIGHT THREAD - Step {step_id}] Initial check: isolated Claude client available: {self.insight_claude_client is not None}")
+                
+                if step_id == 4:  # PR Refinement
+                    draft_pr = self.step_outputs.get(3, "")
+                    logger.debug(f"[INSIGHT THREAD - Step {step_id}] Comparative insight for step 4. Draft PR (len: {len(draft_pr)}): '{draft_pr[:50]}...'")
+                    if draft_pr:
+                        insight = self._extract_comparative_insight(
+                            step_id=4,
+                            before_content=draft_pr,
+                            after_content=output,
+                            prompt_template="Compare these press releases. What's the most important strategic improvement made? Focus on positioning, messaging, or differentiation changes.\\n\\nDraft: {before}\\n\\nRefined: {after}"
+                        )
+                        label = "Refined:"
+                    else:
+                        logger.warning(f"[INSIGHT THREAD - Step {step_id}] Draft PR for step 4 not found, falling back to single content extraction.")
+                        insight = self._extract_key_insight(step_id, output)
+                        label = "Key change:"
+                        
+                elif step_id == 7:  # Solution Refinement
+                    validation_feedback = self.step_outputs.get(6, "")
+                    logger.debug(f"[INSIGHT THREAD - Step {step_id}] Comparative insight for step 7. Validation feedback (len: {len(validation_feedback)}): '{validation_feedback[:50]}...'")
+                    if validation_feedback:
+                        insight = self._extract_comparative_insight(
+                            step_id=7,
+                            before_content=validation_feedback,
+                            after_content=output,
+                            prompt_template="Given this user feedback, what specific change was made to the solution? Focus on what was added or modified to address user concerns.\\n\\nUser feedback themes: {before}\\n\\nRefined solution: {after}"
+                        )
+                        label = "Added:"
+                    else:
+                        logger.warning(f"[INSIGHT THREAD - Step {step_id}] Validation feedback for step 7 not found, falling back to single content extraction.")
+                        insight = self._extract_key_insight(step_id, output)
+                        label = "Refined:"
+                        
+                else:
+                    logger.debug(f"[INSIGHT THREAD - Step {step_id}] Standard insight: calling _extract_key_insight.")
+                    insight = self._extract_key_insight(step_id, output)
+                    label = self._get_insight_label(step_id)
+                
+                logger.info(f"[INSIGHT THREAD - Step {step_id}] Insight generation attempt completed. Insight: '{str(insight)[:50]}...', Label: {label}")
+                
+                if insight and progress_callback:
+                    logger.info(f"[INSIGHT THREAD - Step {step_id}] Insight is valid. Sending to frontend via progress_callback.")
+                    progress_callback({
+                        "step": step_id,
+                        "keyInsight": insight,
+                        "insightLabel": label
+                    })
+                elif not insight:
+                    logger.warning(f"[INSIGHT THREAD - Step {step_id}] Insight was None or empty, not sending to frontend.")
+                elif not progress_callback:
+                    logger.warning(f"[INSIGHT THREAD - Step {step_id}] Progress_callback was None, cannot send insight.")
+
+            except Exception as e:
+                logger.error(f"[INSIGHT THREAD - Step {step_id}] Insight extraction thread failed: {e}", exc_info=True)
+                pass  # Silent fail (as per original plan for non-blocking)
+            finally:
+                logger.info(f"[INSIGHT THREAD - Step {step_id}] Thread finished.")
+
+        threading.Thread(target=extract_async, daemon=True).start()
+
     def _get_insight_label(self, step_id):
         """Get the appropriate label for each step's insight"""
         labels = {
-            1: None,  # No label for market research
+            1: "Insight:",  # Market research insight
             2: "Pain:",
             3: "Headline:",
             4: "Refined:",
             5: "Risk:",
-            6: "Users:",
-            7: "Added:",
+            6: "Finding:",
+            7: "Change:",
             8: "Top Q:",
             9: "Thesis:",
             10: "Must nail:"
@@ -702,86 +807,131 @@ This enriched brief combines the original product idea with strategic insights t
         return labels.get(step_id)
 
     def _extract_key_insight(self, step_id, output):
-        """Extract a one-line insight from step output using Gemini Flash"""
+        logger.info(f"[_extract_key_insight - Step {step_id}] Method called. Output length: {len(output)}. Using isolated Claude client: {self.insight_claude_client is not None}")
         
-        if not self.gemini_flash_model:
-            logger.warning("Gemini Flash not initialized - skipping insight extraction")
+        # Check if isolated Claude client is available
+        if not self.insight_claude_client:
+            logger.warning(f"[_extract_key_insight - Step {step_id}] Isolated Claude client not initialized - skipping insight extraction")
             return None
         
         insight_prompts = {
-            1: "What's the single most important market insight that would make a PM lean forward in their chair? Focus on opportunity size, competitive gaps, or surprising user behavior. Be specific with numbers if mentioned.",
-            2: "What specific customer struggle or behavior pattern was most consistently validated across participants? Include frequency or intensity if mentioned.",
-            3: "Extract the exact headline from this press release. If there's no clear headline, create one that captures the core product announcement.",
-            4: "In one sentence, what's the most important improvement made? Focus on strategic positioning, clarity, or differentiation changes.",
-            5: "Across all internal FAQs, what's the most critical business, technical, or strategic concern raised? Be specific about the risk or challenge.",
-            6: "What specific feature or aspect of the concept generated the strongest user reaction (positive or negative)? Include the split if mentioned (e.g., '8/10 loved X').",
-            7: "Based on user feedback, what's the most significant change made to the solution? Be specific about what was added, removed, or modified.",
-            8: "What's the most important customer question answered in this FAQ? Choose the one that addresses the biggest adoption concern or clarifies the core value.",
-            9: "In one sentence, what's the strategic thesis of this PRFAQ? Focus on market opportunity + our unique approach.",
-            10: "What's the single most important capability or feature that defines the MLP? What must work perfectly on day one?"
+            1: "Summarize the most important finding from this research in one sentence.",
+            2: "Summarize the main issue or challenge mentioned most frequently in one sentence.",
+            3: "What is the main headline or title from this document?",
+            4: "State the most significant change or improvement described in one sentence.",
+            5: "State the most important concern or question raised in this content in one sentence.",
+            6: "State the reaction or response pattern mentioned most often in one sentence.",
+            7: "State the main change or modification described in this content in one sentence.",
+            8: "What is the absolute most important question addressed in this content in one sentence?",
+            9: "State the central, precise customer value proposition conveyed in this document in one sentence.",
+            10: "State the most critical element or feature mentioned in one sentence."
         }
         
         prompt = insight_prompts.get(step_id, "Summarize the key finding in one sentence.")
         
         try:
-            # Prepare the full prompt for Gemini
-            full_prompt = f"""You are an expert at extracting key insights. Respond with exactly one clear, concise sentence. No quotes around the response.
+            # Create Claude-format prompt
+            user_prompt = f"""Thoroughly review the following content and extract the most important insight. Respond with exactly one clear, concise sentence. No quotes around the response.
 
-{prompt}
+Task: {prompt}
 
 Content to analyze:
-{output}""" # NO TRUNCATION
+{output}"""
             
-            # Generate with Gemini Flash
-            response = self.gemini_flash_model.generate_content(
-                full_prompt,
-                generation_config=genai.types.GenerationConfig(
-                    max_output_tokens=100,
-                    temperature=0.5,
-                )
+            logger.info(f"[_extract_key_insight - Step {step_id}] Attempting isolated Claude API call with model: {self.insight_claude_model}")
+            logger.debug(f"[_extract_key_insight - Step {step_id}] Prompt task: '{prompt[:100]}...'")
+            
+            # Call isolated Claude client
+            response = self.insight_claude_client.messages.create(
+                model=self.insight_claude_model,
+                max_tokens=60,
+                temperature=0,
+                messages=[
+                    {
+                        "role": "user",
+                        "content": user_prompt
+                    }
+                ]
             )
             
-            if response.text:
-                return response.text.strip().strip('"')
+            logger.info(f"[_extract_key_insight - Step {step_id}] Isolated Claude API call completed successfully")
+            
+            # Extract content from response
+            if response.content and len(response.content) > 0:
+                insight_text = response.content[0].text.strip()
+                logger.info(f"[_extract_key_insight - Step {step_id}] Insight extracted (first 50 chars): '{insight_text[:50]}...'")
+                
+                if insight_text:
+                    # Clean up any quotes that might have been added
+                    clean_insight = insight_text.strip().strip('"').strip("'")
+                    logger.debug(f"[_extract_key_insight - Step {step_id}] Cleaned insight: '{clean_insight[:50]}...'")
+                    return clean_insight
+                else:
+                    logger.warning(f"[_extract_key_insight - Step {step_id}] Empty insight text received from Claude")
+                    return None
             else:
-                logger.warning(f"Empty response from Gemini for step {step_id}")
+                logger.warning(f"[_extract_key_insight - Step {step_id}] No content in Claude response")
                 return None
                 
         except Exception as e:
-            logger.warning(f"Failed to extract insight for step {step_id}: {e}")
+            logger.error(f"[_extract_key_insight - Step {step_id}] Failed during isolated Claude API call or processing: {e}", exc_info=True)
             return None
 
     def _extract_comparative_insight(self, step_id, before_content, after_content, prompt_template):
-        """Extract insights that need before/after comparison using Gemini Flash"""
+        logger.info(f"[_extract_comparative_insight - Step {step_id}] Method called. Before length: {len(before_content)}, After length: {len(after_content)}. Using isolated Claude client: {self.insight_claude_client is not None}")
         
-        if not self.gemini_flash_model:
-            logger.warning("Gemini Flash not initialized - skipping comparative insight extraction")
+        # Check if isolated Claude client is available
+        if not self.insight_claude_client:
+            logger.warning(f"[_extract_comparative_insight - Step {step_id}] Isolated Claude client not initialized - skipping comparative insight extraction")
             return None
-        
-        try:
-            prompt = prompt_template.format(
-                before=before_content, # NO TRUNCATION
-                after=after_content # NO TRUNCATION
-            )
-            
-            full_prompt = f"""You are an expert at identifying key changes and improvements. Respond with exactly one clear, concise sentence. No quotes around the response.
 
-{prompt}"""
-            
-            response = self.gemini_flash_model.generate_content(
-                full_prompt,
-                generation_config=genai.types.GenerationConfig(
-                    max_output_tokens=60,
-                    temperature=0,
-                )
+        try:
+            # Format the comparison prompt using the template
+            comparison_prompt = prompt_template.format(
+                before=before_content, 
+                after=after_content 
             )
             
-            if response.text:
-                return response.text.strip().strip('"')
+            # Create Claude-format prompt for comparison
+            user_prompt = f"""Compare the content and extract a key insight. Respond with exactly one clear, concise sentence. No quotes around the response.
+
+{comparison_prompt}"""
+            
+            logger.info(f"[_extract_comparative_insight - Step {step_id}] Attempting isolated Claude API call with model: {self.insight_claude_model}")
+            logger.debug(f"[_extract_comparative_insight - Step {step_id}] Using prompt template for comparison analysis")
+            
+            # Call isolated Claude client
+            response = self.insight_claude_client.messages.create(
+                model=self.insight_claude_model,
+                max_tokens=60,
+                temperature=0,
+                messages=[
+                    {
+                        "role": "user",
+                        "content": user_prompt
+                    }
+                ]
+            )
+
+            logger.info(f"[_extract_comparative_insight - Step {step_id}] Isolated Claude API call completed successfully")
+
+            # Extract content from response
+            if response.content and len(response.content) > 0:
+                insight_text = response.content[0].text.strip()
+                logger.info(f"[_extract_comparative_insight - Step {step_id}] Comparative insight extracted (first 50 chars): '{insight_text[:50]}...'")
+                
+                if insight_text:
+                    # Clean up any quotes that might have been added
+                    clean_insight = insight_text.strip().strip('"').strip("'")
+                    logger.debug(f"[_extract_comparative_insight - Step {step_id}] Cleaned comparative insight: '{clean_insight[:50]}...'")
+                    return clean_insight
+                else:
+                    logger.warning(f"[_extract_comparative_insight - Step {step_id}] Empty insight text received from Claude")
+                    return None
             else:
-                logger.warning(f"Empty comparative response from Gemini for step {step_id}")
+                logger.warning(f"[_extract_comparative_insight - Step {step_id}] No content in Claude response")
                 return None
                 
         except Exception as e:
-            logger.warning(f"Failed to extract comparative insight for step {step_id}: {e}")
+            logger.error(f"[_extract_comparative_insight - Step {step_id}] Failed during isolated Claude API call or processing: {e}", exc_info=True)
             return None

@@ -323,20 +323,30 @@ def process_single_step():
 
 @app.route('/api/analyze_product_idea', methods=['POST'])
 def analyze_product_idea():
+    request_id = generate_request_id()
+    logger.info(f"[{request_id}] API /analyze_product_idea endpoint called")
     try:
         data = request.get_json()
         if not data or 'product_idea' not in data:
-            return jsonify({'error': 'Missing product_idea'}), 400
+            logger.warning(f"[{request_id}] Missing product_idea for analyze_product_idea")
+            return jsonify({'error': 'Missing product_idea', 'request_id': request_id}), 400
         
-        result = llm_processor.analyze_product_idea(data['product_idea'])
+        result = llm_processor.analyze_product_idea(data['product_idea'], request_id=request_id)
         
         if 'error' in result:
-            return jsonify({'error': result['error']}), 500
+            logger.error(f"[{request_id}] Product analysis failed: {result['error']}")
+            error_response = result.copy()
+            if 'request_id' not in error_response: error_response['request_id'] = request_id
+            return jsonify(error_response), 500
         
-        return jsonify(result)
+        final_response = result.copy()
+        if 'request_id' not in final_response: final_response['request_id'] = request_id
+        logger.info(f"[{request_id}] Product analysis successful.")
+        return jsonify(final_response)
         
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        logger.exception(f"[{request_id}] Unexpected error in analyze_product_idea")
+        return jsonify({'error': str(e), 'request_id': request_id}), 500
 
 @app.route('/api/refine_analysis', methods=['POST'])
 def refine_analysis():
