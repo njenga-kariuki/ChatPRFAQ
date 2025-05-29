@@ -45,7 +45,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onStartEvaluation }) => {
           </p>
           
           {/* NEW ENHANCED SOLUTION PILL - This is the main visual change */}
-          <div className="inline-flex items-center gap-3 bg-gray-900 text-white px-7 py-3.5 rounded-full font-semibold text-base shadow-lg mt-8 mb-8 hover:shadow-xl transition-shadow duration-200">
+          <div className="inline-flex items-center gap-3 bg-gray-900 text-white px-7 py-3.5 rounded-full font-semibold text-base shadow-lg mt-8 mb-8 hover:shadow-xl hover:shadow-gray-900/20 hover:transform hover:-translate-y-0.5 transition-all duration-200">
             <span>Idea</span>
             <span className="text-[#4B7CF3] text-lg">→</span>
             <span>AI Team</span>
@@ -140,7 +140,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onStartEvaluation }) => {
             </h3>
             <div className="mb-4">
               <textarea
-                className="w-full p-6 border border-gray-200 rounded-xl resize-none focus:outline-none focus:ring-2 focus:ring-[#4B7CF3] focus:border-[#4B7CF3] bg-white text-gray-900 transition-all duration-200"
+                className="w-full p-6 border border-gray-200 rounded-xl resize-none focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 bg-white text-gray-900 transition-all duration-200 placeholder-gray-500"
                 rows={6}
                 placeholder="Example: A WhatsApp-based inventory system that lets small retailers track stock levels and automatically reorder from suppliers when running low..."
                 value={productIdea}
@@ -151,7 +151,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onStartEvaluation }) => {
             </div>
             <button
               onClick={handleStartClick}
-              className="w-full px-8 py-4 bg-black text-white font-semibold rounded-xl transition-all duration-200 hover:bg-gray-800 hover:shadow-lg hover:shadow-[#4B7CF3]/20 hover:transform hover:-translate-y-0.5 text-lg focus:outline-none focus:ring-2 focus:ring-[#4B7CF3] focus:ring-offset-2"
+              className="w-full px-8 py-4 bg-gray-900 text-white font-semibold rounded-xl transition-all duration-200 hover:bg-gray-800 hover:shadow-lg hover:shadow-gray-900/20 hover:transform hover:-translate-y-0.5 text-lg focus:outline-none focus:ring-2 focus:ring-gray-500/20"
             >
               Get My PRFAQ
             </button>
@@ -166,7 +166,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onStartEvaluation }) => {
             Used by PMs at OpenAI, Anthropic, Meta, Google, and Stripe.
           </p>
           <p className="text-gray-600 text-sm">
-            &copy; {new Date().getFullYear()} Nj Vibe Code LLC
+            &copy; {new Date().getFullYear()} Work Back AI LLC
           </p>
         </div>
       </footer>

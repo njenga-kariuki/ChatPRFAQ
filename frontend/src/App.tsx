@@ -6,9 +6,10 @@ import ProcessingStatus from './components/ProcessingStatus'; // Import Processi
 import StepsDisplay from './components/StepsDisplay'; // Import StepsDisplay
 import ProductAnalysisReview from './components/ProductAnalysisReview'; // Import new component
 import LandingPage from './components/LandingPage'; // Import LandingPage
-import { StepData } from './types'; // Import StepData
+import { StepData, PRVersions, ResearchArtifacts } from './types'; // Import StepData and new types
 import Markdown from 'react-markdown'; // Import react-markdown
 import ModernResults from './components/ModernResults'; // Added import for ModernResults
+import EnhancedResults from './components/EnhancedResults'; // Import new enhanced results component
 import { ContentProcessor } from './utils/contentProcessor';
 
 // Interface for feedback data
@@ -20,112 +21,52 @@ interface FeedbackData {
 
 // Unified scroll management hook
 const useSmartScroll = () => {
-  const lastUserInteractionRef = useRef<number>(0);
-  const scrollTimeoutRef = useRef<number>();
-  
-  // Track user interactions to prevent interrupting reading
+  const userIsInteracting = useRef(false);
+  const updateInteraction = () => {
+    userIsInteracting.current = true;
+    setTimeout(() => {
+      userIsInteracting.current = false;
+    }, 30000); // Extended from 2000 to 30000 (30 seconds)
+  };
+
   useEffect(() => {
-    const updateInteraction = () => {
-      lastUserInteractionRef.current = Date.now();
-    };
-    
-    // Listen for user interactions
-    window.addEventListener('scroll', updateInteraction);
-    window.addEventListener('mousedown', updateInteraction);
-    window.addEventListener('touchstart', updateInteraction);
-    window.addEventListener('keydown', updateInteraction);
-    
+    ['mousedown', 'wheel', 'keydown', 'touchstart'].forEach(event => {
+      document.addEventListener(event, updateInteraction, { passive: true });
+    });
+
     return () => {
-      window.removeEventListener('scroll', updateInteraction);
-      window.removeEventListener('mousedown', updateInteraction);
-      window.removeEventListener('touchstart', updateInteraction);
-      window.removeEventListener('keydown', updateInteraction);
+      ['mousedown', 'wheel', 'keydown', 'touchstart'].forEach(event => {
+        document.removeEventListener(event, updateInteraction);
+      });
     };
   }, []);
-  
+
   const smartScroll = (targetId: string, options: {
     block?: ScrollLogicalPosition;
     delay?: number;
     forceScroll?: boolean;
     priority?: 'low' | 'medium' | 'high';
   } = {}) => {
-    const {
-      block = 'nearest',
-      delay = 300,
-      forceScroll = false,
-      priority = 'medium'
-    } = options;
+    const { block = 'nearest', delay = 0, forceScroll = false, priority = 'low' } = options;
     
-    // Clear any pending scroll
-    if (scrollTimeoutRef.current) {
-      clearTimeout(scrollTimeoutRef.current);
+    // Block ALL scrolling when user is active (removed priority checks)
+    if (!forceScroll && userIsInteracting.current) {
+      return;
     }
-    
-    scrollTimeoutRef.current = setTimeout(() => {
-      const element = document.getElementById(targetId);
-      if (!element) return;
-      
-      // Check if user has interacted recently (unless forced or high priority)
-      const timeSinceInteraction = Date.now() - lastUserInteractionRef.current;
-      const interactionCooldown = priority === 'high' ? 1000 : 3000;
-      
-      if (!forceScroll && timeSinceInteraction < interactionCooldown) {
-        console.log(`Skipping scroll to ${targetId} - user interaction detected`);
-        return;
-      }
-      
-      // Check if element is already visible (unless forced)
-      if (!forceScroll) {
-        const rect = element.getBoundingClientRect();
-        const viewportHeight = window.innerHeight;
-        const isInView = rect.top >= 0 && rect.bottom <= viewportHeight + 100;
-        
-        if (isInView) {
-          console.log(`Skipping scroll to ${targetId} - already in view`);
-          return;
-        }
-      }
-      
-      console.log(`Smart scrolling to ${targetId}`);
-      element.scrollIntoView({
-        behavior: 'smooth',
-        block,
-        inline: 'nearest'
-      });
-    }, delay) as unknown as number;
-  };
-  
-  // Cleanup on unmount
-  useEffect(() => {
-    return () => {
-      if (scrollTimeoutRef.current) {
-        clearTimeout(scrollTimeoutRef.current);
-      }
-    };
-  }, []);
-  
-  return { smartScroll };
-};
 
-const extractKeyInsight = (output: string, stepId: number): string | null => {
-  if (stepId === 2) { // Problem validation
-    // Look specifically for "High Priority Pain Points" under Severity Assessment
-    const match = output.match(/#### Severity Assessment[\s\S]*?- High Priority Pain Points[^\n]*\n\s*- (.+?)(?:\n|$)/i);
-    if (match) return match[1].trim().substring(0, 100) + '...';
-    
-    // Fallback: look for any bullet under "High Priority Pain Points"
-    const fallback = output.match(/High Priority Pain Points[^\n]*\n\s*- (.+?)(?:\n|$)/i);
-    return fallback ? fallback[1].trim().substring(0, 100) + '...' : null;
-  } else if (stepId === 6) { // Concept validation
-    // Look specifically for "What Resonated Most" section
-    const match = output.match(/### What Resonated Most[^\n]*\n[\s\S]*?[-•*]\s*(.+?)(?:\n|$)/i);
-    if (match) return match[1].trim().substring(0, 100) + '...';
-    
-    // Fallback: look for any bullet under resonated/insights
-    const fallback = output.match(/(?:resonated|insights)[\s\S]*?[-•*]\s*(.+?)(?:\n|$)/i);
-    return fallback ? fallback[1].trim().substring(0, 100) + '...' : null;
-  }
-  return null;
+    setTimeout(() => {
+      const element = document.getElementById(targetId);
+      if (element) {
+        element.scrollIntoView({ 
+          behavior: 'smooth', 
+          block,
+          inline: 'nearest'
+        });
+      }
+    }, delay);
+  };
+
+  return { smartScroll };
 };
 
 // Initial step definitions - will be updated by API stream
@@ -179,6 +120,12 @@ function App() {
   const [finalPrfaq, setFinalPrfaq] = useState<string | null>(null);
   const [finalMlpPlan, setFinalMlpPlan] = useState<string | null>(null);
   const [generalError, setGeneralError] = useState<string | null>(null);
+
+  // Add new state for PR versions and research artifacts
+  const [prVersions, setPRVersions] = useState<PRVersions>({});
+  const [researchArtifacts, setResearchArtifacts] = useState<ResearchArtifacts>({});
+  const [resultId, setResultId] = useState<string | null>(null);
+  const [viewMode, setViewMode] = useState<'input' | 'processing' | 'results'>('input');
 
   // Track if we're auto-submitting from landing page
   const [isAutoSubmitting, setIsAutoSubmitting] = useState(false);
@@ -298,6 +245,11 @@ function App() {
     setShowFinalTab(false);
     setShowNotification(false);
     setLastCompletedStepId(null);
+    // Reset new state variables
+    setPRVersions({});
+    setResearchArtifacts({});
+    setResultId(null);
+    setViewMode('input');
     // Optionally, close all accordions or open the first one
     // setStepsData(prev => prev.map(s => s.id === 1 ? { ...s, isActive: true } : { ...s, isActive: false }));
   };
@@ -360,11 +312,13 @@ function App() {
     logToStorage('info', '📝 HANDLE FORM SUBMIT CALLED', { ideaLength: idea.length });
     resetState();
     setAppStateWithLogging('processing'); // Set processing state
+    setViewMode('processing'); // Set view mode to processing
     setProductIdea(idea);
     setOriginalProductIdea(idea);
     setAnalysisPhase('analyzing');
     setIsProcessing(true); // Set processing immediately for UI feedback
-    setProgress(5); // Set initial progress for visual feedback
+    setProgress(2); // Set initial progress for visual feedback (reduced from 5% to 2%)
+    setCurrentStepText('PM analyzing concept...'); // Set immediate feedback message
 
     try {
       // Step 0: Analyze Product Idea
@@ -390,7 +344,7 @@ function App() {
       setProductAnalysis(analysisResult.analysis);
       setAnalysisPhase('reviewing');
       setIsProcessing(false); // Stop processing when analysis complete
-      setProgress(15); // Set progress to 15% when analysis is done
+      setProgress(8); // Set progress to 8% when analysis is done (reduced from 15% to 8%)
       setCurrentStepText('Review your product analysis below.');
       
     } catch (error) {
@@ -416,7 +370,7 @@ function App() {
     setIsRefiningAnalysis(true);
     setCurrentStepText('Refining analysis...');
     setIsProcessing(true); // Show global processing state
-    setProgress(10); // Show some progress during refinement
+    setProgress(5); // Show some progress during refinement (keeping this at 5% as intermediate)
     
     try {
       const refineResponse = await fetch('/api/refine_analysis', {
@@ -443,7 +397,7 @@ function App() {
 
       setProductAnalysis(refineResult.analysis);
       setCurrentStepText('Analysis refined successfully! Review the update below.');
-      setProgress(15); // Reset to analysis complete state
+      setProgress(8); // Reset to analysis complete state (reduced from 15% to 8%)
       
     } catch (error) {
       console.error('Analysis refinement error:', error);
@@ -459,7 +413,7 @@ function App() {
     setIsProcessing(true);
     setGeneralError(null);
     setCurrentStepText('Initializing process...');
-    setProgress(15); // Start from 15% since analysis is complete
+    setProgress(8); // Start from 8% since analysis is complete (reduced from 15% to 8%)
     
     // Set first step as active and its input as the (possibly enriched) product idea
     setStepsData(initialStepsData.map(s => ({ ...s, status: 'pending', isActive: s.id === 1, input: s.id === 1 ? inputIdea : null })));
@@ -551,11 +505,8 @@ function App() {
               }
 
               if (eventData.progress !== undefined) {
-                // Adjust progress to account for analysis phase (15-100% for main workflow)
-                const adjustedProgress = 15 + (eventData.progress * 0.85);
-                
-                // Cap at 99% to prevent showing 100% before final completion
-                const cappedProgress = Math.min(Math.round(adjustedProgress), 99);
+                // Backend now handles full progress range (8-100%), just cap at 99%
+                const cappedProgress = Math.min(Math.round(eventData.progress), 99);
                 setProgress(cappedProgress);
               }
 
@@ -582,11 +533,6 @@ function App() {
                     if (eventData.input) updatedStep.input = eventData.input;
                     if (eventData.output) {
                       updatedStep.output = eventData.output;
-                      // Extract key insights for research steps
-                      if (eventData.status === 'completed') {
-                        const insight = extractKeyInsight(eventData.output, stepId);
-                        if (insight) updatedStep.keyInsight = insight;
-                      }
                     }
                     if (eventData.status === 'completed') updatedStep.isActive = false;
                     return { ...s, ...updatedStep };
@@ -599,6 +545,113 @@ function App() {
                       completedStepId: stepId,
                       completedStepName: initialStepsData.find(s => s.id === stepId)?.name
                     });
+                    
+                    // Capture PR versions and research artifacts
+                    if (eventData.output) {
+                      switch (stepId) {
+                        case 1:
+                          setResearchArtifacts(prev => ({ ...prev, marketResearch: eventData.output }));
+                          logToStorage('info', '📊 CAPTURED MARKET RESEARCH', { length: eventData.output.length });
+                          break;
+                        case 2:
+                          setResearchArtifacts(prev => ({ ...prev, problemValidation: eventData.output }));
+                          logToStorage('info', '🔍 CAPTURED PROBLEM VALIDATION', { length: eventData.output.length });
+                          break;
+                        case 3:
+                          setPRVersions(prev => ({ ...prev, v1_draft: eventData.output }));
+                          logToStorage('info', '📝 CAPTURED PR V1 DRAFT', { length: eventData.output.length });
+                          break;
+                        case 4:
+                          setPRVersions(prev => ({ ...prev, v2_refined: eventData.output }));
+                          logToStorage('info', '📝 CAPTURED PR V2 REFINED', { length: eventData.output.length });
+                          break;
+                        case 5:
+                          // Step 5 is Internal FAQ, not concept validation
+                          // No PR version or research artifact to capture from this step
+                          break;
+                        case 6:
+                          setResearchArtifacts(prev => ({ ...prev, conceptValidation: eventData.output }));
+                          logToStorage('info', '✅ CAPTURED CONCEPT VALIDATION', { length: eventData.output.length });
+                          break;
+                        case 7:
+                          // Extract press release from Solution Refinement output
+                          const solutionRefinementContent = eventData.output;
+                          // Try multiple patterns to extract the updated press release
+                          let prUpdateMatch = solutionRefinementContent.match(/### Updated Press Release[\s\S]*?(?=###|$)/);
+                          if (!prUpdateMatch) {
+                            // Try alternative patterns
+                            prUpdateMatch = solutionRefinementContent.match(/##\s*Updated Press Release[\s\S]*?(?=##|$)/);
+                          }
+                          if (!prUpdateMatch) {
+                            // Try more flexible pattern
+                            prUpdateMatch = solutionRefinementContent.match(/Updated Press Release[\s\S]*?(?=###|##|What We Intentionally|$)/);
+                          }
+                          
+                          if (prUpdateMatch) {
+                            // Clean up the extracted content by removing the header
+                            let cleanedPR = prUpdateMatch[0]
+                              .replace(/^#{1,3}\s*Updated Press Release\s*\n?/i, '')
+                              .trim();
+                            
+                            setPRVersions(prev => ({ ...prev, v3_validated: cleanedPR }));
+                            logToStorage('info', '📝 CAPTURED PR V3 VALIDATED FROM SOLUTION REFINEMENT', { 
+                              solutionRefinementLength: solutionRefinementContent.length,
+                              extractedLength: cleanedPR.length,
+                              pattern: 'found'
+                            });
+                          } else {
+                            logToStorage('warn', '⚠️ COULD NOT EXTRACT UPDATED PR FROM SOLUTION REFINEMENT', { 
+                              solutionRefinementLength: solutionRefinementContent.length,
+                              searchPatterns: ['### Updated Press Release', '## Updated Press Release', 'Updated Press Release'],
+                              preview: solutionRefinementContent.substring(0, 500)
+                            });
+                            // Fallback: use the entire solution refinement output as v3_validated
+                            setPRVersions(prev => ({ ...prev, v3_validated: solutionRefinementContent }));
+                            logToStorage('info', '📝 USING FULL SOLUTION REFINEMENT AS V3 VALIDATED (FALLBACK)', { 
+                              solutionRefinementLength: solutionRefinementContent.length
+                            });
+                          }
+                          break;
+                        case 8:
+                          // Step 8 is External FAQ, not a PR version
+                          // No PR version to capture from this step
+                          break;
+                        case 9:
+                          // Extract press release from PRFAQ document
+                          const prfaqContent = eventData.output;
+                          // Try multiple patterns to extract press release
+                          let prMatch = prfaqContent.match(/## Press Release[\s\S]*?(?=##|$)/);
+                          if (!prMatch) {
+                            // Try alternative patterns
+                            prMatch = prfaqContent.match(/Section 2: Press Release[\s\S]*?(?=Section \d+|##|$)/);
+                          }
+                          if (!prMatch) {
+                            // Try more flexible pattern
+                            prMatch = prfaqContent.match(/Press Release[\s\S]*?(?=##|Section \d+|Customer FAQ|Internal FAQ|$)/);
+                          }
+                          
+                          if (prMatch) {
+                            setPRVersions(prev => ({ ...prev, v4_final: prMatch[0] }));
+                            logToStorage('info', '📝 CAPTURED PR V4 FINAL FROM PRFAQ', { 
+                              prfaqLength: prfaqContent.length,
+                              extractedLength: prMatch[0].length,
+                              pattern: 'found'
+                            });
+                          } else {
+                            logToStorage('warn', '⚠️ COULD NOT EXTRACT PR FROM PRFAQ', { 
+                              prfaqLength: prfaqContent.length,
+                              searchPatterns: ['## Press Release', 'Section 2: Press Release', 'Press Release'],
+                              preview: prfaqContent.substring(0, 500)
+                            });
+                            // Fallback: use the entire PRFAQ as v4_final
+                            setPRVersions(prev => ({ ...prev, v4_final: prfaqContent }));
+                            logToStorage('info', '📝 USING FULL PRFAQ AS V4 FINAL (FALLBACK)', { 
+                              prfaqLength: prfaqContent.length
+                            });
+                          }
+                          break;
+                      }
+                    }
                     
                     const currentIndex = initialStepsData.findIndex(s => s.id === stepId);
                     if (currentIndex !== -1 && currentIndex < initialStepsData.length - 1) {
@@ -621,6 +674,17 @@ function App() {
                 
                 // Smooth transition to 100% on true completion
                 setProgress(100);
+                
+                // Generate result ID and switch to results view
+                const newResultId = Date.now().toString(36) + Math.random().toString(36).substr(2);
+                setResultId(newResultId);
+                setViewMode('results');
+                
+                logToStorage('info', '🎉 PROCESSING COMPLETE - SWITCHING TO RESULTS VIEW', {
+                  resultId: newResultId,
+                  prVersionsCount: Object.keys(prVersions).length,
+                  researchArtifactsCount: Object.keys(researchArtifacts).length
+                });
                 
                 setShowFinalTab(true);
                 // Delay notification for smoother experience
@@ -673,62 +737,6 @@ function App() {
     }
   }, [analysisPhase, isProcessing]);
 
-  // Unified scroll management with smart behavior
-  useEffect(() => {
-    // Auto-scroll to analysis section when it appears
-    if (analysisPhase === 'reviewing') {
-      smartScroll('analysis-review-section', { 
-        block: 'center', 
-        delay: 100, 
-        priority: 'high' 
-      });
-    }
-  }, [analysisPhase, smartScroll]);
-
-  useEffect(() => {
-    // Auto-scroll to Working Backwards section when it appears
-    if (showWorkingBackwards) {
-      smartScroll('steps-display-section', { 
-        block: 'start', 
-        delay: 200, 
-        priority: 'medium' 
-      });
-    }
-  }, [showWorkingBackwards, smartScroll]);
-
-  useEffect(() => {
-    // Smart scroll for completed steps
-    const newlyCompletedSteps = stepsData.filter(s => s.status === 'completed');
-    
-    if (newlyCompletedSteps.length > 0) {
-      const latestCompleted = newlyCompletedSteps[newlyCompletedSteps.length - 1];
-      
-      // Only scroll if this is a newly completed step and we're on the process tab
-      if (latestCompleted.id !== lastCompletedStepId && activeTab === 'process') {
-        setLastCompletedStepId(latestCompleted.id);
-        
-        // Use smart scroll with conservative settings
-        smartScroll(`step-${latestCompleted.id}`, {
-          block: 'nearest',
-          delay: 500,
-          priority: 'low'
-        });
-      }
-    }
-  }, [stepsData, lastCompletedStepId, activeTab, smartScroll]);
-
-  useEffect(() => {
-    // Scroll to top when switching to Documents tab (only if user initiated)
-    if (activeTab === 'final' && showFinalTab) {
-      smartScroll('steps-display-section', { 
-        block: 'start', 
-        delay: 100, 
-        forceScroll: true, 
-        priority: 'medium' 
-      });
-    }
-  }, [activeTab, showFinalTab, smartScroll]);
-
   // Auto-dismiss notification banner
   useEffect(() => {
     if (showNotification) {
@@ -746,6 +754,15 @@ function App() {
       setShowNotification(false);
     }
   }, [activeTab]);
+
+  // Completion auto-scroll: scroll to top when results are ready
+  useEffect(() => {
+    if (viewMode === 'results') {
+      setTimeout(() => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }, 100);
+    }
+  }, [viewMode]);
 
   const generateReportText = () => {
     let report = `Product Concept Evaluation Report\n`;
@@ -883,312 +900,502 @@ function App() {
       } />
       <Route path="/app" element={
         <div className="min-h-screen bg-gray-50 text-gray-900">
-          <div className="flex flex-col items-center p-4 md:p-8">
-            <header className="w-full max-w-6xl mb-12 text-center">
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4 leading-tight">
-                <span className="text-black">
-                  Working Backwards AI
-                </span>
-              </h1>
-              
-              <p className="subheadline">
-                Turn product ideas into C-Suite ready PRFAQs in 3 minutes.<br />Powered by 10 specialized AI agents.
-              </p>
-            </header>
-
-            {generalError && (
-              <div className="w-full max-w-6xl mb-4 p-4 bg-red-50 border border-red-200 rounded-xl text-center">
-                <h3 className="text-xl font-semibold text-red-700 mb-2">An Error Occurred</h3>
-                <p className="text-red-600 whitespace-pre-wrap">{generalError}</p>
+          {viewMode === 'input' && (
+            <div className="flex flex-col items-center p-4 md:p-8">
+              <header className="w-full max-w-6xl mb-12 text-center">
+                <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight tracking-tight text-gray-900">
+                  ChatPRFAQ
+                </h1>
                 
-                <div className="mt-4 flex flex-col sm:flex-row gap-3 justify-center">
-                  <button 
-                    onClick={resetState} 
-                    className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg transition-colors"
-                  >
-                    Try Again / Reset
-                  </button>
-                  
-                  {canResumeFromFailure && savedProgress && (
-                    <button 
-                      onClick={resumeFromSavedProgress}
-                      className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors"
-                    >
-                      Resume from Step {savedProgress.stepsData.filter((s: StepData) => s.status === 'completed').length + 1}
-                    </button>
-                  )}
-                </div>
-              </div>
-            )}
-
-            {/* Recovery Banner - Show when saved progress is available but no error */}
-            {canResumeFromFailure && savedProgress && !generalError && !isProcessing && (
-              <div className="w-full max-w-6xl mb-4 p-4 bg-blue-50 border border-blue-200 rounded-xl text-center">
-                <h3 className="text-xl font-semibold text-blue-700 mb-2">Previous Session Found</h3>
-                <p className="text-blue-600 mb-3">
-                  We found a previous session with {savedProgress.stepsData.filter((s: StepData) => s.status === 'completed').length} completed steps. 
-                  Would you like to resume where you left off?
+                <p className="text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed">
+                  Turn product ideas into C-Suite ready PRFAQs in 3 minutes.
+                  <br />
+                  <span className="text-gray-600">Powered by 10 specialized AI agents.</span>
                 </p>
-                
-                <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                  <button 
-                    onClick={resumeFromSavedProgress}
-                    className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors"
-                  >
-                    Resume Previous Session
-                  </button>
-                  
-                  <button 
-                    onClick={clearSavedProgress}
-                    className="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white font-semibold rounded-lg transition-colors"
-                  >
-                    Start Fresh
-                  </button>
-                </div>
-              </div>
-            )}
+              </header>
 
-            {/* Debug Panel - Toggle with Ctrl+Shift+D */}
-            {showDebugPanel && (
-              <div className="fixed top-4 right-4 bg-gray-900 text-white p-4 rounded-lg shadow-lg z-50 max-w-sm">
-                <div className="flex justify-between items-center mb-3">
-                  <h3 className="font-semibold">Debug Panel</h3>
-                  <button 
-                    onClick={() => setShowDebugPanel(false)}
-                    className="text-gray-400 hover:text-white"
-                  >
-                    ✕
-                  </button>
-                </div>
-                
-                <div className="space-y-2 text-sm">
-                  <p className="text-gray-300">Logs are automatically saved to localStorage</p>
-                  
-                  <div className="flex flex-col gap-2">
-                    <button 
-                      onClick={clearDebugLogs}
-                      className="px-3 py-1 bg-red-600 hover:bg-red-700 rounded text-xs"
-                    >
-                      Clear Console & Logs
-                    </button>
-                    
-                    <button 
-                      onClick={downloadDebugLogs}
-                      className="px-3 py-1 bg-blue-600 hover:bg-blue-700 rounded text-xs"
-                    >
-                      Download Debug Logs
-                    </button>
-                    
-                    <div className="text-xs text-gray-400 mt-2">
-                      Logs persist across page reloads.<br/>
-                      Press Ctrl+Shift+D to toggle this panel.
+              {generalError && (
+                <div className="w-full max-w-6xl mb-6 p-6 bg-red-50 border border-red-100 rounded-2xl">
+                  <div className="flex items-start gap-4">
+                    <div className="w-10 h-10 bg-red-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                      <svg className="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="text-lg font-semibold text-red-900 mb-1">An Error Occurred</h3>
+                      <p className="text-red-700 whitespace-pre-wrap text-sm">{generalError}</p>
+                      
+                      <div className="mt-4 flex flex-col sm:flex-row gap-3">
+                        <button 
+                          onClick={resetState} 
+                          className="px-6 py-2.5 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg transition-all duration-200 hover:shadow-md"
+                        >
+                          Try Again
+                        </button>
+                        
+                        {canResumeFromFailure && savedProgress && (
+                          <button 
+                            onClick={resumeFromSavedProgress}
+                            className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-all duration-200 hover:shadow-md"
+                          >
+                            Resume from Step {savedProgress.stepsData.filter((s: StepData) => s.status === 'completed').length + 1}
+                          </button>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            )}
+              )}
 
-            <main className="w-full max-w-6xl space-y-8">
-              <section id="product-idea-section" className="py-12 md:py-16">
-                <div className="bg-white rounded-2xl p-8 border border-gray-100">
-                  <h2 className="text-2xl font-semibold text-gray-900 mb-6">Describe your product idea</h2>
-                  <ProductIdeaForm 
-                    onSubmit={handleFormSubmit} 
-                    isProcessing={isProcessing}
-                    initialValue={isAutoSubmitting ? productIdea : undefined}
-                  />
+              {/* Recovery Banner - Show when saved progress is available but no error */}
+              {canResumeFromFailure && savedProgress && !generalError && !isProcessing && (
+                <div className="w-full max-w-6xl mb-6 p-6 bg-blue-50 border border-blue-100 rounded-2xl">
+                  <div className="flex items-start gap-4">
+                    <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                      <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="text-lg font-semibold text-blue-900 mb-1">Previous Session Found</h3>
+                      <p className="text-blue-700 text-sm">
+                        We found a previous session with {savedProgress.stepsData.filter((s: StepData) => s.status === 'completed').length} completed steps. 
+                        Would you like to resume where you left off?
+                      </p>
+                      
+                      <div className="mt-4 flex flex-col sm:flex-row gap-3">
+                        <button 
+                          onClick={resumeFromSavedProgress}
+                          className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-all duration-200 hover:shadow-md"
+                        >
+                          Resume Previous Session
+                        </button>
+                        
+                        <button 
+                          onClick={clearSavedProgress}
+                          className="px-6 py-2.5 bg-white hover:bg-gray-50 text-gray-700 border border-gray-200 font-medium rounded-lg transition-all duration-200"
+                        >
+                          Start Fresh
+                        </button>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-              </section>
+              )}
 
-              {/* Product Analysis Review Section */}
-              {analysisPhase === 'reviewing' && productAnalysis && (
-                <section id="analysis-review-section" className="py-12 md:py-16">
-                  <div className="bg-white rounded-2xl p-8 border border-gray-100">
-                    <ProductAnalysisReview
-                      productIdea={originalProductIdea}
-                      analysis={productAnalysis}
-                      onConfirm={handleAnalysisConfirm}
-                      onRefine={handleAnalysisRefine}
-                      isRefining={isRefiningAnalysis}
+              <main className="w-full max-w-6xl space-y-8">
+                <section id="product-idea-section" className="py-8 md:py-12">
+                  <div className="bg-white rounded-2xl p-8 md:p-10 border border-gray-100 shadow-sm hover:shadow-md transition-shadow duration-300">
+                    <h2 className="text-2xl font-semibold text-gray-900 mb-2">Describe your product idea</h2>
+                    <p className="text-gray-600 mb-6">What problem does your product solve? Who is it for?</p>
+                    <ProductIdeaForm 
+                      onSubmit={handleFormSubmit} 
+                      isProcessing={isProcessing}
+                      initialValue={isAutoSubmitting ? productIdea : undefined}
                     />
                   </div>
                 </section>
+              </main>
+              
+              <footer className="w-full max-w-6xl mt-16 pt-8 border-t border-gray-100 text-center">
+                <p className="text-gray-500 text-sm">
+                  &copy; {new Date().getFullYear()} Work Back AI LLC. All rights reserved.
+                </p>
+              </footer>
+            </div>
+          )}
+          
+          {viewMode === 'processing' && (
+            <div className="flex flex-col items-center p-4 md:p-8">
+              <header className="w-full max-w-6xl mb-6 text-center relative">
+                <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4 leading-tight">
+                  <span className="text-black">
+                    ChatPRFAQ
+                  </span>
+                </h1>
+                
+                <p className="subheadline">
+                  Turn product ideas into C-Suite ready PRFAQs in 3 minutes.<br />Powered by 10 specialized AI agents.
+                </p>
+                
+                {/* Subtle exit button in top-right corner */}
+                <button
+                  onClick={() => {
+                    resetState();
+                    navigate('/app');
+                  }}
+                  className="absolute top-0 right-0 px-3 py-1.5 text-sm text-gray-500 hover:text-gray-700 hover:bg-gray-50 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300"
+                >
+                  New Idea
+                </button>
+              </header>
+
+              {generalError && (
+                <div className="w-full max-w-6xl mb-4 p-4 bg-red-50 border border-red-200 rounded-xl text-center">
+                  <h3 className="text-xl font-semibold text-red-700 mb-2">An Error Occurred</h3>
+                  <p className="text-red-600 whitespace-pre-wrap">{generalError}</p>
+                  
+                  <div className="mt-4 flex flex-col sm:flex-row gap-3 justify-center">
+                    <button 
+                      onClick={resetState} 
+                      className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg transition-colors"
+                    >
+                      Try Again / Reset
+                    </button>
+                  </div>
+                </div>
               )}
 
-              {(showWorkingBackwards || analysisPhase === 'complete') && (
-              <section id="steps-display-section" className="py-12 md:py-16">
-                <div className="bg-white rounded-2xl p-8 border border-gray-100">
-                  <h2 className="text-2xl font-semibold text-gray-900 mb-6">Working Backwards Process</h2>
-                  
-                  {/* Progress Section - Always visible above tabs */}
-                  {(isProcessing || progress > 0 || stepsData.some(s => s.status !== 'pending') || !!generalError || analysisPhase === 'analyzing') && (
-                    <div className="mb-8 p-4 bg-gray-50 rounded-xl border border-gray-200">
-                      <div className="flex items-center justify-between mb-3">
-                        <div className="flex items-center gap-3">
-                          {isProcessing || analysisPhase === 'analyzing' ? (
-                            <div className="flex items-center justify-center w-6 h-6">
-                              <svg className="animate-spin h-5 w-5 text-black" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                              </svg>
+              <main className="w-full max-w-6xl space-y-8">
+                {/* Standalone Progress Section - Show during analysis phase */}
+                {analysisPhase === 'analyzing' && (
+                  <section className="py-12 md:py-16">
+                    <div className="bg-white rounded-2xl p-8 border border-gray-100">
+                      <h2 className="text-2xl font-semibold text-gray-900 mb-6">Working Backwards Process</h2>
+                      
+                      {/* Progress Section */}
+                      <div className="mb-8 bg-gradient-to-br from-gray-50 to-white rounded-2xl p-6 border border-gray-100 shadow-sm">
+                        {/* Status Row */}
+                        <div className="flex items-center justify-between mb-4">
+                          <div className="flex items-center gap-3">
+                            {/* Animated status indicator */}
+                            <div className="relative">
+                              <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
+                                <div className="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+                              </div>
+                              {/* Pulse effect when processing */}
+                              <div className="absolute inset-0 bg-blue-400 rounded-xl animate-ping opacity-20" />
                             </div>
-                          ) : progress === 100 ? (
-                            <div className="flex items-center justify-center w-6 h-6">
-                              <svg className="h-5 w-5 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                              </svg>
+                            
+                            <div>
+                              <p className="text-sm font-medium text-gray-900">{currentStepText}</p>
+                              <p className="text-xs text-gray-500 mt-0.5">
+                                Analyzing product concept...
+                              </p>
                             </div>
-                          ) : (
-                            <div className="flex items-center justify-center w-6 h-6">
-                              <div className="w-3 h-3 bg-black rounded-full"></div>
-                            </div>
-                          )}
-                          <span className="text-gray-700 font-medium">{currentStepText}</span>
+                          </div>
+                          
+                          {/* Percentage with modern mono font */}
+                          <div className="text-2xl font-mono font-semibold text-gray-900">
+                            {Math.round(progress)}%
+                          </div>
                         </div>
-                        <span className="text-sm text-gray-500 font-mono">{Math.round(progress)}%</span>
-                      </div>
-                      
-                      {/* Main progress bar */}
-                      <div className="w-full bg-gray-200 rounded-full h-0.5 mb-3">
-                        <div 
-                          className="bg-black h-0.5 rounded-full transition-all duration-500 ease-out"
-                          style={{ width: `${Math.round(progress)}%` }}
-                        ></div>
-                      </div>
-                      
-                      {/* Step indicators - NEW */}
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs text-gray-500">
-                          Step {stepsData.filter(s => s.status !== 'pending').length} of {stepsData.length}
-                        </span>
-                        <div className="flex space-x-1.5">
+                        
+                        {/* Premium progress bar */}
+                        <div className="relative h-2 bg-gray-100 rounded-full overflow-hidden">
+                          <div 
+                            className="absolute inset-y-0 left-0 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full transition-all duration-700 ease-out"
+                            style={{ width: `${Math.round(progress)}%` }}
+                          >
+                            {/* Shimmer effect */}
+                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-shimmer" />
+                          </div>
+                        </div>
+                        
+                        {/* Step indicators - Linear style */}
+                        <div className="flex items-center justify-between mt-6 relative px-2">
+                          {/* Connecting line */}
+                          <div className="absolute top-2 left-2 right-2 h-px bg-gray-200" />
+                          
                           {stepsData.map((step) => (
-                            <div
-                              key={step.id}
-                              className={`group relative`}
-                            >
-                              <div
-                                className={`w-2 h-2 rounded-full transition-all ${
-                                  step.status === 'completed' ? 'bg-black' :
-                                  step.status === 'processing' ? 'bg-black animate-pulse' :
-                                  step.status === 'error' ? 'bg-red-500' :
-                                  'bg-gray-300'
-                                }`}
-                              />
-                              {/* Tooltip on hover */}
-                              <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 text-xs text-white bg-gray-800 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">
-                                {step.name}
+                            <div key={step.id} className="relative group">
+                              {/* Step dot */}
+                              <div className="w-4 h-4 rounded-full border-2 transition-all duration-300 cursor-pointer relative z-10 bg-white border-gray-300 hover:border-gray-400" />
+                              
+                              {/* Hover tooltip */}
+                              <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-20">
+                                <div className="bg-gray-900 text-white text-xs px-3 py-1.5 rounded-lg whitespace-nowrap">
+                                  {step.name}
+                                  <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-gray-900" />
+                                </div>
                               </div>
                             </div>
                           ))}
                         </div>
                       </div>
                     </div>
-                  )}
+                  </section>
+                )}
 
-                  {/* Tab Navigation - Show when final tab is available */}
-                  {showFinalTab && (
-                    <div className="flex border-b border-gray-200 mb-6 -mx-2 md:mx-0">
-                      <button
-                        onClick={() => setActiveTab('final')}
-                        className={`flex-1 md:flex-none md:px-6 py-3 px-4 font-medium transition-colors ${
-                          activeTab === 'final' 
-                            ? 'text-black border-b-2 border-black' 
-                            : 'text-gray-500 hover:text-gray-700'
-                        }`}
-                      >
-                        Documents
-                      </button>
-                      <button
-                        onClick={() => setActiveTab('process')}
-                        className={`flex-1 md:flex-none md:px-6 py-3 px-4 font-medium transition-colors ${
-                          activeTab === 'process' 
-                            ? 'text-black border-b-2 border-black' 
-                            : 'text-gray-500 hover:text-gray-700'
-                        }`}
-                      >
-                        Process
-                      </button>
-                    </div>
-                  )}
-
-                  {/* Conditional Content Rendering */}
-                  {activeTab === 'process' || !showFinalTab ? (
-                    <StepsDisplay 
-                      steps={stepsData} 
-                      onToggleStep={handleToggleStep} 
-                      isVisible={stepsData.some(s => s.status !== 'pending') || isProcessing || !!generalError}
-                    />
-                  ) : (
-                    /* Final Documents Display */
-                    finalPrfaq || finalMlpPlan ? (
-                      <ModernResults 
-                        finalPrfaq={finalPrfaq || ''}
-                        finalMlpPlan={finalMlpPlan || ''}
-                        productIdea={productIdea}
-                        stepsData={stepsData}
+                {/* Product Analysis Review Section */}
+                {analysisPhase === 'reviewing' && productAnalysis && (
+                  <section id="analysis-review-section" className="py-8 md:py-12">
+                    <div className="bg-white rounded-2xl p-8 md:p-10 border border-gray-100 shadow-sm hover:shadow-md transition-shadow duration-300">
+                      <ProductAnalysisReview
+                        productIdea={originalProductIdea}
+                        analysis={productAnalysis}
+                        onConfirm={handleAnalysisConfirm}
+                        onRefine={handleAnalysisRefine}
+                        isRefining={isRefiningAnalysis}
                       />
-                    ) : (
-                      <div className="text-center py-8 text-gray-500">
-                        No documents available yet.
+                    </div>
+                  </section>
+                )}
+
+                {(showWorkingBackwards || analysisPhase === 'complete') && (
+                  <section id="steps-display-section" className="py-8 md:py-12">
+                    <div className="bg-white rounded-2xl p-8 md:p-10 border border-gray-100 shadow-sm hover:shadow-md transition-shadow duration-300">
+                      <h2 className="text-2xl font-semibold text-gray-900 mb-8">Working Backwards Process</h2>
+                      
+                      {/* Progress Section - Always visible above tabs */}
+                      {(isProcessing || progress > 0 || stepsData.some(s => s.status !== 'pending') || !!generalError || analysisPhase === 'analyzing') && (
+                        <div className="mb-8 bg-gradient-to-br from-gray-50 to-white rounded-2xl p-6 border border-gray-100 shadow-sm">
+                          {/* Status Row */}
+                          <div className="flex items-center justify-between mb-4">
+                            <div className="flex items-center gap-3">
+                              {/* Animated status indicator */}
+                              <div className="relative">
+                                <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
+                                  {isProcessing || analysisPhase === 'analyzing' ? (
+                                    <div className="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+                                  ) : progress === 100 ? (
+                                    <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                    </svg>
+                                  ) : (
+                                    <div className="w-3 h-3 bg-blue-600 rounded-full" />
+                                  )}
+                                </div>
+                                {/* Pulse effect when processing */}
+                                {(isProcessing || analysisPhase === 'analyzing') && (
+                                  <div className="absolute inset-0 bg-blue-400 rounded-xl animate-ping opacity-20" />
+                                )}
+                              </div>
+                              
+                              <div>
+                                <p className="text-sm font-medium text-gray-900">{currentStepText}</p>
+                                <p className="text-xs text-gray-500 mt-0.5">
+                                  Step {stepsData.filter(s => s.status !== 'pending').length} of {stepsData.length}
+                                </p>
+                              </div>
+                            </div>
+                            
+                            {/* Percentage with modern mono font */}
+                            <div className="text-2xl font-mono font-semibold text-gray-900">
+                              {Math.round(progress)}%
+                            </div>
+                          </div>
+                          
+                          {/* Premium progress bar */}
+                          <div className="relative h-2 bg-gray-100 rounded-full overflow-hidden">
+                            <div 
+                              className="absolute inset-y-0 left-0 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full transition-all duration-700 ease-out"
+                              style={{ width: `${Math.round(progress)}%` }}
+                            >
+                              {/* Shimmer effect */}
+                              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-shimmer" />
+                            </div>
+                          </div>
+                          
+                          {/* Step indicators - Linear style */}
+                          <div className="flex items-center justify-between mt-6 relative px-2">
+                            {/* Connecting line */}
+                            <div className="absolute top-2 left-2 right-2 h-px bg-gray-200" />
+                            
+                            {stepsData.map((step) => (
+                              <div key={step.id} className="relative group">
+                                {/* Step dot */}
+                                <div className={`
+                                  w-4 h-4 rounded-full border-2 transition-all duration-300 cursor-pointer relative z-10 bg-white
+                                  ${step.status === 'completed' ? 'bg-blue-500 border-blue-500 scale-110' :
+                                    step.status === 'processing' ? 'border-blue-500 animate-pulse' :
+                                    step.status === 'error' ? 'bg-red-500 border-red-500' :
+                                    'border-gray-300 hover:border-gray-400'}
+                                `} />
+                                
+                                {/* Hover tooltip */}
+                                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-20">
+                                  <div className="bg-gray-900 text-white text-xs px-3 py-1.5 rounded-lg whitespace-nowrap">
+                                    {step.name}
+                                    <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-gray-900" />
+                                  </div>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Tab Navigation - Show when final tab is available */}
+                      {showFinalTab && (
+                        <div className="relative bg-gray-50 p-1 rounded-xl mb-6">
+                          <div className="relative flex gap-1">
+                            {/* Sliding background pill */}
+                            <div 
+                              className="absolute inset-y-0 bg-white rounded-lg shadow-sm transition-all duration-300 ease-out"
+                              style={{
+                                left: activeTab === 'final' ? '0%' : '50%',
+                                width: 'calc(50% - 4px)'
+                              }}
+                            />
+                            
+                            {/* Tab buttons */}
+                            <button
+                              onClick={() => setActiveTab('final')}
+                              className={`relative flex-1 px-6 py-3 text-sm font-medium rounded-lg transition-all duration-200 z-10 ${
+                                activeTab === 'final' 
+                                  ? 'text-gray-900' 
+                                  : 'text-gray-500 hover:text-gray-700'
+                              }`}
+                            >
+                              Documents
+                            </button>
+                            <button
+                              onClick={() => setActiveTab('process')}
+                              className={`relative flex-1 px-6 py-3 text-sm font-medium rounded-lg transition-all duration-200 z-10 ${
+                                activeTab === 'process' 
+                                  ? 'text-gray-900' 
+                                  : 'text-gray-500 hover:text-gray-700'
+                              }`}
+                            >
+                              Process
+                            </button>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Conditional Content Rendering */}
+                      {activeTab === 'process' || !showFinalTab ? (
+                        <StepsDisplay 
+                          steps={stepsData} 
+                          onToggleStep={handleToggleStep} 
+                          isVisible={stepsData.some(s => s.status !== 'pending') || isProcessing || !!generalError}
+                        />
+                      ) : (
+                        /* Final Documents Display */
+                        finalPrfaq || finalMlpPlan ? (
+                          <ModernResults 
+                            finalPrfaq={finalPrfaq || ''}
+                            finalMlpPlan={finalMlpPlan || ''}
+                            productIdea={productIdea}
+                            stepsData={stepsData}
+                          />
+                        ) : (
+                          <div className="text-center py-8 text-gray-500">
+                            No documents available yet.
+                          </div>
+                        )
+                      )}
+                    </div>
+                  </section>
+                )}
+
+                {/* Notification Banner - Show when documents complete and still on process tab */}
+                {showNotification && activeTab === 'process' && (
+                  <div className="fixed top-6 right-6 animate-slideIn z-50">
+                    <div className="bg-white rounded-2xl shadow-2xl border border-gray-100 p-6 min-w-[320px]">
+                      <div className="flex items-start gap-4">
+                        <div className="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                          <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                          </svg>
+                        </div>
+                        <div className="flex-1">
+                          <h3 className="font-semibold text-gray-900">Documents Ready</h3>
+                          <p className="text-sm text-gray-600 mt-1">Your PRFAQ and MLP plan are complete</p>
+                          <button 
+                            onClick={() => setActiveTab('final')}
+                            className="text-sm font-medium text-blue-600 hover:text-blue-700 mt-3 transition-colors"
+                          >
+                            View Documents →
+                          </button>
+                        </div>
+                        <button 
+                          onClick={() => setShowNotification(false)}
+                          className="text-gray-400 hover:text-gray-600 transition-colors"
+                        >
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                          </svg>
+                        </button>
                       </div>
-                    )
-                  )}
+                    </div>
+                  </div>
+                )}
+
+                {(finalPrfaq || finalMlpPlan) && !isProcessing && !generalError && (
+                  <div className="flex flex-col sm:flex-row justify-center gap-4 mt-8">
+                    <button 
+                      onClick={resetState} 
+                      className="group flex items-center justify-center px-6 py-3 bg-white hover:bg-gray-50 text-gray-900 border border-gray-200 font-medium rounded-xl transition-all duration-200 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-gray-500/20"
+                    >
+                      <svg className="w-5 h-5 mr-2 transition-transform group-hover:rotate-180 duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                      </svg>
+                      Analyze New Idea
+                    </button>
+                    <button 
+                      onClick={handleExportResults} 
+                      className="group flex items-center justify-center px-6 py-3 bg-gray-900 hover:bg-gray-800 text-white font-medium rounded-xl transition-all duration-200 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-gray-500/20"
+                    >
+                      <svg className="w-5 h-5 mr-2 transition-transform group-hover:translate-y-0.5 duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                      </svg>
+                      Export Report
+                    </button>
+                  </div>
+                )}
+              </main>
+            </div>
+          )}
+          
+          {viewMode === 'results' && (
+            <EnhancedResults
+              finalPrfaq={finalPrfaq || ''}
+              finalMlpPlan={finalMlpPlan || ''}
+              productIdea={productIdea}
+              stepsData={stepsData}
+              prVersions={prVersions}
+              researchArtifacts={researchArtifacts}
+              onNewIdea={() => {
+                resetState();
+                navigate('/app');
+              }}
+            />
+          )}
+
+          {/* Debug Panel - Toggle with Ctrl+Shift+D */}
+          {showDebugPanel && (
+            <div className="fixed top-4 right-4 bg-gray-900 text-white p-5 rounded-2xl shadow-2xl z-50 max-w-sm">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="font-semibold text-lg">Debug Panel</h3>
+                <button 
+                  onClick={() => setShowDebugPanel(false)}
+                  className="text-gray-400 hover:text-white transition-colors p-1 hover:bg-gray-800 rounded-lg"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+              
+              <div className="space-y-3 text-sm">
+                <p className="text-gray-300">Logs are automatically saved to localStorage</p>
+                
+                <div className="flex flex-col gap-2">
+                  <button 
+                    onClick={clearDebugLogs}
+                    className="px-4 py-2 bg-red-600 hover:bg-red-700 rounded-lg text-sm font-medium transition-colors"
+                  >
+                    Clear Console & Logs
+                  </button>
+                  
+                  <button 
+                    onClick={downloadDebugLogs}
+                    className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg text-sm font-medium transition-colors"
+                  >
+                    Download Debug Logs
+                  </button>
+                  
+                  <div className="text-xs text-gray-400 mt-3 pt-3 border-t border-gray-700">
+                    Logs persist across page reloads.<br/>
+                    Press Ctrl+Shift+D to toggle this panel.
+                  </div>
                 </div>
-              </section>
-              )}
-
-              {/* Notification Banner - Show when documents complete and still on process tab */}
-              {showNotification && activeTab === 'process' && (
-                <div className="fixed top-4 left-4 right-4 md:left-1/2 md:right-auto md:transform md:-translate-x-1/2 md:w-auto bg-black text-white px-6 py-3 rounded-lg shadow-lg z-50 flex items-center gap-3">
-                  <span>✓</span>
-                  <span className="hidden sm:inline">Documents ready</span>
-                  <span className="sm:hidden">Ready</span>
-                  <button 
-                    onClick={() => setActiveTab('final')}
-                    className="underline hover:no-underline"
-                  >
-                    <span className="hidden sm:inline">View final output</span>
-                    <span className="sm:hidden">View</span>
-                  </button>
-                  <button 
-                    onClick={() => setShowNotification(false)}
-                    className="ml-2 text-white hover:text-gray-300"
-                  >
-                    ✕
-                  </button>
-                </div>
-              )}
-
-              {(finalPrfaq || finalMlpPlan) && !isProcessing && !generalError && (
-                <div className="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4 mt-8">
-                  <button 
-                    onClick={resetState} 
-                    className="flex items-center justify-center px-6 py-3 bg-white hover:bg-gray-50 text-black border border-gray-300 font-medium rounded-xl transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500"
-                  >
-                    <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                    </svg>
-                    Analyze New Idea
-                  </button>
-                  <button 
-                    onClick={handleExportResults} 
-                    className="flex items-center justify-center px-6 py-3 bg-black hover:bg-gray-800 text-white font-medium rounded-xl transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500"
-                  >
-                    <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                    </svg>
-                    Export Report
-                  </button>
-                </div>
-              )}
-
-            </main>
-
-            <footer className="w-full max-w-6xl mt-12 text-center text-gray-500">
-              <p>&copy; {new Date().getFullYear()} Njenga Vibe Code LLC. All rights reserved.</p>
-            </footer>
-          </div>
+              </div>
+            </div>
+          )}
         </div>
       } />
     </Routes>

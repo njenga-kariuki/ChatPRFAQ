@@ -33,6 +33,39 @@ class PerplexityProcessor:
         else:
             logger.info("PERPLEXITY_API_KEY is properly configured")
     
+    def _calculate_step_progress(self, step_id, sub_increment=0):
+        """
+        Calculate progress percentage for a given step and sub-increment using linear distribution.
+        
+        Progress allocation:
+        - Analysis (Step 0): 0% to 8%
+        - Main workflow (Steps 1-10): 8% to 97% using linear distribution (8.9% per step)
+        
+        Linear distribution creates predictable progression:
+        - Each step represents approximately 8.9% of total progress
+        - Smooth increments that match user expectations
+        - No jarring jumps between phases
+        
+        Args:
+            step_id: The step number (1-10 for main workflow)
+            sub_increment: Additional progress within the step (0-7)
+            
+        Returns:
+            Progress percentage (0-100)
+        """
+        if step_id <= 0:
+            # Analysis phase handling
+            return min(2 + sub_increment, 8)
+        
+        # Simple linear: 8% to 97% across 10 steps = 8.9% per step
+        base_progress = 8 + ((step_id - 1) * 8.9)
+        
+        # Sub-increments scale slightly for better feel within each step
+        step_increment = sub_increment * 1.2
+        
+        # Cap at 97% to ensure we never exceed 99% with safety margins
+        return min(base_progress + step_increment, 97)
+    
     def conduct_initial_market_research(self, product_idea, system_prompt, user_prompt, progress_callback=None):
         """
         Conduct initial market research using Perplexity's Sonar API on raw product idea
@@ -70,7 +103,7 @@ class PerplexityProcessor:
                     "step": 1,
                     "status": "processing",
                     "message": "Market analyst pulling competitive intelligence...",
-                    "progress": 5
+                    "progress": self._calculate_step_progress(1)
                 })
             
             logger.info("Calling Perplexity Sonar API for initial research...")
@@ -107,7 +140,7 @@ class PerplexityProcessor:
                     "step": 1,
                     "status": "completed",
                     "message": "Market research and competitive analysis complete",
-                    "progress": 10.0,  # ~1/10 of total progress
+                    "progress": self._calculate_step_progress(1, 7),
                     "output": research_output
                 })
             

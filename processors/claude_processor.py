@@ -1,5 +1,6 @@
 import logging
 import anthropic
+import httpx
 from config import ANTHROPIC_API_KEY, CLAUDE_MODEL
 
 logger = logging.getLogger(__name__)
@@ -20,7 +21,10 @@ def format_response_summary(text: str, max_length: int = 150) -> str:
 
 class ClaudeProcessor:
     def __init__(self):
-        self.client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
+        self.client = anthropic.Anthropic(
+            api_key=ANTHROPIC_API_KEY,
+            timeout=httpx.Timeout(180.0)  # 3 minute HTTP timeout
+        )
         self.model = CLAUDE_MODEL
         logger.info(f"ClaudeProcessor initialized with model: {self.model}")
         
@@ -88,6 +92,39 @@ class ClaudeProcessor:
         else:
             logger.info("ANTHROPIC_API_KEY is properly configured")
     
+    def _calculate_step_progress(self, step_id, sub_increment=0):
+        """
+        Calculate progress percentage for a given step and sub-increment using linear distribution.
+        
+        Progress allocation:
+        - Analysis (Step 0): 0% to 8%
+        - Main workflow (Steps 1-10): 8% to 97% using linear distribution (8.9% per step)
+        
+        Linear distribution creates predictable progression:
+        - Each step represents approximately 8.9% of total progress
+        - Smooth increments that match user expectations
+        - No jarring jumps between phases
+        
+        Args:
+            step_id: The step number (1-10 for main workflow)
+            sub_increment: Additional progress within the step (0-7)
+            
+        Returns:
+            Progress percentage (0-100)
+        """
+        if step_id <= 0:
+            # Analysis phase handling
+            return min(2 + sub_increment, 8)
+        
+        # Simple linear: 8% to 97% across 10 steps = 8.9% per step
+        base_progress = 8 + ((step_id - 1) * 8.9)
+        
+        # Sub-increments scale slightly for better feel within each step
+        step_increment = sub_increment * 1.2
+        
+        # Cap at 97% to ensure we never exceed 99% with safety margins
+        return min(base_progress + step_increment, 97)
+    
     def generate_response(self, system_prompt, user_prompt, progress_callback=None, step_id=None):
         """
         Generate a response from Claude API
@@ -127,7 +164,7 @@ class ClaudeProcessor:
                         "step": step_id,
                         "status": "processing",
                         "message": messages[0],
-                        "progress": ((step_id - 1) / 10) * 100 + 5 if step_id and step_id > 0 else 5
+                        "progress": self._calculate_step_progress(step_id)
                     })
                     
                     # Set up message progression for team dynamics
@@ -135,12 +172,12 @@ class ClaudeProcessor:
                         import threading
                         for i, msg in enumerate(messages[1:], 1):
                             delay = i * 2.0
-                            progress_increment = 5 + (i * 3)
+                            progress_increment = self._calculate_step_progress(step_id, i)
                             threading.Timer(delay, lambda m=msg, p=progress_increment, sid=step_id: progress_callback({
                                 "step": sid,
                                 "status": "processing", 
                                 "message": m,
-                                "progress": ((sid - 1) / 10) * 100 + p if sid and sid > 0 else p
+                                "progress": p
                             })).start()
             
             logger.info(f"Calling Claude API with model: {self.model}")
@@ -177,7 +214,7 @@ class ClaudeProcessor:
                     "step": step_id,
                     "status": "completed",
                     "message": f"Step {step_id} completed successfully",
-                    "progress": (step_id / 10) * 100 if step_id else 100,
+                    "progress": self._calculate_step_progress(step_id, 7),
                     "output": output
                 })
             

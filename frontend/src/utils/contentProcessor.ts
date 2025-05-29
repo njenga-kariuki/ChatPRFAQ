@@ -7,6 +7,9 @@ export class ContentProcessor {
     // Fix: Preserve headers with colons/semicolons on same line
     { pattern: /^(#{1,6}\s+.*?:)\s*\n+/gm, replacement: '$1\n' },
     
+    // Fix: Ensure bold text with colons stays together (for MLP plan subheaders)
+    { pattern: /^(\*\*[^*]+:\*\*)\s*\n+/gm, replacement: '$1\n' },
+    
     // Normalize spacing: exactly 2 newlines for proper markdown paragraphs
     { pattern: /\n{3,}/g, replacement: '\n\n' },
   ];
