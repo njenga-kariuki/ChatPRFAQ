@@ -80,7 +80,9 @@ FORMATTING ONLY (maintain research quality and methodology):
 - Preserve citation formats - they add credibility
 - Preserve tables - they're valuable for executive review
 - Start directly with research findings (no "Here's my analysis" introductions)
-- End with clean source list if sources are included""",
+- CRITICAL: For all section headers with colons, place the colon INSIDE the bold markers: "**Header:**" not "**Header**":
+- End with complete  source list 
+""",
         "user_prompt": """Based on this product idea:
 
 {input}
@@ -419,13 +421,15 @@ Analyze the press release and market research above, and use your expertise to p
 
 FORMATTING REQUIREMENTS:
 - Each response should be substantive but concise, backed by data and clear reasoning
-- Label each question and answer pair with a number (e.g. "1. **Question:** [text] followed by **Answer:** [text]")
+- Label each question and answer pair with a number (e.g. \"1. **Question:** [text] followed by **Answer:** [text]\")
 - Start directly with questions
 - Use consistent Q/A structure throughout
 - No introductory or concluding meta-text
 - Format section headers as bold text (using **)
 
-Remember: Provide executive-level answers with Amazon's signature clarity, precision, and customer obsession (no corporate speak)"""
+Remember: Provide executive-level answers with Amazon's signature clarity, precision, and customer obsession (no corporate speak)
+CRITICAL: Question and answer text MUST be on the SAME line as their labels. NO line break after 'Question:' or 'Answer:'
+"""
     },
     {
         "id": 6,
@@ -629,7 +633,15 @@ Concept Validation Feedback:
 {concept_validation_feedback}
 
 Create 5 customer FAQs that address the the top 5 actual questions You'd expect prospective customers to ask based on the concept validation research. Do NOT include any meta commentary (e.g., Based on the...) - start directly with the first questions and answers.
+FORMAT EACH FAQ ENTRY EXACTLY AS:
+1. **Question:** [question text goes HERE on same line]
+2. **Answer:** [answer text goes HERE on same line]
 
+CRITICAL FORMATTING:
+- Question text MUST be on SAME line as '**Question:**'
+- Answer text MUST be on SAME line as '**Answer:**'
+- Single blank line between Q&A pairs
+- NO extra line breaks within Q&A pairs"
 
 """
     },
@@ -681,10 +693,9 @@ Create a PRFAQ that exemplifies Amazon's high standards for strategic thinking a
 FORMATTING ONLY (maintain editorial synthesis approach above):
 - Start with document title, then structured sections
 - Order: Press Release, Customer FAQ, Internal FAQ
-   - For the FAQs:
-      - Format as: **Question:** [text] followed by **Answer:** [text]
-      - Label each question and answer pair with a number (e.g. "1. **Question:** [text] followed by **Answer:** [text]")
-      - Use consistent Q/A structure throughout
+- FORMATTING RULES FOR ALL FAQS:
+   - Keep question and answer text on SAME line as their bold labels
+   - One blank line between FAQ pairs
 - Use consistent header hierarchy throughout
 - One blank line between major sections
 - End with complete document (no editorial sign-offs)""",
@@ -733,7 +744,16 @@ Format all FAQs as numbered:
    **Answer:** [text]
 
 STYLE NOTES:
-- Use Amazon's signature writing style focusing on clarity, precision, and customer obsession (no corporate speak)"""
+- Use Amazon's signature writing style focusing on clarity, precision, and customer obsession (no corporate speak)
+
+FORMATTING RULES FOR ALL FAQS:
+1. **Question:** [text HERE]
+   **Answer:** [text HERE]
+   - Keep question and answer text on SAME line as their bold labels
+   - One blank line between FAQ pairs
+   - For ANY headers with colons: **Header Text:** (colon INSIDE the bold markers)
+
+"""
     },
     {
         "id": 10,
@@ -796,7 +816,8 @@ Create an MLP plan that clearly connects customer value to technical foundation 
 FORMATTING ONLY (maintain executive-level MLP planning above):
 - Use ## for major plan sections
 - Use - for bullet points in lists
-- Start directly with MLP plan content
+- CRITICAL: For all section headers with colons, place the colon INSIDE the bold markers: "**Header:**" not "**Header**":
+- Start directly with MLP plan content - NO meta-commentary 
 - End with complete plan (no meta-commentary about next steps)
 
 """,
