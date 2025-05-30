@@ -801,6 +801,18 @@ function App() {
     }
   }, [viewMode]);
 
+  // Fetch late insights when viewing process steps after completion
+  useEffect(() => {
+    if (currentRequestId && viewMode === 'results' && (activeTab === 'process' || !showFinalTab)) {
+      // Small delay to ensure component is fully mounted
+      const timer = setTimeout(() => {
+        fetchLateInsights();
+      }, 500);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [currentRequestId, viewMode, activeTab, showFinalTab]);
+
   const generateReportText = () => {
     let report = `Product Concept Evaluation Report\n`;
     report += `Generated: ${new Date().toLocaleDateString()}\n\n`;
@@ -847,6 +859,52 @@ function App() {
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(link.href);
+  };
+
+  // Fetch late insights that may have been generated after stream completion
+  const fetchLateInsights = async () => {
+    if (!currentRequestId) {
+      console.log('No request ID available for insight fetching');
+      return;
+    }
+
+    try {
+      logToStorage('info', '🔍 FETCHING LATE INSIGHTS', { requestId: currentRequestId });
+      
+      const response = await fetch(`/api/insights?request_id=${currentRequestId}`);
+      const data = await response.json();
+      
+      if (data.success && data.insights && Object.keys(data.insights).length > 0) {
+        logToStorage('info', '✨ FOUND LATE INSIGHTS', { 
+          requestId: currentRequestId, 
+          insightCount: Object.keys(data.insights).length,
+          steps: Object.keys(data.insights).join(', ')
+        });
+        
+        // Update stepsData with the found insights
+        setStepsData(prev => prev.map(step => {
+          const stepInsight = data.insights[step.id];
+          if (stepInsight) {
+            return {
+              ...step,
+              keyInsight: stepInsight.insight,
+              insightLabel: stepInsight.insight_label
+            };
+          }
+          return step;
+        }));
+        
+        console.log('Updated steps with late insights:', data.insights);
+      } else {
+        logToStorage('info', '📭 NO LATE INSIGHTS FOUND', { requestId: currentRequestId });
+      }
+    } catch (error) {
+      console.warn('Failed to fetch late insights:', error);
+      logToStorage('error', '❌ INSIGHT FETCH FAILED', { 
+        requestId: currentRequestId, 
+        error: error instanceof Error ? error.message : String(error)
+      });
+    }
   };
 
   // Add persistent logging system

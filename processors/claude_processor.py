@@ -193,7 +193,7 @@ class ClaudeProcessor:
             response = self.client.messages.create(
                 model=self.model,
                 max_tokens=8192,
-                temperature=0.7,
+                temperature=0.3,
                 top_p=0.95,
                 system=system_prompt,
                 messages=[
@@ -210,6 +210,7 @@ class ClaudeProcessor:
 
             # Store raw output if request_id is provided
             if request_id and step_info:
+                logger.debug(f"{log_prefix} PRE-CACHE RAW OUTPUT for {step_info} (len: {len(output)}): '{output[:500]}...'" ) # Log first 500 chars
                 try:
                     store_raw_llm_output(request_id, step_info, output)
                 except Exception as e_store:

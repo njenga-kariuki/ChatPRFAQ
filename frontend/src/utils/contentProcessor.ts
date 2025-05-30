@@ -1,5 +1,8 @@
 export class ContentProcessor {
   private static readonly SAFE_CLEANUP_RULES = [
+    // Fix: MLP standalone colons (specific pattern, placed before existing broader rule)
+    { pattern: /^(\*\*[^*\n]+\*\*)\s*\n+:\s*$/gm, replacement: '$1:' },
+    
     // Remove meta-commentary but preserve line breaks
     { pattern: /^(Here's|Here is|I've created|Below is).*?:?\s*$/gim, replacement: '' },
     { pattern: /^(This document|The following|Let me know if).*?$/gim, replacement: '' },
@@ -10,7 +13,19 @@ export class ContentProcessor {
     // Fix: Ensure bold text with colons stays together (for MLP plan subheaders)
     { pattern: /^(\*\*[^*]+:\*\*)\s*\n+/gm, replacement: '$1\n' },
     
-    // Normalize spacing: exactly 2 newlines for proper markdown paragraphs
+    // Fix: Bold text followed by external colon (Key Insight, section headers)
+    { pattern: /^(\*\*[^*\n]+\*\*)\s*\n+:\s*/gm, replacement: '$1: ' },
+    
+    // Fix: FAQ Answer indentation (specific to External FAQ format with literal "Question:" text)
+    { pattern: /^(\d+\.\s+\*\*Question:\*\*[^\n]+)\n(\s+)(\*\*Answer:\*\*)/gm, replacement: '$1\n$3' },
+    
+    // Fix: FAQ question continuation (prevent question text from new line)
+    { pattern: /^(\d+\.\s+\*\*Question:\*\*)\s*\n+([^#*\n])/gm, replacement: '$1 $2' },
+    
+    // Fix: Bold text continuation with lowercase (prevent sentence breaks)
+    { pattern: /(\*\*[^*\n]+\*\*)\s*\n+\s*([a-z])/gm, replacement: '$1 $2' },
+    
+    // Normalize spacing: exactly 2 newlines for proper markdown paragraphs (but preserve headers)
     { pattern: /\n{3,}/g, replacement: '\n\n' },
   ];
 

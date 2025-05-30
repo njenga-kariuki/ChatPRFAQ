@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { StepData } from '../types'; // Assuming types.ts is in src/
 import Markdown from 'react-markdown'; // We'll add this dependency later
 import remarkGfm from 'remark-gfm';
@@ -8,6 +8,94 @@ interface StepCardProps {
   step: StepData;
   onToggle: () => void;
 }
+
+// FAQ Fix Wrapper - Only for Step 8 External FAQ
+const FAQFixWrapper: React.FC<{ children: React.ReactNode; stepId: number; content: string }> = ({ 
+  children, 
+  stepId, 
+  content 
+}) => {
+  const [isFixed, setIsFixed] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    // Only apply to Step 8 with broken FAQ patterns
+    const shouldApplyFix = stepId === 8 && 
+                          content.includes('**Question:**') &&
+                          content.includes('**Answer:**');
+
+    if (!shouldApplyFix) {
+      setIsFixed(true); // Show immediately if no fix needed
+      return;
+    }
+
+    // Apply FAQ fix after render
+    const applyFix = () => {
+      if (!containerRef.current) return;
+
+      try {
+        const container = containerRef.current;
+        
+        // Find broken FAQ patterns in rendered DOM
+        const paragraphs = container.querySelectorAll('p');
+        let fixesApplied = false;
+
+        paragraphs.forEach(p => {
+          const text = p.textContent || '';
+          
+          // Look for "Question:" without bold formatting
+          if (text.includes('Question:') && !p.querySelector('strong')) {
+            // Fix broken question formatting
+            const questionMatch = text.match(/(\d+\.\s+)(Question:)\s*(.+?)\s*(Answer:)\s*(.+)/);
+            if (questionMatch) {
+              const [, number, questionLabel, questionText, answerLabel, answerText] = questionMatch;
+              
+              // Reconstruct with proper formatting
+              p.innerHTML = `
+                ${number}<strong>${questionLabel}</strong> ${questionText.trim()}
+                <br><br>
+                <strong>${answerLabel}</strong> ${answerText.trim()}
+              `;
+              fixesApplied = true;
+            }
+          }
+        });
+
+        if (fixesApplied) {
+          console.log('FAQ fixes applied to Step 8');
+        }
+        
+        setIsFixed(true);
+      } catch (error) {
+        console.warn('FAQ fix failed, showing original content:', error);
+        setIsFixed(true); // Show original content if fix fails
+      }
+    };
+
+    // Apply fix after DOM renders
+    const timeoutId = setTimeout(applyFix, 50);
+    
+    // Safety timeout: always show content within 200ms
+    const safetyTimeoutId = setTimeout(() => setIsFixed(true), 200);
+
+    return () => {
+      clearTimeout(timeoutId);
+      clearTimeout(safetyTimeoutId);
+    };
+  }, [stepId, content]);
+
+  return (
+    <div 
+      ref={containerRef}
+      style={{ 
+        opacity: isFixed ? 1 : 0,
+        transition: 'opacity 150ms ease-in-out'
+      }}
+    >
+      {children}
+    </div>
+  );
+};
 
 const StepCard: React.FC<StepCardProps> = ({ step, onToggle }) => {
   const getStatusIcon = () => {
@@ -93,42 +181,44 @@ const StepCard: React.FC<StepCardProps> = ({ step, onToggle }) => {
       </button>
 
       {/* Content - Collapsible with smooth transition */}
-      <div className={`overflow-hidden transition-all duration-300 ease-in-out ${step.isActive ? 'max-h-[5000px]' : 'max-h-0'}`}>
+      <div className={`overflow-hidden transition-all duration-300 ease-in-out ${step.isActive ? 'max-h-[7500px]' : 'max-h-0'}`}>
         <div className="px-8 pb-8 pt-4 border-t border-gray-100">
           {step.output ? (
-            <div className="prose-custom">
-              <Markdown 
-                remarkPlugins={[remarkGfm]}
-                components={{
-                  p: ({children}) => <p style={{marginBottom: '1.5rem', lineHeight: '1.7'}}>{children}</p>,
-                  table: ({children}) => (
-                    <div className="overflow-x-auto my-6">
-                      <table className="min-w-full divide-y divide-gray-200 border border-gray-200 rounded-lg overflow-hidden">
+            <FAQFixWrapper stepId={step.id} content={step.output}>
+              <div className="prose-custom">
+                <Markdown 
+                  remarkPlugins={[remarkGfm]}
+                  components={{
+                    p: ({children}) => <p style={{marginBottom: '1.5rem', lineHeight: '1.7'}}>{children}</p>,
+                    table: ({children}) => (
+                      <div className="overflow-x-auto my-6">
+                        <table className="min-w-full divide-y divide-gray-200 border border-gray-200 rounded-lg overflow-hidden">
+                          {children}
+                        </table>
+                      </div>
+                    ),
+                    thead: ({children}) => (
+                      <thead className="bg-gray-50">{children}</thead>
+                    ),
+                    th: ({children}) => (
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-r last:border-r-0">
                         {children}
-                      </table>
-                    </div>
-                  ),
-                  thead: ({children}) => (
-                    <thead className="bg-gray-50">{children}</thead>
-                  ),
-                  th: ({children}) => (
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-r last:border-r-0">
-                      {children}
-                    </th>
-                  ),
-                  td: ({children}) => (
-                    <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900 border-r last:border-r-0">
-                      {children}
-                    </td>
-                  ),
-                  tr: ({children}) => (
-                    <tr className="border-b hover:bg-gray-50 transition-colors">{children}</tr>
-                  )
-                }}
-              >
-                {ContentProcessor.processContent(step.output)}
-              </Markdown>
-            </div>
+                      </th>
+                    ),
+                    td: ({children}) => (
+                      <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900 border-r last:border-r-0">
+                        {children}
+                      </td>
+                    ),
+                    tr: ({children}) => (
+                      <tr className="border-b hover:bg-gray-50 transition-colors">{children}</tr>
+                    )
+                  }}
+                >
+                  {ContentProcessor.processContent(step.output)}
+                </Markdown>
+              </div>
+            </FAQFixWrapper>
           ) : (
             <div className="text-center py-8">
               {step.status === 'processing' ? (

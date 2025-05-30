@@ -7,8 +7,9 @@ import anthropic
 from config import ANTHROPIC_API_KEY, CLAUDE_MODEL, WORKING_BACKWARDS_STEPS, PRODUCT_ANALYSIS_STEP, GEMINI_API_KEY, GEMINI_FLASH_MODEL
 from .perplexity_processor import PerplexityProcessor
 from .claude_processor import ClaudeProcessor
+from utils.raw_output_cache import store_insight
 # REMOVE: store_raw_llm_output is now imported and used by individual processors (claude, perplexity)
-# from routes import store_raw_llm_output 
+# from routes import store_raw_llm_output
 
 # Get logger for this module
 logger = logging.getLogger(__name__)
@@ -770,6 +771,11 @@ This enriched brief combines the original product idea with strategic insights t
                 
                 logger.info(f"[INSIGHT THREAD - Step {step_id}] Insight generation attempt completed. Insight: '{str(insight)[:50]}...', Label: {label}")
                 
+                # Always store insight in cache, regardless of progress_callback status
+                if insight and request_id:
+                    logger.info(f"[INSIGHT THREAD - Step {step_id}] Storing insight in cache for potential late retrieval")
+                    store_insight(request_id, step_id, insight, label)
+                
                 if insight and progress_callback:
                     logger.info(f"[INSIGHT THREAD - Step {step_id}] Insight is valid. Sending to frontend via progress_callback.")
                     progress_callback({
@@ -815,8 +821,8 @@ This enriched brief combines the original product idea with strategic insights t
             return None
         
         insight_prompts = {
-            1: "Summarize the most important finding from this research in one sentence.",
-            2: "Summarize the main issue or challenge mentioned most frequently in one sentence.",
+            1: "Summarize the key takeaway from this research in one sentence.",
+            2: "State the core issue/challenge mentioned most frequently in one sentence.",
             3: "What is the main headline or title from this document?",
             4: "State the most significant change or improvement described in one sentence.",
             5: "State the most important concern or question raised in this content in one sentence.",

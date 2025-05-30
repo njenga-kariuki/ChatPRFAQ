@@ -610,6 +610,17 @@ Your FAQs should:
 - Build confidence in the solution
 - Be honest about limitations
 
+STRUCTURE:
+- The question should be worded the way a customer might ask them while still being clear and concise, as if a customer was asking a customer service rep a concern before they bought the product or while they were using it. 
+- The answer should be a concise response that addresses the question and provides a clear and concise answer In a tone that a great customer service representative would have. . 
+
+FORMATTING REQUIREMENTS:
+- Format as: **Question:** [text] followed by **Answer:** [text]
+- Label each question and answer pair with a number (e.g. "1. **Question:** [text] followed by **Answer:** [text]")
+- Start directly with questions
+- Use consistent Q/A structure throughout
+- Do NOT include meta commentary (e.g.,Based on the concept validation research, here are the top customer FAQs addressing real concerns that emerged from testing...) - start directly with questions and answers
+
 Reference specific insights from concept validation to ensure authenticity.""",
         "user_prompt": """Refined Press Release:
 {solution_refined_press_release}
@@ -617,16 +628,10 @@ Reference specific insights from concept validation to ensure authenticity.""",
 Concept Validation Feedback:
 {concept_validation_feedback}
 
-Create 5-6 customer FAQs that address the actual questions and concerns from user research. Use their language, not corporate speak.
+Create 5 customer FAQs that address the the top 5 actual questions You'd expect prospective customers to ask based on the concept validation research. Do NOT include any meta commentary (e.g., Based on the...) - start directly with the first questions and answers.
 
-Format as numbered questions:
-1. **Question:** [text]
-   **Answer:** [text]
 
-2. **Question:** [text]
-   **Answer:** [text]
-
-[Continue for 5-6 FAQs total]"""
+"""
     },
     {
         "id": 9,
@@ -675,6 +680,11 @@ Create a PRFAQ that exemplifies Amazon's high standards for strategic thinking a
 
 FORMATTING ONLY (maintain editorial synthesis approach above):
 - Start with document title, then structured sections
+- Order: Press Release, Customer FAQ, Internal FAQ
+   - For the FAQs:
+      - Format as: **Question:** [text] followed by **Answer:** [text]
+      - Label each question and answer pair with a number (e.g. "1. **Question:** [text] followed by **Answer:** [text]")
+      - Use consistent Q/A structure throughout
 - Use consistent header hierarchy throughout
 - One blank line between major sections
 - End with complete document (no editorial sign-offs)""",
@@ -787,7 +797,9 @@ FORMATTING ONLY (maintain executive-level MLP planning above):
 - Use ## for major plan sections
 - Use - for bullet points in lists
 - Start directly with MLP plan content
-- End with complete plan (no meta-commentary about next steps)""",
+- End with complete plan (no meta-commentary about next steps)
+
+""",
         "user_prompt": """Final PRFAQ Document:
 ---
 {input}

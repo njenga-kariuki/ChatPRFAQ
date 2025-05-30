@@ -10,7 +10,7 @@ import os
 import uuid
 
 # Import cache utilities from the new location
-from utils.raw_output_cache import store_raw_llm_output, get_raw_llm_output
+from utils.raw_output_cache import store_raw_llm_output, get_raw_llm_output, get_insights
 
 # Configure logging
 logger = logging.getLogger(__name__)
@@ -568,22 +568,105 @@ def debug_test_step(step_id):
 # --- BEGIN: New Raw LLM Output Debug Endpoint ---
 @app.route('/api/debug/get_raw_llm_output', methods=['GET'])
 def get_raw_llm_output_route():
-    """Endpoint to retrieve raw LLM output for a given request_id."""
+    """Endpoint to retrieve all raw LLM outputs for a given request_id."""
     query_request_id = request.args.get('request_id')
+    # query_step_info = request.args.get('step_info') # REMOVE: No longer needed
+
     if not query_request_id:
         return jsonify({"error": "request_id parameter is required"}), 400
+    # if not query_step_info: # REMOVE: No longer needed
+    #     return jsonify({"error": "step_info parameter is required (e.g., step_0_Analyze Product Concept)"}), 400
 
-    output_entry = get_raw_llm_output(query_request_id)
+    # Call get_raw_llm_output with only request_id
+    output_entry_for_request_id = get_raw_llm_output(query_request_id)
+    # cache_key_used = f"{query_request_id}_{query_step_info}" # REMOVE: No longer needed
 
-    if output_entry:
-        logger.info(f"[{query_request_id}] Retrieved raw LLM output for step '{output_entry['step_info']}' via debug API.")
-        return jsonify({
-            "request_id": query_request_id,
-            "step_info": output_entry['step_info'],
-            "raw_output": output_entry['data'],
-            "timestamp": output_entry['timestamp']
-        })
+    if output_entry_for_request_id:
+        logger.info(f"Retrieved all raw LLM outputs for request_id '{query_request_id}' via debug API.")
+        return jsonify(output_entry_for_request_id) # This now contains the list of step outputs
     else:
-        logger.warn(f"[{query_request_id}] No raw LLM output found in cache for debug API.")
-        return jsonify({"error": "Raw output not found for this request_id (may have expired or not been stored)"}), 404
+        logger.warn(f"No raw LLM output found in cache for request_id '{query_request_id}' for debug API.")
+        return jsonify({"error": f"Raw output not found for request_id '{query_request_id}' (may have expired or not been stored)"}), 404
 # --- END: New Raw LLM Output Debug Endpoint ---
+
+# --- BEGIN: Insights API Endpoint ---
+@app.route('/api/insights/<request_id>', methods=['GET'])
+def get_request_insights(request_id):
+    """
+    Fetch any stored insights for a specific request_id.
+    Used to retrieve insights that may have been generated after stream completion.
+    """
+    logger.info(f"[{request_id}] Fetching insights via API")
+    
+    try:
+        insights = get_insights(request_id)
+        
+        if insights:
+            logger.info(f"[{request_id}] Retrieved {len(insights)} insights via API")
+            return jsonify({
+                "success": True,
+                "insights": insights,
+                "request_id": request_id
+            })
+        else:
+            logger.debug(f"[{request_id}] No insights found via API")
+            return jsonify({
+                "success": True,
+                "insights": {},
+                "request_id": request_id
+            })
+            
+    except Exception as e:
+        logger.error(f"[{request_id}] Error fetching insights via API: {e}", exc_info=True)
+        return jsonify({
+            "success": False,
+            "error": str(e),
+            "request_id": request_id
+        }), 500
+# --- END: Insights API Endpoint ---
+
+# --- BEGIN: Safe Insights API Endpoint with Query Parameters ---
+@app.route('/api/insights', methods=['GET'])
+def get_insights_by_query():
+    """
+    Fetch any stored insights for a specific request_id using query parameters.
+    Used to retrieve insights that may have been generated after stream completion.
+    Safe route that won't conflict with React app routing.
+    """
+    request_id = request.args.get('request_id')
+    
+    if not request_id:
+        return jsonify({
+            "success": False,
+            "error": "request_id parameter is required",
+            "request_id": None
+        }), 400
+    
+    logger.info(f"[{request_id}] Fetching insights via safe API")
+    
+    try:
+        insights = get_insights(request_id)
+        
+        if insights:
+            logger.info(f"[{request_id}] Retrieved {len(insights)} insights via safe API")
+            return jsonify({
+                "success": True,
+                "insights": insights,
+                "request_id": request_id
+            })
+        else:
+            logger.debug(f"[{request_id}] No insights found via safe API")
+            return jsonify({
+                "success": True,
+                "insights": {},
+                "request_id": request_id
+            })
+            
+    except Exception as e:
+        logger.error(f"[{request_id}] Error fetching insights via safe API: {e}", exc_info=True)
+        return jsonify({
+            "success": False,
+            "error": str(e),
+            "request_id": request_id
+        }), 500
+# --- END: Safe Insights API Endpoint ---
