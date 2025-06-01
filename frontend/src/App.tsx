@@ -510,6 +510,26 @@ function App() {
                 logToStorage('info', '🌊 LLM STREAM REQUEST ID', { requestId: eventData.request_id });
               }
 
+              // Handle backend log messages
+              if (eventData.type === 'log') {
+                logToStorage(eventData.level, eventData.message, { 
+                  backend: true, 
+                  requestId: eventData.request_id,
+                  timestamp: new Date().toISOString()
+                });
+                continue; // Don't process as regular progress update
+              }
+
+              // Handle heartbeat messages (just log, don't show to user)
+              if (eventData.type === 'heartbeat') {
+                logToStorage('info', '💓 Backend thread heartbeat', { 
+                  backend: true, 
+                  requestId: eventData.request_id,
+                  timestamp: eventData.timestamp
+                });
+                continue; // Don't process as regular progress update
+              }
+
               if (eventData.error) {
                 const errorDataLog = {
                   step: eventData.step,

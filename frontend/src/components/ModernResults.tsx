@@ -2,6 +2,8 @@ import React from 'react';
 import Markdown from 'react-markdown';
 import { StepData } from '../types'; // Assuming StepData is in types.ts at src/types.ts
 import { ContentProcessor } from '../utils/contentProcessor';
+import CopyButton from './CopyButton';
+import CopyToast from './CopyToast';
 
 interface ModernResultsProps {
   finalPrfaq: string;
@@ -18,6 +20,14 @@ const ModernResults: React.FC<ModernResultsProps> = ({ finalPrfaq, finalMlpPlan,
 
   // State for tab management (similar to StepCard)
   const [activeTab, setActiveTab] = React.useState('prfaq');
+  
+  // State for copy toast
+  const [showToast, setShowToast] = React.useState(false);
+
+  const handleCopySuccess = () => {
+    setShowToast(true);
+    setTimeout(() => setShowToast(false), 2000);
+  };
 
   return (
     <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
@@ -61,29 +71,56 @@ const ModernResults: React.FC<ModernResultsProps> = ({ finalPrfaq, finalMlpPlan,
       {/* Tab Content with Optimal Reading Layout */}
       <div className="px-8 py-12 md:px-16 md:py-16 max-w-4xl mx-auto">
         {activeTab === 'prfaq' && (
-          <article className="prose-custom">
-            <Markdown 
-              components={{
-                p: ({children}) => <p style={{marginBottom: '2rem', lineHeight: '1.7'}}>{children}</p>
-              }}
-            >
-              {ContentProcessor.processContent(finalPrfaq)}
-            </Markdown>
-          </article>
+          <div className="relative">
+            {/* Copy button positioned at top-right */}
+            <div className="absolute -top-10 right-0">
+              <CopyButton 
+                content={ContentProcessor.processContent(finalPrfaq)}
+                variant="icon"
+                className="text-gray-400 hover:text-gray-600 hover:bg-gray-50/50"
+                iconSize="sm"
+                onCopySuccess={handleCopySuccess}
+              />
+            </div>
+            <article className="prose-custom">
+              <Markdown 
+                components={{
+                  p: ({children}) => <p style={{marginBottom: '2rem', lineHeight: '1.7'}}>{children}</p>
+                }}
+              >
+                {ContentProcessor.processContent(finalPrfaq)}
+              </Markdown>
+            </article>
+          </div>
         )}
         
         {activeTab === 'mlp' && (
-          <article className="prose-custom">
-            <Markdown 
-              components={{
-                p: ({children}) => <p style={{marginBottom: '2rem', lineHeight: '1.7'}}>{children}</p>
-              }}
-            >
-              {ContentProcessor.processContent(finalMlpPlan)}
-            </Markdown>
-          </article>
+          <div className="relative">
+            {/* Copy button positioned at top-right */}
+            <div className="absolute -top-10 right-0">
+              <CopyButton 
+                content={ContentProcessor.processContent(finalMlpPlan)}
+                variant="icon"
+                className="text-gray-400 hover:text-gray-600 hover:bg-gray-50/50"
+                iconSize="sm"
+                onCopySuccess={handleCopySuccess}
+              />
+            </div>
+            <article className="prose-custom">
+              <Markdown 
+                components={{
+                  p: ({children}) => <p style={{marginBottom: '2rem', lineHeight: '1.7'}}>{children}</p>
+                }}
+              >
+                {ContentProcessor.processContent(finalMlpPlan)}
+              </Markdown>
+            </article>
+          </div>
         )}
       </div>
+
+      {/* Copy Toast */}
+      <CopyToast show={showToast} />
     </div>
   );
 };

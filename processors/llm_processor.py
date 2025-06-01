@@ -1,15 +1,11 @@
 import logging
 import threading
-import google.generativeai as genai
-from google.generativeai.types import HarmCategory, HarmBlockThreshold
+from config import ANTHROPIC_API_KEY, WORKING_BACKWARDS_STEPS, CLAUDE_MODEL, PERPLEXITY_API_KEY, GEMINI_API_KEY, GEMINI_FLASH_MODEL, PRODUCT_ANALYSIS_STEP
+from processors.perplexity_processor import PerplexityProcessor
+from processors.claude_processor import ClaudeProcessor
+from utils.raw_output_cache import store_insight, get_insights
 import anthropic
-# import google.generativeai as genai  # Kept for potential future use
-from config import ANTHROPIC_API_KEY, CLAUDE_MODEL, WORKING_BACKWARDS_STEPS, PRODUCT_ANALYSIS_STEP, GEMINI_API_KEY, GEMINI_FLASH_MODEL
-from .perplexity_processor import PerplexityProcessor
-from .claude_processor import ClaudeProcessor
-from utils.raw_output_cache import store_insight
-# REMOVE: store_raw_llm_output is now imported and used by individual processors (claude, perplexity)
-# from routes import store_raw_llm_output
+import google.generativeai as genai
 
 # Get logger for this module
 logger = logging.getLogger(__name__)
@@ -469,6 +465,39 @@ Concept Validation Key Findings:
         output = result["output"]
         logger.info(f"[{request_id or 'NO_REQ_ID'}] Step {step_id} response received - length: {len(output)} characters")
         
+        # Apply FAQ formatting fix for steps 5, 8, 9 (Internal FAQ, External FAQ, PRFAQ Synthesis)
+        if step_id in [5, 8, 9] and output:
+            try:
+                import re
+                
+                # Track if we made changes
+                original_output = output
+                
+                # Fix FAQ formatting issues:
+                # 1. Remove excessive line breaks around **Question:** and **Answer:**
+                # 2. Ensure consistent spacing
+                
+                # Pattern 1: Fix **Question:** followed by excessive line breaks
+                output = re.sub(r'\*\*Question:\*\*\s*\n+\s*', '**Question:** ', output)
+                
+                # Pattern 2: Fix **Answer:** followed by excessive line breaks  
+                output = re.sub(r'\*\*Answer:\*\*\s*\n+\s*', '**Answer:** ', output)
+                
+                # Pattern 3: Clean up multiple consecutive empty lines (keep max 2)
+                output = re.sub(r'\n\s*\n\s*\n+', '\n\n', output)
+                
+                # Pattern 4: Fix spacing before **Answer:** (ensure proper indentation)
+                output = re.sub(r'\n\s*\*\*Answer:\*\*', '\n   **Answer:**', output)
+                
+                # Log if we made changes
+                if output != original_output:
+                    logger.info(f"[{request_id or 'NO_REQ_ID'}] Applied FAQ formatting fixes to step {step_id}")
+                
+            except Exception as e:
+                logger.error(f"[{request_id or 'NO_REQ_ID'}] FAQ formatting fix failed for step {step_id}: {e}")
+                # Continue with original output - don't break the pipeline
+                output = original_output
+        
         self.step_outputs[step_id] = output
         
         # NEW: Fire-and-forget insight extraction
@@ -496,104 +525,245 @@ Concept Validation Key Findings:
         logger.info(f"[{request_id or 'NO_REQ_ID'}] Starting complete Working Backwards process with enhanced research")
         logger.info(f"[{request_id or 'NO_REQ_ID'}] Product idea: {product_idea[:100]}...")
         
+        # Protected progress callback wrapper
+        def safe_callback(update):
+            if progress_callback:
+                try:
+                    progress_callback(update)
+                except Exception as e:
+                    logger.error(f"[{request_id or 'NO_REQ_ID'}] Progress callback failed in process_all_steps: {e}")
+                    # Don't re-raise to avoid killing the processing thread
+        
         try:
             self.step_outputs = {}
             
+            # Send workflow start log
+            safe_callback({
+                'type': 'log',
+                'level': 'info',
+                'message': '🚀 Starting 10-step Working Backwards process',
+                'request_id': request_id
+            })
+            
             logger.info(f"[{request_id or 'NO_REQ_ID'}] --- Processing Step 1: Market Research & Analysis ---")
-            step1_result = self.generate_step_response(1, product_idea, progress_callback=progress_callback, request_id=request_id)
+            safe_callback({
+                'type': 'log',
+                'level': 'info',
+                'message': '📊 Step 1/10: Market Research & Analysis',
+                'request_id': request_id
+            })
+            step1_result = self.generate_step_response(1, product_idea, progress_callback=safe_callback, request_id=request_id)
             
             if 'error' in step1_result:
                 logger.error(f"[{request_id or 'NO_REQ_ID'}] Step 1 failed: {step1_result['error']}")
+                safe_callback({
+                    'type': 'log',
+                    'level': 'error',
+                    'message': f'❌ Step 1 failed: {step1_result["error"]}',
+                    'request_id': request_id
+                })
                 return {'error': step1_result['error'], 'step': 1}
             
             market_research = step1_result['output']
             
             logger.info(f"[{request_id or 'NO_REQ_ID'}] --- Processing Step 2: Problem Validation Research ---")
+            safe_callback({
+                'type': 'log',
+                'level': 'info',
+                'message': '📊 Step 2/10: Problem Validation Research',
+                'request_id': request_id
+            })
             step_data = {'market_research': market_research}
-            step2_result = self.generate_step_response(2, product_idea, step_data, progress_callback=progress_callback, request_id=request_id)
+            step2_result = self.generate_step_response(2, product_idea, step_data, progress_callback=safe_callback, request_id=request_id)
             
             if 'error' in step2_result:
                 logger.error(f"[{request_id or 'NO_REQ_ID'}] Step 2 failed: {step2_result['error']}")
+                safe_callback({
+                    'type': 'log',
+                    'level': 'error',
+                    'message': f'❌ Step 2 failed: {step2_result["error"]}',
+                    'request_id': request_id
+                })
                 return {'error': step2_result['error'], 'step': 2}
             
             problem_validation = step2_result['output']
             
             logger.info(f"[{request_id or 'NO_REQ_ID'}] --- Processing Step 3: Draft Press Release ---")
+            safe_callback({
+                'type': 'log',
+                'level': 'info',
+                'message': '📊 Step 3/10: Draft Press Release',
+                'request_id': request_id
+            })
             step_data['problem_validation'] = problem_validation
-            step3_result = self.generate_step_response(3, product_idea, step_data, progress_callback=progress_callback, request_id=request_id)
+            step3_result = self.generate_step_response(3, product_idea, step_data, progress_callback=safe_callback, request_id=request_id)
             
             if 'error' in step3_result:
                 logger.error(f"[{request_id or 'NO_REQ_ID'}] Step 3 failed: {step3_result['error']}")
+                safe_callback({
+                    'type': 'log',
+                    'level': 'error',
+                    'message': f'❌ Step 3 failed: {step3_result["error"]}',
+                    'request_id': request_id
+                })
                 return {'error': step3_result['error'], 'step': 3}
             
             press_release_draft = step3_result['output']
             
             logger.info(f"[{request_id or 'NO_REQ_ID'}] --- Processing Step 4: Refine Press Release ---")
-            step4_result = self.generate_step_response(4, press_release_draft, step_data, progress_callback=progress_callback, request_id=request_id)
+            safe_callback({
+                'type': 'log',
+                'level': 'info',
+                'message': '📊 Step 4/10: Refine Press Release',
+                'request_id': request_id
+            })
+            step4_result = self.generate_step_response(4, press_release_draft, step_data, progress_callback=safe_callback, request_id=request_id)
             
             if 'error' in step4_result:
                 logger.error(f"[{request_id or 'NO_REQ_ID'}] Step 4 failed: {step4_result['error']}")
+                safe_callback({
+                    'type': 'log',
+                    'level': 'error',
+                    'message': f'❌ Step 4 failed: {step4_result["error"]}',
+                    'request_id': request_id
+                })
                 return {'error': step4_result['error'], 'step': 4}
             
             refined_press_release = step4_result['output']
             
             logger.info(f"[{request_id or 'NO_REQ_ID'}] --- Processing Step 5: Internal FAQ ---")
-            step5_result = self.generate_step_response(5, refined_press_release, step_data, progress_callback=progress_callback, request_id=request_id)
+            safe_callback({
+                'type': 'log',
+                'level': 'info',
+                'message': '📊 Step 5/10: Internal FAQ',
+                'request_id': request_id
+            })
+            step5_result = self.generate_step_response(5, refined_press_release, step_data, progress_callback=safe_callback, request_id=request_id)
             
             if 'error' in step5_result:
                 logger.error(f"[{request_id or 'NO_REQ_ID'}] Step 5 failed: {step5_result['error']}")
+                safe_callback({
+                    'type': 'log',
+                    'level': 'error',
+                    'message': f'❌ Step 5 failed: {step5_result["error"]}',
+                    'request_id': request_id
+                })
                 return {'error': step5_result['error'], 'step': 5}
             
             internal_faq = step5_result['output']
             
             logger.info(f"[{request_id or 'NO_REQ_ID'}] --- Processing Step 6: Concept Validation Research ---")
+            safe_callback({
+                'type': 'log',
+                'level': 'info',
+                'message': '📊 Step 6/10: Concept Validation Research',
+                'request_id': request_id
+            })
             step_data['internal_faq'] = internal_faq
-            step6_result = self.generate_step_response(6, refined_press_release, step_data, progress_callback=progress_callback, request_id=request_id)
+            step6_result = self.generate_step_response(6, refined_press_release, step_data, progress_callback=safe_callback, request_id=request_id)
             
             if 'error' in step6_result:
                 logger.error(f"[{request_id or 'NO_REQ_ID'}] Step 6 failed: {step6_result['error']}")
+                safe_callback({
+                    'type': 'log',
+                    'level': 'error',
+                    'message': f'❌ Step 6 failed: {step6_result["error"]}',
+                    'request_id': request_id
+                })
                 return {'error': step6_result['error'], 'step': 6}
             
             concept_validation = step6_result['output']
             
             logger.info(f"[{request_id or 'NO_REQ_ID'}] --- Processing Step 7: Solution Refinement ---")
+            safe_callback({
+                'type': 'log',
+                'level': 'info',
+                'message': '📊 Step 7/10: Solution Refinement',
+                'request_id': request_id
+            })
             step_data['concept_validation'] = concept_validation
-            step7_result = self.generate_step_response(7, refined_press_release, step_data, progress_callback=progress_callback, request_id=request_id)
+            step7_result = self.generate_step_response(7, refined_press_release, step_data, progress_callback=safe_callback, request_id=request_id)
             
             if 'error' in step7_result:
                 logger.error(f"[{request_id or 'NO_REQ_ID'}] Step 7 failed: {step7_result['error']}")
+                safe_callback({
+                    'type': 'log',
+                    'level': 'error',
+                    'message': f'❌ Step 7 failed: {step7_result["error"]}',
+                    'request_id': request_id
+                })
                 return {'error': step7_result['error'], 'step': 7}
             
             solution_refined_pr = step7_result['output']
             
             logger.info(f"[{request_id or 'NO_REQ_ID'}] --- Processing Step 8: External FAQ ---")
-            step8_result = self.generate_step_response(8, solution_refined_pr, step_data, progress_callback=progress_callback, request_id=request_id)
+            safe_callback({
+                'type': 'log',
+                'level': 'info',
+                'message': '📊 Step 8/10: External FAQ',
+                'request_id': request_id
+            })
+            step8_result = self.generate_step_response(8, solution_refined_pr, step_data, progress_callback=safe_callback, request_id=request_id)
             
             if 'error' in step8_result:
                 logger.error(f"[{request_id or 'NO_REQ_ID'}] Step 8 failed: {step8_result['error']}")
+                safe_callback({
+                    'type': 'log',
+                    'level': 'error',
+                    'message': f'❌ Step 8 failed: {step8_result["error"]}',
+                    'request_id': request_id
+                })
                 return {'error': step8_result['error'], 'step': 8}
             
             external_faq = step8_result['output']
             
             logger.info(f"[{request_id or 'NO_REQ_ID'}] --- Processing Step 9: Synthesize PRFAQ ---")
+            safe_callback({
+                'type': 'log',
+                'level': 'info',
+                'message': '📊 Step 9/10: Synthesize PRFAQ',
+                'request_id': request_id
+            })
             step_data['external_faq'] = external_faq
             step_data['refined_press_release'] = solution_refined_pr
-            step9_result = self.generate_step_response(9, solution_refined_pr, step_data, progress_callback=progress_callback, request_id=request_id)
+            step9_result = self.generate_step_response(9, solution_refined_pr, step_data, progress_callback=safe_callback, request_id=request_id)
             
             if 'error' in step9_result:
                 logger.error(f"[{request_id or 'NO_REQ_ID'}] Step 9 failed: {step9_result['error']}")
+                safe_callback({
+                    'type': 'log',
+                    'level': 'error',
+                    'message': f'❌ Step 9 failed: {step9_result["error"]}',
+                    'request_id': request_id
+                })
                 return {'error': step9_result['error'], 'step': 9}
             
             prfaq_document = step9_result['output']
             
             logger.info(f"[{request_id or 'NO_REQ_ID'}] --- Processing Step 10: MLP Plan ---")
-            step10_result = self.generate_step_response(10, prfaq_document, step_data, progress_callback=progress_callback, request_id=request_id)
+            safe_callback({
+                'type': 'log',
+                'level': 'info',
+                'message': '📊 Step 10/10: MLP Plan',
+                'request_id': request_id
+            })
+            step10_result = self.generate_step_response(10, prfaq_document, step_data, progress_callback=safe_callback, request_id=request_id)
             
             if 'error' in step10_result:
                 logger.error(f"[{request_id or 'NO_REQ_ID'}] Step 10 failed: {step10_result['error']}")
+                safe_callback({
+                    'type': 'log',
+                    'level': 'error',
+                    'message': f'❌ Step 10 failed: {step10_result["error"]}',
+                    'request_id': request_id
+                })
                 return {'error': step10_result['error'], 'step': 10}
             
             mlp_plan = step10_result['output']
+            
+            # Wait for step 10 insight extraction before completion
+            logger.info(f"[{request_id or 'NO_REQ_ID'}] Step 10 completed, waiting for insight extraction...")
+            self._wait_for_step_10_insight(request_id, timeout_seconds=2)
             
             results = {
                 'prfaq': prfaq_document,
@@ -612,12 +782,25 @@ Concept Validation Key Findings:
                 ]
             }
             
+            safe_callback({
+                'type': 'log',
+                'level': 'info',
+                'message': '🎉 All 10 steps completed successfully',
+                'request_id': request_id
+            })
+            
             logger.info(f"[{request_id or 'NO_REQ_ID'}] Complete Working Backwards process completed successfully")
             return results
             
         except Exception as e:
             logger.error(f"[{request_id or 'NO_REQ_ID'}] Error in process_all_steps: {str(e)}")
             logger.exception("Full error traceback:")
+            safe_callback({
+                'type': 'log',
+                'level': 'error',
+                'message': f'💥 Workflow failed: {str(e)}',
+                'request_id': request_id
+            })
             return {"error": f"Processing failed: {str(e)}"}
 
     def analyze_product_idea(self, product_idea, request_id=None):
@@ -720,6 +903,35 @@ This enriched brief combines the original product idea with strategic insights t
             logger.error(f"Failed to create enriched brief: {str(e)}")
             return original_idea  # Fallback to original
 
+    def _wait_for_step_10_insight(self, request_id, timeout_seconds=5):
+        """Wait for step 10 insight to complete with timeout"""
+        import time
+        start_time = time.time()
+        
+        if not request_id:
+            logger.warning("No request_id provided for step 10 insight wait")
+            return False
+            
+        logger.info(f"[{request_id}] Waiting for step 10 insight extraction (timeout: {timeout_seconds}s)...")
+        
+        while time.time() - start_time < timeout_seconds:
+            # Check if insight has been stored in cache
+            try:
+                cached_insights = get_insights(request_id)
+                if cached_insights and 10 in cached_insights:
+                    elapsed = time.time() - start_time
+                    logger.info(f"[{request_id}] Step 10 insight found in cache after {elapsed:.1f}s")
+                    return True
+            except Exception as e:
+                logger.error(f"[{request_id}] Error checking for step 10 insight in cache: {e}")
+                break
+                
+            time.sleep(0.5)  # Check every 500ms
+        
+        elapsed = time.time() - start_time
+        logger.warning(f"[{request_id}] Step 10 insight not found after {elapsed:.1f}s timeout - will rely on late retrieval")
+        return False
+
     def _trigger_insight_extraction(self, step_id, output, progress_callback, request_id=None):
         """
         Trigger insight extraction for any step in a background thread.
@@ -821,19 +1033,19 @@ This enriched brief combines the original product idea with strategic insights t
             return None
         
         insight_prompts = {
-            1: "Summarize the key takeaway from this research in one sentence.",
-            2: "State the core issue/challenge mentioned most frequently in one sentence.",
+            1: "Summarize the key takeaway from this research in one concise sentence.",
+            2: "State the core issue/challenge mentioned most frequently in one concise sentence.",
             3: "What is the main headline or title from this document?",
-            4: "State the most significant change or improvement described in one sentence.",
-            5: "State the most important concern or question raised in this content in one sentence.",
-            6: "State the reaction or response pattern mentioned most often in one sentence.",
-            7: "State the main change or modification described in this content in one sentence.",
-            8: "What is the absolute most important question addressed in this content in one sentence?",
-            9: "State the central, precise customer value proposition conveyed in this document in one sentence.",
-            10: "State the most critical element or feature mentioned in one sentence."
+            4: "State the most significant change or improvement described in one concise sentence.",
+            5: "State the most important concern or question raised in this content in one concise sentence.",
+            6: "State the reaction or response pattern mentioned most often in one concise sentence.",
+            7: "State the main change or modification described in this content in one concise sentence.",
+            8: "What is the absolute most important question addressed in this content in one concise sentence?",
+            9: "State the central, precise customer value proposition conveyed in this document in one concise sentence.",
+            10: "State the most critical element or feature mentioned in one concise sentence."
         }
         
-        prompt = insight_prompts.get(step_id, "Summarize the key finding in one sentence.")
+        prompt = insight_prompts.get(step_id, "Summarize the key finding in one concise sentence.")
         
         try:
             # Create Claude-format prompt

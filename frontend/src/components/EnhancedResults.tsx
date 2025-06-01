@@ -5,6 +5,9 @@ import PressReleaseEvolution from './PressReleaseEvolution';
 import ResearchArtifactsView from './ResearchArtifactsView';
 import StepsDisplay from './StepsDisplay';
 import { ContentProcessor } from '../utils/contentProcessor';
+import CopyButton from './CopyButton';
+import CopyToast from './CopyToast';
+import { exportPRFAQToWord } from '../utils/prfaqExporter';
 
 interface EnhancedResultsProps {
   finalPrfaq: string;
@@ -29,6 +32,8 @@ const EnhancedResults: React.FC<EnhancedResultsProps> = ({
 }) => {
   const [activeTab, setActiveTab] = useState<TabType>('final');
   const [finalDocTab, setFinalDocTab] = useState<'prfaq' | 'mlp'>('prfaq');
+  const [isExporting, setIsExporting] = useState(false);
+  const [showToast, setShowToast] = useState(false);
   
   // Local state for step toggling in results view
   const [localStepsData, setLocalStepsData] = useState<StepData[]>([]);
@@ -45,6 +50,22 @@ const EnhancedResults: React.FC<EnhancedResultsProps> = ({
       step.id === stepId ? { ...step, isActive: !step.isActive } : step
     ));
   };
+
+  const handleExportPRFAQ = async () => {
+    setIsExporting(true);
+    try {
+      await exportPRFAQToWord(finalPrfaq, productIdea);
+    } catch (error) {
+      console.error('Export failed:', error);
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
+  const handleCopySuccess = () => {
+    setShowToast(true);
+    setTimeout(() => setShowToast(false), 2000);
+  };
   
   const tabs: Array<{ id: TabType; label: string; available: boolean }> = [
     { id: 'final', label: 'Final Documents', available: true },
@@ -59,12 +80,41 @@ const EnhancedResults: React.FC<EnhancedResultsProps> = ({
       <header className="bg-white border-b border-gray-200 px-6 py-4">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           <h1 className="text-xl font-semibold">ChatPRFAQ</h1>
-          <button
-            onClick={onNewIdea}
-            className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
-          >
-            New Idea →
-          </button>
+          <div className="flex items-center gap-3">
+            {/* Add Export button when viewing final documents */}
+            {activeTab === 'final' && (
+              <button
+                onClick={handleExportPRFAQ}
+                disabled={isExporting}
+                className="relative flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gray-500/20 disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden"
+              >
+                {isExporting ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin" />
+                    <span>Exporting...</span>
+                  </>
+                ) : (
+                  <>
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    <span>Export PRFAQ</span>
+                  </>
+                )}
+                {isExporting && (
+                  <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gray-200">
+                    <div className="h-full bg-gray-400 animate-progress" />
+                  </div>
+                )}
+              </button>
+            )}
+            <button
+              onClick={onNewIdea}
+              className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
+            >
+              New Idea →
+            </button>
+          </div>
         </div>
       </header>
       
@@ -132,17 +182,33 @@ const EnhancedResults: React.FC<EnhancedResultsProps> = ({
             
             {/* Document Content */}
             <div className="p-8 md:p-16 max-w-4xl mx-auto">
-              {finalDocTab === 'prfaq' ? (
-                <MarkdownRenderer 
-                  content={ContentProcessor.processContent(finalPrfaq)} 
-                  variant="standard"
-                />
-              ) : (
-                <MarkdownRenderer 
-                  content={ContentProcessor.processContent(finalMlpPlan)} 
-                  variant="standard"
-                />
-              )}
+              <div className="relative">
+                {/* Copy button positioned at top-right */}
+                <div className="absolute -top-10 right-0">
+                  <CopyButton 
+                    content={finalDocTab === 'prfaq' 
+                      ? ContentProcessor.processContent(finalPrfaq)
+                      : ContentProcessor.processContent(finalMlpPlan)
+                    }
+                    variant="icon"
+                    className="text-gray-400 hover:text-gray-600 hover:bg-gray-50/50"
+                    iconSize="sm"
+                    onCopySuccess={handleCopySuccess}
+                  />
+                </div>
+                
+                {finalDocTab === 'prfaq' ? (
+                  <MarkdownRenderer 
+                    content={ContentProcessor.processContent(finalPrfaq)} 
+                    variant="standard"
+                  />
+                ) : (
+                  <MarkdownRenderer 
+                    content={ContentProcessor.processContent(finalMlpPlan)} 
+                    variant="standard"
+                  />
+                )}
+              </div>
             </div>
           </div>
         )}
@@ -166,6 +232,9 @@ const EnhancedResults: React.FC<EnhancedResultsProps> = ({
           </div>
         )}
       </div>
+
+      {/* Copy Toast */}
+      <CopyToast show={showToast} />
     </div>
   );
 };

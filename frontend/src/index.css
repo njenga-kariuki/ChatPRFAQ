@@ -449,11 +449,24 @@ body {
 }
 
 /* FAQ Question/Answer Formatting */
-.prose-custom p strong:first-child {
+/* Only apply block styling to strong:first-child if it's the only strong in the paragraph */
+.prose-custom p strong:first-child:only-of-type {
   display: block;
   margin-top: 2rem;
   margin-bottom: 0.75rem;
   color: #111827;
+}
+
+/* For FAQ patterns (multiple strong elements), keep them inline */
+.prose-custom p:has(strong + strong) strong {
+  display: inline;
+  margin: 0;
+}
+
+/* Force Answer: to appear on new line in FAQ patterns */
+.prose-custom p strong:nth-of-type(2):before {
+  content: "\A";
+  white-space: pre;
 }
 
 .prose-custom p:has(strong:first-child) + p:not(:has(strong:first-child)) {
@@ -838,21 +851,6 @@ body {
   animation: shimmer 2s infinite;
 }
 
-@keyframes slideIn {
-  from { 
-    opacity: 0; 
-    transform: translateX(100px);
-  }
-  to { 
-    opacity: 1; 
-    transform: translateX(0);
-  }
-}
-
-.animate-slideIn {
-  animation: slideIn 0.3s ease-out;
-}
-
 @keyframes completionBounce {
   0%, 100% { transform: scale(1); }
   50% { transform: scale(1.05); }
@@ -1035,4 +1033,39 @@ body {
   .step-insight {
     max-width: 850px;
   }
+}
+
+/* Copy/Export Animations */
+@keyframes slideIn {
+  0% { 
+    opacity: 0; 
+    transform: translateY(10px); 
+  }
+  100% { 
+    opacity: 1; 
+    transform: translateY(0); 
+  }
+}
+
+@keyframes progress {
+  0% { width: 0%; }
+  50% { width: 70%; }
+  100% { width: 95%; }
+}
+
+@keyframes fadeIn {
+  0% { opacity: 0; transform: translateY(-5px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+.animate-slideIn {
+  animation: slideIn 0.3s ease-out forwards;
+}
+
+.animate-progress {
+  animation: progress 2s ease-out forwards;
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.2s ease-out 0.1s both;
 }

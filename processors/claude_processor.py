@@ -2,6 +2,7 @@ import logging
 import anthropic
 import httpx
 from config import ANTHROPIC_API_KEY, CLAUDE_MODEL
+import time
 
 # Import store_raw_llm_output from the new utility location
 from utils.raw_output_cache import store_raw_llm_output
@@ -146,17 +147,39 @@ class ClaudeProcessor:
         log_prefix = f"[{request_id or 'NO_REQ_ID'}]" if request_id else f"[Step {step_id or 'N/A'}]"
         logger.info(f"{log_prefix} Starting Claude API call for step {step_id}")
         
+        # Protected progress callback wrapper
+        def safe_callback(update):
+            if progress_callback:
+                try:
+                    progress_callback(update)
+                except Exception as e:
+                    logger.error(f"{log_prefix} Progress callback failed: {e}")
+                    # Don't re-raise to avoid killing the calling thread
+        
+        # Send step start log
+        safe_callback({
+            'type': 'log',
+            'level': 'info',
+            'message': f'🎯 Step {step_id} starting Claude API call',
+            'request_id': request_id
+        })
+        
         # Check if client was properly initialized
         if not self.client:
             error_msg = "Claude API client not initialized. Please set ANTHROPIC_API_KEY in Replit Secrets."
             logger.error(f"{log_prefix} {error_msg}")
-            if progress_callback:
-                progress_callback({
-                    "step": step_id,
-                    "status": "error",
-                    "message": "Claude API not configured",
-                    "error": error_msg
-                })
+            safe_callback({
+                "step": step_id,
+                "status": "error",
+                "message": "Claude API not configured",
+                "error": error_msg
+            })
+            safe_callback({
+                'type': 'log',
+                'level': 'error',
+                'message': f'❌ Step {step_id} failed: API not configured',
+                'request_id': request_id
+            })
             return {"error": error_msg}
         
         try:
@@ -164,31 +187,39 @@ class ClaudeProcessor:
             messages = self.step_activity_messages.get(step_id, ["Processing..."])
             
             # Send initial message
-            if progress_callback:
-                if isinstance(messages, list) and len(messages) > 0:
-                    progress_callback({
-                        "step": step_id,
-                        "status": "processing",
-                        "message": messages[0],
-                        "progress": self._calculate_step_progress(step_id)
-                    })
-                    
-                    # Set up message progression for team dynamics
-                    if len(messages) > 1:
-                        import threading
-                        for i, msg in enumerate(messages[1:], 1):
-                            delay = i * 2.0
-                            progress_increment = self._calculate_step_progress(step_id, i)
-                            threading.Timer(delay, lambda m=msg, p=progress_increment, sid=step_id: progress_callback({
-                                "step": sid,
-                                "status": "processing", 
-                                "message": m,
-                                "progress": p
-                            })).start()
+            if isinstance(messages, list) and len(messages) > 0:
+                safe_callback({
+                    "step": step_id,
+                    "status": "processing",
+                    "message": messages[0],
+                    "progress": self._calculate_step_progress(step_id)
+                })
+                
+                # Set up message progression for team dynamics
+                if len(messages) > 1:
+                    import threading
+                    for i, msg in enumerate(messages[1:], 1):
+                        delay = i * 2.0
+                        progress_increment = self._calculate_step_progress(step_id, i)
+                        threading.Timer(delay, lambda m=msg, p=progress_increment, sid=step_id: safe_callback({
+                            "step": sid,
+                            "status": "processing", 
+                            "message": m,
+                            "progress": p
+                        })).start()
             
             logger.info(f"{log_prefix} Calling Claude API with model: {self.model}")
             logger.debug(f"{log_prefix} System prompt length: {len(system_prompt)}")
             logger.debug(f"{log_prefix} User prompt length: {len(user_prompt)}")
+            
+            # Send API call start log with timing
+            api_start_time = time.time()
+            safe_callback({
+                'type': 'log',
+                'level': 'info',
+                'message': f'🔄 Step {step_id} calling Claude API (model: {self.model})',
+                'request_id': request_id
+            })
             
             response = self.client.messages.create(
                 model=self.model,
@@ -201,12 +232,28 @@ class ClaudeProcessor:
                 ]
             )
             
+            api_duration = time.time() - api_start_time
+            
             if not response or not response.content or not response.content[0].text:
                 logger.error(f"{log_prefix} Invalid response from Claude API")
+                safe_callback({
+                    'type': 'log',
+                    'level': 'error',
+                    'message': f'❌ Step {step_id} received invalid Claude API response',
+                    'request_id': request_id
+                })
                 return {"error": "Invalid response from Claude API"}
             
             output = response.content[0].text
             logger.info(f"{log_prefix} Claude response: {format_response_summary(output)}")
+
+            # Send API completion log with timing
+            safe_callback({
+                'type': 'log',
+                'level': 'info',
+                'message': f'✅ Step {step_id} Claude API completed in {api_duration:.1f}s ({len(output)} chars)',
+                'request_id': request_id
+            })
 
             # Store raw output if request_id is provided
             if request_id and step_info:
@@ -219,33 +266,45 @@ class ClaudeProcessor:
             # Critical validation logging for response quality
             if len(output.strip()) < 100:
                 logger.warning(f"{log_prefix} Claude response seems unusually short: {len(output)} chars")
+                safe_callback({
+                    'type': 'log',
+                    'level': 'warn',
+                    'message': f'⚠️ Step {step_id} response unusually short ({len(output)} chars)',
+                    'request_id': request_id
+                })
             else:
                 logger.info(f"{log_prefix} Claude response appears to be of appropriate length")
             
             # Send completion update via progress callback
-            if progress_callback:
-                progress_callback({
-                    "step": step_id,
-                    "status": "completed",
-                    "message": f"Step {step_id} completed successfully",
-                    "progress": self._calculate_step_progress(step_id, 7),
-                    "output": output
-                })
+            safe_callback({
+                "step": step_id,
+                "status": "completed",
+                "message": f"Step {step_id} completed successfully",
+                "progress": self._calculate_step_progress(step_id, 7),
+                "output": output
+            })
             
             logger.info(f"{log_prefix} Claude API call completed successfully")
             return {"output": output}
             
         except Exception as e:
+            api_duration = time.time() - api_start_time if 'api_start_time' in locals() else 0
             error_msg = f"Claude API error: {str(e)}"
             logger.error(f"{log_prefix} API call failed | Model: {self.model}, Error: {type(e).__name__}: {str(e)}")
             logger.exception("Full error traceback:")
             
-            if progress_callback:
-                progress_callback({
-                    "step": step_id,
-                    "status": "error",
-                    "message": f"Step {step_id} failed: {str(e)}",
-                    "error": error_msg
-                })
+            safe_callback({
+                "step": step_id,
+                "status": "error",
+                "message": f"Step {step_id} failed: {str(e)}",
+                "error": error_msg
+            })
+            
+            safe_callback({
+                'type': 'log',
+                'level': 'error',
+                'message': f'💥 Step {step_id} Claude API failed after {api_duration:.1f}s: {type(e).__name__}: {str(e)}',
+                'request_id': request_id
+            })
             
             return {"error": error_msg} 

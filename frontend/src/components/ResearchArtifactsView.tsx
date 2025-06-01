@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { ResearchArtifacts } from '../types';
 import MarkdownRenderer from './MarkdownRenderer';
+import CopyButton from './CopyButton';
+import CopyToast from './CopyToast';
 
 interface ResearchArtifactsViewProps {
   artifacts: ResearchArtifacts;
@@ -8,6 +10,12 @@ interface ResearchArtifactsViewProps {
 
 const ResearchArtifactsView: React.FC<ResearchArtifactsViewProps> = ({ artifacts }) => {
   const [selectedReport, setSelectedReport] = useState<keyof ResearchArtifacts | null>(null);
+  const [showToast, setShowToast] = useState(false);
+  
+  const handleCopySuccess = () => {
+    setShowToast(true);
+    setTimeout(() => setShowToast(false), 2000);
+  };
   
   const reports = [
     {
@@ -96,14 +104,24 @@ const ResearchArtifactsView: React.FC<ResearchArtifactsViewProps> = ({ artifacts
               <h3 className="text-xl font-semibold">
                 {reports.find(r => r.key === selectedReport)?.title}
               </h3>
-              <button
-                onClick={() => setSelectedReport(null)}
-                className="text-gray-500 hover:text-gray-700"
-              >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
+              <div className="flex items-center gap-3">
+                <CopyButton 
+                  content={artifacts[selectedReport]}
+                  variant="icon"
+                  className="text-gray-400 hover:text-gray-600 hover:bg-gray-50/50"
+                  iconSize="sm"
+                  onCopySuccess={handleCopySuccess}
+                />
+                <div className="w-px h-4 bg-gray-200" />
+                <button
+                  onClick={() => setSelectedReport(null)}
+                  className="text-gray-400 hover:text-gray-600 transition-colors"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
             </div>
             <div className="flex-1 overflow-y-auto p-6">
               <MarkdownRenderer 
@@ -114,6 +132,9 @@ const ResearchArtifactsView: React.FC<ResearchArtifactsViewProps> = ({ artifacts
           </div>
         </div>
       )}
+
+      {/* Copy Toast */}
+      <CopyToast show={showToast} />
     </div>
   );
 };

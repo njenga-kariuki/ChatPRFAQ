@@ -154,20 +154,90 @@ def process_product_idea_stream():
             # Create a queue for progress updates
             progress_queue = queue.Queue()
             result_container = {}
+            last_heartbeat = {'time': time.time()}
             
-            def progress_callback(update):
-                logger.info(f"[{request_id}] Step {update.get('step', '?')} | {update.get('status', 'unknown')}")
-                progress_queue.put(update)
+            def safe_progress_callback(update):
+                """Protected progress callback that won't kill the background thread"""
+                try:
+                    # Don't log heartbeat messages to avoid log clutter
+                    if update.get('type') != 'heartbeat':
+                        logger.info(f"[{request_id}] Step {update.get('step', '?')} | {update.get('status', 'unknown')}")
+                    progress_queue.put(update)
+                except Exception as e:
+                    logger.error(f"[{request_id}] Progress callback failed but thread continues: {e}")
+                    # Don't re-raise - keep the background thread alive
+                    try:
+                        progress_queue.put({
+                            'type': 'log',
+                            'level': 'error',
+                            'message': f'🚨 Progress callback failed: {str(e)}',
+                            'request_id': request_id
+                        })
+                    except:
+                        pass  # Final safety net
             
             def process_in_thread():
                 try:
                     logger.info(f"[{request_id}] Background processing thread started")
-                    result = llm_processor.process_all_steps(product_idea, progress_callback, request_id=request_id)
+                    
+                    # Send thread start log to frontend
+                    safe_progress_callback({
+                        'type': 'log',
+                        'level': 'info',
+                        'message': '🧵 Background processing thread started',
+                        'request_id': request_id
+                    })
+                    
+                    # Heartbeat mechanism with stop flag
+                    heartbeat_stop = {'stop': False}
+                    import threading
+                    def heartbeat():
+                        while not heartbeat_stop['stop']:
+                            try:
+                                last_heartbeat['time'] = time.time()
+                                safe_progress_callback({
+                                    'type': 'heartbeat',
+                                    'timestamp': time.time(),
+                                    'request_id': request_id
+                                })
+                                time.sleep(15)  # Heartbeat every 15 seconds
+                            except:
+                                break  # Exit heartbeat if main thread ends
+                    
+                    heartbeat_thread = threading.Thread(target=heartbeat, daemon=True)
+                    heartbeat_thread.start()
+                    
+                    result = llm_processor.process_all_steps(product_idea, safe_progress_callback, request_id=request_id)
                     result_container['result'] = result
+                    
+                    # Stop heartbeat thread
+                    heartbeat_stop['stop'] = True
+                    
+                    # Send completion log
+                    safe_progress_callback({
+                        'type': 'log',
+                        'level': 'info',
+                        'message': '✅ Background processing completed successfully',
+                        'request_id': request_id
+                    })
+                    
                     progress_queue.put({'done': True})
                     logger.info(f"[{request_id}] Background processing thread completed")
+                    
                 except Exception as e:
+                    # Stop heartbeat thread on error too
+                    heartbeat_stop['stop'] = True
+                    
                     logger.exception(f"[{request_id}] Error in background processing thread")
+                    
+                    # Send error log to frontend
+                    safe_progress_callback({
+                        'type': 'log',
+                        'level': 'error',
+                        'message': f'🚨 Background thread failed: {str(e)}',
+                        'request_id': request_id
+                    })
+                    
                     progress_queue.put({
                         'error': True,
                         'message': f'Server error: {str(e)}'
@@ -190,7 +260,7 @@ def process_product_idea_stream():
             
             while True:
                 try:
-                    update = progress_queue.get(timeout=60)  # 60 second timeout
+                    update = progress_queue.get(timeout=10)  # Reduced from 60s to 10s for faster detection
                     update_count += 1
                     current_time = time.time()
                     
@@ -199,6 +269,10 @@ def process_product_idea_stream():
                         step_duration = current_time - last_step_time
                         logger.info(f"[{request_id}] Step {update.get('step')} update after {step_duration:.1f}s | Status: {update.get('status', 'unknown')}")
                         last_step_time = current_time
+                    
+                    # Update heartbeat tracking for non-heartbeat messages
+                    if update.get('type') != 'heartbeat':
+                        last_heartbeat['time'] = current_time
                     
                     logger.debug(f"[{request_id}] Streaming update #{update_count}: {update.get('status', 'unknown')}")
                     
@@ -219,13 +293,28 @@ def process_product_idea_stream():
                         yield f"data: {json.dumps({'error': update['message'], 'request_id': request_id})}\n\n"
                         break
                     else:
-                        # Send progress update
+                        # Send progress update (including logs and heartbeats)
                         yield f"data: {json.dumps(update)}\n\n"
                         
                 except queue.Empty:
-                    # Timeout - send keepalive and check for stuck processing
+                    # Faster timeout detection with thread health checking
                     elapsed_time = time.time() - last_step_time
-                    logger.warning(f"[{request_id}] Stream timeout after {elapsed_time:.1f}s - sending keepalive")
+                    heartbeat_elapsed = time.time() - last_heartbeat['time']
+                    thread_alive = thread.is_alive()
+                    
+                    logger.warning(f"[{request_id}] Stream timeout after {elapsed_time:.1f}s | Thread alive: {thread_alive} | Heartbeat age: {heartbeat_elapsed:.1f}s")
+                    
+                    # Check if thread died
+                    if not thread_alive:
+                        logger.error(f"[{request_id}] Background thread died unexpectedly")
+                        yield f"data: {json.dumps({'error': 'Processing thread failed unexpectedly. Please try again.', 'request_id': request_id})}\n\n"
+                        break
+                    
+                    # Check if we've lost heartbeat (thread might be hung)
+                    if heartbeat_elapsed > 45:  # No heartbeat for 45 seconds = hung thread
+                        logger.error(f"[{request_id}] Thread appears hung (no heartbeat for {heartbeat_elapsed:.1f}s)")
+                        yield f"data: {json.dumps({'error': 'Processing appears to be stuck. Please try again.', 'request_id': request_id})}\n\n"
+                        break
                     
                     # If we've been stuck for too long, consider it a failure
                     if elapsed_time > 120:  # 2 minutes without progress

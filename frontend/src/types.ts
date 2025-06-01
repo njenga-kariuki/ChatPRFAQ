@@ -160,4 +160,11 @@ export interface AstDiffResult {
 }
 
 // Union of all possible diff result types
-export type DiffResultType = AstDiffResult | MarkdownAwareDiff | ProcessedDiff; 
+export type DiffResultType = AstDiffResult | MarkdownAwareDiff | ProcessedDiff;
+
+// Add type declaration for modern File System API
+declare global {
+  interface Window {
+    showSaveFilePicker?: (options?: any) => Promise<any>;
+  }
+} 

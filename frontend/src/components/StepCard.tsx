@@ -3,6 +3,7 @@ import { StepData } from '../types'; // Assuming types.ts is in src/
 import Markdown from 'react-markdown'; // We'll add this dependency later
 import remarkGfm from 'remark-gfm';
 import { ContentProcessor } from '../utils/contentProcessor';
+import CopyButton from './CopyButton';
 
 interface StepCardProps {
   step: StepData;
@@ -137,7 +138,7 @@ const StepCard: React.FC<StepCardProps> = ({ step, onToggle }) => {
       {/* Header with hover effect */}
       <button
         onClick={onToggle}
-        className="w-full px-8 py-6 relative overflow-hidden group/header focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:bg-gray-50/50 rounded-t-2xl"
+        className="w-full px-8 py-6 relative overflow-hidden group/header group/insight-hover focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:bg-gray-50/50 rounded-t-2xl"
       >
         {/* Hover gradient */}
         <div className="absolute inset-0 bg-gradient-to-r from-gray-50/0 via-gray-50/50 to-gray-50/0 opacity-0 group-hover/header:opacity-100 transition-opacity duration-300" />
@@ -161,22 +162,37 @@ const StepCard: React.FC<StepCardProps> = ({ step, onToggle }) => {
             </div>
           </div>
           
-          {/* Key insight display - updated with new classes and spacing */}
-          {step.status === 'completed' && step.keyInsight && !step.isActive && (
-            <div className="step-insight-container">
-              <span className="step-insight">
-                {step.insightLabel && (
-                  <span className="insight-label">{step.insightLabel}</span>
-                )}
-                {step.keyInsight}
-              </span>
-            </div>
-          )}
-          
-          {/* Animated chevron */}
-          <svg className={`w-5 h-5 text-gray-400 transition-all duration-300 ${step.isActive ? 'rotate-180' : 'group-hover/header:translate-y-0.5'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-          </svg>
+          <div className="flex items-center gap-2">
+            {/* Key insight display - updated with inline expansion */}
+            {step.status === 'completed' && step.keyInsight && !step.isActive && (
+              <div className="step-insight-container">
+                {/* Normal truncated insight - hidden on hover */}
+                <span className="step-insight group-hover/insight-hover:opacity-0 transition-opacity duration-200">
+                  {step.insightLabel && (
+                    <span className="insight-label">{step.insightLabel}</span>
+                  )}
+                  {step.keyInsight}
+                </span>
+              </div>
+            )}
+            
+            {/* Expanded insight overlay - shows on hover */}
+            {step.status === 'completed' && step.keyInsight && !step.isActive && (
+              <div className="absolute inset-y-0 left-1/2 right-12 opacity-0 group-hover/insight-hover:opacity-100 transition-opacity duration-200 flex items-center pointer-events-none">
+                <div className="text-gray-600 text-sm font-semibold leading-relaxed whitespace-normal pr-4">
+                  {step.insightLabel && (
+                    <span className="text-gray-500 font-medium text-xs mr-1.5">{step.insightLabel}</span>
+                  )}
+                  {step.keyInsight}
+                </div>
+              </div>
+            )}
+            
+            {/* Animated chevron */}
+            <svg className={`w-5 h-5 text-gray-400 transition-all duration-300 ${step.isActive ? 'rotate-180' : 'group-hover/header:translate-y-0.5'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </svg>
+          </div>
         </div>
       </button>
 
@@ -184,41 +200,58 @@ const StepCard: React.FC<StepCardProps> = ({ step, onToggle }) => {
       <div className={`overflow-hidden transition-all duration-300 ease-in-out ${step.isActive ? 'max-h-[7500px]' : 'max-h-0'}`}>
         <div className="px-8 pb-8 pt-4 border-t border-gray-100">
           {step.output ? (
-            <FAQFixWrapper stepId={step.id} content={step.output}>
-              <div className="prose-custom">
-                <Markdown 
-                  remarkPlugins={[remarkGfm]}
-                  components={{
-                    p: ({children}) => <p style={{marginBottom: '1.5rem', lineHeight: '1.7'}}>{children}</p>,
-                    table: ({children}) => (
-                      <div className="overflow-x-auto my-6">
-                        <table className="min-w-full divide-y divide-gray-200 border border-gray-200 rounded-lg overflow-hidden">
-                          {children}
-                        </table>
-                      </div>
-                    ),
-                    thead: ({children}) => (
-                      <thead className="bg-gray-50">{children}</thead>
-                    ),
-                    th: ({children}) => (
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-r last:border-r-0">
-                        {children}
-                      </th>
-                    ),
-                    td: ({children}) => (
-                      <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900 border-r last:border-r-0">
-                        {children}
-                      </td>
-                    ),
-                    tr: ({children}) => (
-                      <tr className="border-b hover:bg-gray-50 transition-colors">{children}</tr>
-                    )
-                  }}
-                >
-                  {ContentProcessor.processContent(step.output)}
-                </Markdown>
+            <div className="relative">
+              {/* Copy button positioned at top-right of content */}
+              {step.status === 'completed' && (
+                <div className="absolute top-0 right-0">
+                  <CopyButton 
+                    content={step.output}
+                    variant="icon"
+                    className="text-gray-400 hover:text-gray-600 hover:bg-gray-50/50"
+                    iconSize="sm"
+                  />
+                </div>
+              )}
+              
+              {/* Existing content with responsive padding to accommodate copy button */}
+              <div className="pr-12">
+                <FAQFixWrapper stepId={step.id} content={step.output}>
+                  <div className="prose-custom">
+                    <Markdown 
+                      remarkPlugins={[remarkGfm]}
+                      components={{
+                        p: ({children}) => <p style={{marginBottom: '1.5rem', lineHeight: '1.7'}}>{children}</p>,
+                        table: ({children}) => (
+                          <div className="overflow-x-auto my-6">
+                            <table className="min-w-full divide-y divide-gray-200 border border-gray-200 rounded-lg overflow-hidden">
+                              {children}
+                            </table>
+                          </div>
+                        ),
+                        thead: ({children}) => (
+                          <thead className="bg-gray-50">{children}</thead>
+                        ),
+                        th: ({children}) => (
+                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-r last:border-r-0">
+                            {children}
+                          </th>
+                        ),
+                        td: ({children}) => (
+                          <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900 border-r last:border-r-0">
+                            {children}
+                          </td>
+                        ),
+                        tr: ({children}) => (
+                          <tr className="border-b hover:bg-gray-50 transition-colors">{children}</tr>
+                        )
+                      }}
+                    >
+                      {ContentProcessor.processContent(step.output)}
+                    </Markdown>
+                  </div>
+                </FAQFixWrapper>
               </div>
-            </FAQFixWrapper>
+            </div>
           ) : (
             <div className="text-center py-8">
               {step.status === 'processing' ? (
