@@ -223,7 +223,8 @@ class LLMProcessor:
         # Format prompt with press_release_draft and market_research (step 4 specific format)
         formatted_prompt = step["user_prompt"].format(
             press_release_draft=input_text,
-            market_research=step_data['market_research']
+            market_research=step_data['market_research'],
+            problem_validation=step_data['problem_validation']
         )
         
         return self._call_claude_api(step, formatted_prompt, progress_callback, step_id_for_log, request_id)
@@ -254,7 +255,8 @@ class LLMProcessor:
         if step_id in [5, 6]:
             formatted_prompt = step["user_prompt"].format(
                 press_release=input_text,
-                market_research=step_data['market_research']
+                market_research=step_data['market_research'],
+                problem_validation_summary=step_data.get('problem_validation', '')
             )
         else:
             logger.warning(f"[{request_id or 'NO_REQ_ID'}] _handle_step_with_market_research called for unexpected step_id: {step_id}")
@@ -1033,23 +1035,23 @@ This enriched brief combines the original product idea with strategic insights t
             return None
         
         insight_prompts = {
-            1: "Summarize the key takeaway from this research in one concise sentence.",
-            2: "State the core issue/challenge mentioned most frequently in one concise sentence.",
-            3: "What is the main headline or title from this document?",
-            4: "State the most significant change or improvement described in one concise sentence.",
-            5: "State the most important concern or question raised in this content in one concise sentence.",
-            6: "State the reaction or response pattern mentioned most often in one concise sentence.",
-            7: "State the main change or modification described in this content in one concise sentence.",
-            8: "What is the absolute most important question addressed in this content in one concise sentence?",
-            9: "State the central, precise customer value proposition conveyed in this document in one concise sentence.",
-            10: "State the most critical element or feature mentioned in one concise sentence."
+            1: "What is the primary finding from this research? One sentence.",
+            2: "What issue appears most frequently? One sentence.",
+            3: "What is the main headline or title from this document? (keep as is)",
+            4: "What change or improvement is emphasized? One sentence.",
+            5: "What risk is raised most? One sentence.",
+            6: "What reaction pattern appears repeatedly? One sentence.",
+            7: "What change or modification is described? One sentence.",
+            8: "What is the first question in this content? (repeat exactly as is; no preface or explanation)?",
+            9: "What is the core value proposition presented? One sentence.",
+            10: "Which hypothesis is identified as most critical to validate? One sentence"
         }
         
         prompt = insight_prompts.get(step_id, "Summarize the key finding in one concise sentence.")
         
         try:
             # Create Claude-format prompt
-            user_prompt = f"""Thoroughly review the following content and extract the most important insight. Respond with exactly one clear, concise sentence. No quotes around the response.
+            user_prompt = f"""Thoroughly review the following content and extract the most important insight. Respond with exactly one clear, concise sentence. No quotes around the response. Write with maximum economy. Use only essential words. No adjectives, adverbs, or qualifiers unless absolutely necessary for clarity.
 
 Task: {prompt}
 

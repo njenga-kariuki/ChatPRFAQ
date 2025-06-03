@@ -992,47 +992,77 @@ body {
 
 /* Responsive character limits based on screen size */
 /* Base: Hide on mobile/tablet */
-@media (max-width: 1023px) {
+@media (max-width: 1279px) {
   .step-insight-container {
     display: none;
   }
-}
-
-/* Small desktop (1024px-1279px): ~60-70 characters */
-@media (min-width: 1024px) {
-  .step-insight-container {
-    display: flex;
-    flex: 1;
-    justify-content: flex-end;
-    margin-left: 1rem; /* 16px */
-    margin-right: 0.5rem; /* 8px */
-    min-width: 0; /* Enable text truncation */
-  }
   
-  .step-insight {
-    max-width: 400px;
+  /* Also hide hover insight overlay to prevent overlap */
+  .group-hover\/insight-hover\:opacity-100 {
+    opacity: 0 !important;
   }
 }
 
 /* Medium desktop (1280px-1535px): ~80-90 characters */
 @media (min-width: 1280px) {
+  .step-insight-container {
+    display: flex;
+    justify-content: flex-end;
+    flex-shrink: 0; /* Prevent shrinking */
+    max-width: 350px; /* Fixed constraint instead of flex expansion */
+    margin-left: auto; /* Push to right */
+    margin-right: 0.5rem; /* 8px */
+    min-width: 0; /* Enable text truncation */
+  }
+  
   .step-insight {
-    max-width: 550px;
+    max-width: 350px; /* Reduced from 550px */
   }
 }
 
 /* Large desktop (1536px-1919px): ~100-110 characters */
 @media (min-width: 1536px) {
   .step-insight {
-    max-width: 700px;
+    max-width: 450px; /* Reduced from 700px */
+  }
+  
+  .step-insight-container {
+    max-width: 450px; /* Match insight max-width */
   }
 }
 
 /* Ultra-wide (1920px+): ~120-130 characters */
 @media (min-width: 1920px) {
   .step-insight {
-    max-width: 850px;
+    max-width: 550px; /* Reduced from 850px */
   }
+  
+  .step-insight-container {
+    max-width: 550px; /* Match insight max-width */
+  }
+}
+
+/* Step card layout constraints */
+.step-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 2rem; /* Minimum 32px gap between step info and insight */
+  max-width: 100%;
+}
+
+.step-info-section {
+  flex-shrink: 0; /* Prevent step name/persona from shrinking */
+  min-width: 200px; /* Ensure minimum space for step info */
+}
+
+.step-card {
+  max-width: 100%;
+  min-height: auto;
+}
+
+.step-card-content {
+  overflow: hidden; /* Prevent content from breaking layout */
 }
 
 /* Copy/Export Animations */

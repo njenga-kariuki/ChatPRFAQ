@@ -120,7 +120,7 @@ const StepCard: React.FC<StepCardProps> = ({ step, onToggle }) => {
 
   return (
     <div id={`step-${step.id}`} className={`
-      group relative bg-white rounded-2xl border transition-all duration-200
+      step-card group relative bg-white rounded-2xl border transition-all duration-200
       ${step.status === 'processing' ? 'border-blue-200 shadow-lg shadow-blue-100/50' :
         step.status === 'completed' ? 'border-gray-200 hover:border-gray-300 hover:shadow-lg' :
         step.status === 'error' ? 'border-red-200' :
@@ -143,8 +143,8 @@ const StepCard: React.FC<StepCardProps> = ({ step, onToggle }) => {
         {/* Hover gradient */}
         <div className="absolute inset-0 bg-gradient-to-r from-gray-50/0 via-gray-50/50 to-gray-50/0 opacity-0 group-hover/header:opacity-100 transition-opacity duration-300" />
         
-        <div className="relative flex items-center justify-between">
-          <div className="flex items-center gap-4">
+        <div className="step-card-header relative">
+          <div className="step-info-section flex items-center gap-4">
             {/* Modern status icon */}
             <div className={`
               w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300
@@ -178,8 +178,8 @@ const StepCard: React.FC<StepCardProps> = ({ step, onToggle }) => {
             
             {/* Expanded insight overlay - shows on hover */}
             {step.status === 'completed' && step.keyInsight && !step.isActive && (
-              <div className="absolute inset-y-0 left-1/2 right-12 opacity-0 group-hover/insight-hover:opacity-100 transition-opacity duration-200 flex items-center pointer-events-none">
-                <div className="text-gray-600 text-sm font-semibold leading-relaxed whitespace-normal pr-4">
+              <div className="absolute inset-y-0 right-16 w-102 opacity-0 group-hover/insight-hover:opacity-100 transition-opacity duration-200 flex items-center pointer-events-none">
+                <div className="text-gray-600 text-sm font-semibold leading-tight whitespace-normal pr-4 text-center">
                   {step.insightLabel && (
                     <span className="text-gray-500 font-medium text-xs mr-1.5">{step.insightLabel}</span>
                   )}
@@ -197,7 +197,7 @@ const StepCard: React.FC<StepCardProps> = ({ step, onToggle }) => {
       </button>
 
       {/* Content - Collapsible with smooth transition */}
-      <div className={`overflow-hidden transition-all duration-300 ease-in-out ${step.isActive ? 'max-h-[7500px]' : 'max-h-0'}`}>
+      <div className={`step-card-content overflow-hidden transition-all duration-300 ease-in-out ${step.isActive ? 'max-h-[7500px]' : 'max-h-0'}`}>
         <div className="px-8 pb-8 pt-4 border-t border-gray-100">
           {step.output ? (
             <div className="relative">

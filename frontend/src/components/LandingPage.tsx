@@ -36,7 +36,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onStartEvaluation }) => {
         <div className="max-w-4xl mx-auto text-center">
           {/* Hero Headline */}
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-5 leading-tight">
-            <span className="text-black">C-Suite Ready PRFAQs in 3 Minutes</span>
+            <span className="text-black">C-Suite Ready PRFAQs in 5 Minutes</span>
           </h1>
           
           {/* First Subheadline - Tighter spacing */}

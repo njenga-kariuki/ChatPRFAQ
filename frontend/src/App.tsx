@@ -609,8 +609,42 @@ function App() {
                           logToStorage('info', '📝 CAPTURED PR V1 DRAFT', { length: eventData.output.length });
                           break;
                         case 4:
-                          setPRVersions(prev => ({ ...prev, v2_refined: eventData.output }));
-                          logToStorage('info', '📝 CAPTURED PR V2 REFINED', { length: eventData.output.length });
+                          // Extract press release from VP Refinement output, removing "Key Refinements Made" section
+                          const step4Content = eventData.output;
+                          let prRefinedMatch = step4Content.match(/## Refined Press Release[\s\S]*?(?=##|$)/);
+                          if (!prRefinedMatch) {
+                            // Try alternative patterns
+                            prRefinedMatch = step4Content.match(/##\s*Refined Press Release[\s\S]*?(?=##|$)/);
+                          }
+                          if (!prRefinedMatch) {
+                            // Try more flexible pattern
+                            prRefinedMatch = step4Content.match(/Refined Press Release[\s\S]*?(?=##|$)/);
+                          }
+                          
+                          if (prRefinedMatch) {
+                            // Clean up the extracted content by removing the header
+                            let cleanedPR = prRefinedMatch[0]
+                              .replace(/^#{1,3}\s*Refined Press Release\s*\n?/i, '')
+                              .trim();
+                            
+                            setPRVersions(prev => ({ ...prev, v2_refined: cleanedPR }));
+                            logToStorage('info', '📝 CAPTURED PR V2 REFINED FROM VP REFINEMENT', { 
+                              step4ContentLength: step4Content.length,
+                              extractedLength: cleanedPR.length,
+                              pattern: 'found'
+                            });
+                          } else {
+                            logToStorage('warn', '⚠️ COULD NOT EXTRACT REFINED PR FROM VP REFINEMENT', { 
+                              step4ContentLength: step4Content.length,
+                              searchPatterns: ['## Refined Press Release', '##\\s*Refined Press Release', 'Refined Press Release'],
+                              preview: step4Content.substring(0, 500)
+                            });
+                            // Fallback: use the entire VP refinement output
+                            setPRVersions(prev => ({ ...prev, v2_refined: step4Content }));
+                            logToStorage('info', '📝 USING FULL VP REFINEMENT AS V2 REFINED (FALLBACK)', { 
+                              step4ContentLength: step4Content.length
+                            });
+                          }
                           break;
                         case 5:
                           // Step 5 is Internal FAQ, not concept validation
@@ -678,10 +712,15 @@ function App() {
                           }
                           
                           if (prMatch) {
-                            setPRVersions(prev => ({ ...prev, v4_final: prMatch[0] }));
+                            // Clean up the extracted content by removing the header
+                            let cleanedPR = prMatch[0]
+                              .replace(/^#{1,3}\s*\*{0,2}\s*Press Release\s*\*{0,2}\s*\n?/i, '')
+                              .trim();
+                            
+                            setPRVersions(prev => ({ ...prev, v4_final: cleanedPR }));
                             logToStorage('info', '📝 CAPTURED PR V4 FINAL FROM PRFAQ', { 
                               prfaqLength: prfaqContent.length,
-                              extractedLength: prMatch[0].length,
+                              extractedLength: cleanedPR.length,
                               pattern: 'found'
                             });
                           } else {
@@ -1022,7 +1061,7 @@ function App() {
                   ChatPRFAQ
                 </h1>
                 <p className="text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed">
-                  Turn product ideas into C-Suite ready PRFAQs in 3 minutes.
+                  Turn product ideas into C-Suite ready PRFAQs in 5 minutes.
                   <br />
                   <span className="text-gray-600">Powered by 10 specialized AI agents.</span>
                 </p>
@@ -1130,7 +1169,7 @@ function App() {
                 </h1>
                 
                 <p className="subheadline">
-                  Turn product ideas into C-Suite ready PRFAQs in 3 minutes.<br />Powered by 10 specialized AI agents.
+                  Turn product ideas into C-Suite ready PRFAQs in 5 minutes.<br />Powered by 10 specialized AI agents.
                 </p>
                 
                 {/* Subtle exit button in top-right corner */}

@@ -257,6 +257,7 @@ def process_product_idea_stream():
             # Stream progress updates
             update_count = 0
             last_step_time = time.time()
+            current_step_id = None  # Track current step for step-aware timeouts
             
             while True:
                 try:
@@ -269,10 +270,17 @@ def process_product_idea_stream():
                         step_duration = current_time - last_step_time
                         logger.info(f"[{request_id}] Step {update.get('step')} update after {step_duration:.1f}s | Status: {update.get('status', 'unknown')}")
                         last_step_time = current_time
+                        # Track current step for step-aware timeouts
+                        current_step_id = update.get('step')
                     
                     # Update heartbeat tracking for non-heartbeat messages
                     if update.get('type') != 'heartbeat':
                         last_heartbeat['time'] = current_time
+                    else:
+                        # Reset elapsed time on heartbeat for long-running steps (9-10)
+                        if current_step_id and current_step_id >= 9:
+                            last_step_time = current_time
+                            logger.debug(f"[{request_id}] Heartbeat reset elapsed time for Step {current_step_id}")
                     
                     logger.debug(f"[{request_id}] Streaming update #{update_count}: {update.get('status', 'unknown')}")
                     
@@ -302,7 +310,7 @@ def process_product_idea_stream():
                     heartbeat_elapsed = time.time() - last_heartbeat['time']
                     thread_alive = thread.is_alive()
                     
-                    logger.warning(f"[{request_id}] Stream timeout after {elapsed_time:.1f}s | Thread alive: {thread_alive} | Heartbeat age: {heartbeat_elapsed:.1f}s")
+                    logger.warning(f"[{request_id}] Stream timeout after {elapsed_time:.1f}s | Thread alive: {thread_alive} | Heartbeat age: {heartbeat_elapsed:.1f}s | Current step: {current_step_id}")
                     
                     # Check if thread died
                     if not thread_alive:
@@ -316,9 +324,13 @@ def process_product_idea_stream():
                         yield f"data: {json.dumps({'error': 'Processing appears to be stuck. Please try again.', 'request_id': request_id})}\n\n"
                         break
                     
+                    # Step-aware timeout: longer timeout for steps 9-10 (PRFAQ synthesis and MLP plan)
+                    timeout_threshold = 180 if current_step_id and current_step_id >= 9 else 120
+                    
                     # If we've been stuck for too long, consider it a failure
-                    if elapsed_time > 120:  # 2 minutes without progress
-                        logger.error(f"[{request_id}] Processing appears stuck - terminating stream")
+                    if elapsed_time > timeout_threshold:
+                        step_info = f" (Step {current_step_id})" if current_step_id else ""
+                        logger.error(f"[{request_id}] Processing appears stuck{step_info} - terminating stream after {elapsed_time:.1f}s (threshold: {timeout_threshold}s)")
                         yield f"data: {json.dumps({'error': 'Processing timeout - the operation took too long to complete. Please try again.', 'request_id': request_id})}\n\n"
                         break
                     
