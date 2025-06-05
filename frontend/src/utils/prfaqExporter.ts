@@ -3,52 +3,53 @@ import { Document, Paragraph, TextRun, HeadingLevel, AlignmentType, Packer } fro
 // Formatting configuration
 const PRFAQ_FORMATTING = {
   document: {
-    margins: { top: 1440, right: 1440, bottom: 1440, left: 1440 }, // 1 inch = 1440 twips
+    margins: { top: 720, right: 720, bottom: 720, left: 720 }, // 0.5 inch = 720 twips
     defaultFont: "Calibri",
   },
   
   styles: {
     headline: {
-      size: 36, // 18pt × 2 (docx uses half-points)
+      size: 20, // 10pt × 2 (docx uses half-points)
       bold: true,
       alignment: AlignmentType.CENTER,
       spacingAfter: 240, // 12pt
     },
     
     subheading: {
-      size: 28, // 14pt × 2
+      size: 20, // 10pt × 2
       italic: true,
       alignment: AlignmentType.CENTER,
       spacingAfter: 360, // 18pt
     },
     
     body: {
-      size: 22, // 11pt × 2
+      size: 20, // 10pt × 2
       spacingAfter: 120, // 6pt
       lineSpacing: 276, // 1.15
     },
     
     faqSectionHeader: {
-      size: 32, // 16pt × 2
+      size: 20, // 10pt × 2
       bold: true,
+      underline: true,
       spacingBefore: 480, // 24pt
       spacingAfter: 240, // 12pt
     },
     
     faqQuestion: {
-      size: 22, // 11pt × 2
+      size: 20, // 10pt × 2
       bold: true,
       spacingAfter: 60, // 3pt
     },
     
     faqAnswer: {
-      size: 22, // 11pt × 2
+      size: 20, // 10pt × 2
       indent: 720, // 0.5 inch left
       spacingAfter: 240, // 12pt
     },
     
     quote: {
-      size: 22, // 11pt × 2
+      size: 20, // 10pt × 2
       italic: true,
       indent: 720, // 0.5 inch left
       spacingBefore: 120, // 6pt
@@ -224,6 +225,7 @@ function createParagraph(text: string, style: any, options: any = {}): Paragraph
     size: style.size,
     bold: style.bold || false,
     italics: style.italic || false,
+    underline: style.underline || false,
     font: PRFAQ_FORMATTING.document.defaultFont,
   });
   

@@ -197,7 +197,7 @@ const StepCard: React.FC<StepCardProps> = ({ step, onToggle }) => {
       </button>
 
       {/* Content - Collapsible with smooth transition */}
-      <div className={`step-card-content overflow-hidden transition-all duration-300 ease-in-out ${step.isActive ? 'max-h-[7500px]' : 'max-h-0'}`}>
+      <div className={`step-card-content overflow-hidden transition-all duration-300 ease-in-out ${step.isActive ? 'max-h-none' : 'max-h-0'}`}>
         <div className="px-8 pb-8 pt-4 border-t border-gray-100">
           {step.output ? (
             <div className="relative">

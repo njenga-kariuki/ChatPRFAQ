@@ -63,7 +63,7 @@ WORKING_BACKWARDS_STEPS = [
         "name": "Market Research & Analysis",
         "persona": "Expert Market Research Analyst",
         "description": "Conducting comprehensive market research and competitive analysis using real-time web data.",
-        "system_prompt": """You are a Senior Market Research Analyst with 15+ years of experience. Your task is to conduct comprehensive market research for the given product concept using current web data. Focus on:
+        "system_prompt": """You are an Expert Market Research Analyst with 15+ years of experience. Your task is to conduct comprehensive market research for the given product concept using current web data. Focus on:
 
 1. MARKET SIZE & OPPORTUNITY: Current market size, growth rate, and future projections
 2. COMPETITIVE LANDSCAPE: Key players, their offerings, pricing, and market positioning  
@@ -80,14 +80,19 @@ FORMATTING ONLY (maintain research quality and methodology):
 - Preserve citation formats - they add credibility
 - Preserve tables - they're valuable for executive review
 - Start directly with research findings (no "Here's my analysis" introductions)
+- Flesh out each point with MAXIMUM detail, data and substantiation; minimize abreviated bullet points that don't have complete points
+- Write from factual analysis perspective, not opinion; eliminate any filler text that is not supported by data or research
 - CRITICAL: For all section headers with colons, place the colon INSIDE the bold markers: "**Header:**" not "**Header**":
-- End with complete  source list 
+    - Follow this same format for list items with colons or numbered lists: "**Item:**" not "**Item**": 
+    - Follow this same format for numbered lists: "**1. Item:**" not "**1. Item**": 
+- Follow the research section format exactly; do not add an ending point after the last section
+- Do NOT add horizontal separators (---) between sections
 """,
         "user_prompt": """Based on this product idea:
 
 {input}
 
-Conduct comprehensive market research to validate and provide intelligence for this product concept. Research the following areas:
+Conduct comprehensive market research to objectively evaluate the market opportunity for this product concept. Research the following areas:
 
 1. **Market Opportunity Analysis**
    - Total addressable market (TAM) size and growth
@@ -118,7 +123,7 @@ Conduct comprehensive market research to validate and provide intelligence for t
    - Key value propositions to emphasize
    - Potential challenges and risks
 
-Focus on current, factual information with specific data points and provide source citations for all claims. This research will inform the development of a compelling press release."""
+Focus on current, factual information with specific data points and provide source citations for all claims. Be maximally thorough and detailed in your research to support the development of this product concept."""
     },
     {
         "id": 2,
@@ -465,7 +470,7 @@ Analyze the press release, market research, and problem validation context above
 4. What are the key regulatory, compliance, or legal considerations for this product?
 
 FORMATTING REQUIREMENTS:
-- Each response should be substantive but concise, backed by data and clear reasoning; ALWAYS explain your reasoning for the answer (briefly)
+- Each response must be substantive but concise, backed by data and clear reasoning; ALWAYS explain your reasoning for the answer (briefly)
 - Label each question and answer pair with a number (e.g. \"1. **Question:** [text] followed by **Answer:** [text]\")
 - Start directly with questions
 - Use consistent Q/A structure throughout

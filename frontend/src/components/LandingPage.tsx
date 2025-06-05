@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Navigation from './Navigation';
 
 interface LandingPageProps {
   onStartEvaluation: (productIdea?: string) => void;
@@ -31,8 +32,16 @@ const LandingPage: React.FC<LandingPageProps> = ({ onStartEvaluation }) => {
 
   return (
     <div className="min-h-screen bg-gray-50 text-gray-900">
-      {/* Hero Section */}
-      <section className="w-full px-4 py-8 md:px-8 md:py-8">
+      {/* Header - exactly matches How It Works page */}
+      <header className="w-full px-4 py-4 md:px-6">
+        <div className="max-w-6xl mx-auto relative">
+          <Navigation className="absolute top-0 right-0" />
+          <h1 className="text-xl font-semibold">ChatPRFAQ</h1>
+        </div>
+      </header>
+
+      {/* Hero Section - optimized spacing */}
+      <section className="w-full px-4 py-4 md:px-8 md:py-6">
         <div className="max-w-4xl mx-auto text-center">
           {/* Hero Headline */}
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-5 leading-tight">

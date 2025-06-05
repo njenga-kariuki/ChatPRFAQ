@@ -6,6 +6,8 @@ import ProcessingStatus from './components/ProcessingStatus'; // Import Processi
 import StepsDisplay from './components/StepsDisplay'; // Import StepsDisplay
 import ProductAnalysisReview from './components/ProductAnalysisReview'; // Import new component
 import LandingPage from './components/LandingPage'; // Import LandingPage
+import HowItWorksPage from './components/HowItWorksPage'; // Import HowItWorksPage
+import Navigation from './components/Navigation'; // Import Navigation
 import { StepData, PRVersions, ResearchArtifacts } from './types'; // Import StepData and new types
 import Markdown from 'react-markdown'; // Import react-markdown
 import ModernResults from './components/ModernResults'; // Added import for ModernResults
@@ -1056,7 +1058,8 @@ function App() {
         <div className="min-h-screen bg-gray-50 text-gray-900">
           {viewMode === 'input' && (
             <div className="flex flex-col items-center p-4 md:p-8">
-              <header className="w-full max-w-6xl mb-12 text-center">
+              <header className="w-full max-w-6xl mb-12 text-center relative">
+                <Navigation className="absolute top-0 right-0" />
                 <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight tracking-tight text-gray-900">
                   ChatPRFAQ
                 </h1>
@@ -1162,6 +1165,11 @@ function App() {
           {viewMode === 'processing' && (
             <div className="flex flex-col items-center p-4 md:p-8">
               <header className="w-full max-w-6xl mb-6 text-center relative">
+                {/* Conditional Navigation - only show when NOT actively processing */}
+                {!isProcessing && (
+                  <Navigation className="absolute top-0 right-0" />
+                )}
+                
                 <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4 leading-tight">
                   <span className="text-black">
                     ChatPRFAQ
@@ -1172,16 +1180,18 @@ function App() {
                   Turn product ideas into C-Suite ready PRFAQs in 5 minutes.<br />Powered by 10 specialized AI agents.
                 </p>
                 
-                {/* Subtle exit button in top-right corner */}
-                <button
-                  onClick={() => {
-                    resetState();
-                    navigate('/app');
-                  }}
-                  className="absolute top-0 right-0 px-3 py-1.5 text-sm text-gray-500 hover:text-gray-700 hover:bg-gray-50 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300"
-                >
-                  New Idea
-                </button>
+                {/* Subtle exit button in top-right corner - only show when processing */}
+                {isProcessing && (
+                  <button
+                    onClick={() => {
+                      resetState();
+                      navigate('/app');
+                    }}
+                    className="absolute top-0 right-0 px-3 py-1.5 text-sm text-gray-500 hover:text-gray-700 hover:bg-gray-50 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300"
+                  >
+                    New Idea
+                  </button>
+                )}
               </header>
 
               {generalError && (
@@ -1558,6 +1568,7 @@ function App() {
           )}
         </div>
       } />
+      <Route path="/how-it-works" element={<HowItWorksPage />} />
     </Routes>
   );
 }

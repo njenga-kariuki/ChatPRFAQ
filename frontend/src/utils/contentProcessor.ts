@@ -7,6 +7,9 @@ export class ContentProcessor {
     { pattern: /^(Here's|Here is|I've created|Below is).*?:?\s*$/gim, replacement: '' },
     { pattern: /^(This document|The following|Let me know if).*?$/gim, replacement: '' },
     
+    // Remove standalone horizontal rule markers that create unwanted visual breaks
+    { pattern: /^---\s*$/gm, replacement: '' },
+    
     // Fix: Preserve headers with colons/semicolons on same line
     { pattern: /^(#{1,6}\s+.*?:)\s*\n+/gm, replacement: '$1\n' },
     

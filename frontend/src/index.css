@@ -448,6 +448,87 @@ body {
   list-style-type: decimal;
 }
 
+/* Citation Styling */
+.prose-custom p:contains("[") {
+  position: relative;
+}
+
+/* Link Styling - Enhanced for Source Lists */
+.prose-custom a {
+  color: var(--primary-blue);
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 200ms ease;
+  border-bottom: 1px solid transparent;
+}
+
+.prose-custom a:hover {
+  color: var(--primary-blue-hover);
+  border-bottom-color: var(--primary-blue);
+  background-color: var(--primary-blue-alpha-10);
+  padding: 0.125rem 0.25rem;
+  margin: -0.125rem -0.25rem;
+  border-radius: 0.25rem;
+}
+
+.prose-custom a:focus {
+  outline: none;
+  ring: 2px;
+  ring-color: var(--primary-blue-alpha-20);
+  ring-offset: 2px;
+  border-radius: 0.25rem;
+}
+
+/* Source List specific styling */
+.prose-custom li a {
+  display: inline-block;
+  line-height: 1.5;
+}
+
+/* Show URL after link text in source lists - Clean format without parentheses */
+.prose-custom li a::after {
+  content: " " attr(href);
+  color: #9CA3AF;
+  font-size: 0.875rem;
+  font-weight: 400;
+  margin-left: 0.5rem;
+  opacity: 0.8;
+}
+
+/* Desktop: Truncate long URLs with ellipsis */
+@media (min-width: 769px) {
+  .prose-custom li a::after {
+    max-width: 40ch;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: inline-block;
+    vertical-align: top;
+  }
+}
+
+/* Mobile: Shorter URLs, keep inline to maintain alignment */
+@media (max-width: 768px) {
+  .prose-custom li a::after {
+    font-size: 0.8125rem;
+    color: #6B7280;
+    max-width: 25ch;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: inline-block;
+    vertical-align: top;
+  }
+}
+
+/* Very small screens: Even more compact */
+@media (max-width: 480px) {
+  .prose-custom li a::after {
+    max-width: 20ch;
+    font-size: 0.75rem;
+  }
+}
+
 /* FAQ Question/Answer Formatting */
 /* Only apply block styling to strong:first-child if it's the only strong in the paragraph */
 .prose-custom p strong:first-child:only-of-type {
@@ -500,11 +581,6 @@ body {
 
 .prose-custom tbody tr:nth-child(even) {
   background-color: #f9fafb;
-}
-
-/* Citation Styling */
-.prose-custom p:contains("[") {
-  position: relative;
 }
 
 /* FAQ Specific Formatting */
@@ -1098,4 +1174,23 @@ body {
 
 .animate-fadeIn {
   animation: fadeIn 0.2s ease-out 0.1s both;
+}
+
+/* How It Works Page Animations */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Blur utility for process visualization */
+.blur-\[0\.5px\] {
+  filter: blur(0.5px);
 }

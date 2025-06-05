@@ -170,6 +170,41 @@ class PerplexityProcessor:
                 return {"error": "Invalid response from Perplexity API"}
             
             research_output = response.choices[0].message.content
+            
+            # Extract citations from Perplexity API response and append to output
+            try:
+                if hasattr(response, 'citations') and response.citations:
+                    research_output += "\n\n## Source List\n\n"
+                    for i, url in enumerate(response.citations, 1):
+                        # Extract meaningful title from URL path
+                        from urllib.parse import urlparse
+                        parsed = urlparse(url)
+                        path_parts = [part for part in parsed.path.strip('/').split('/') if part]
+                        
+                        if path_parts:
+                            # Take the last meaningful part (usually the article slug)
+                            title_slug = path_parts[-1]
+                            # Convert slug to readable title
+                            title = title_slug.replace('-', ' ').replace('_', ' ')
+                            title = ' '.join(word.capitalize() for word in title.split())
+                            
+                            # Remove common file extensions
+                            title = title.replace('.Html', '').replace('.Php', '').replace('.Aspx', '')
+                        else:
+                            # Fallback to domain name if no path
+                            domain = parsed.netloc.replace('www.', '').replace('.com', '').replace('.edu', '').replace('.org', '')
+                            title = ' '.join(word.capitalize() for word in domain.split('.'))
+                        
+                        # Format as numbered list with clickable markdown links
+                        research_output += f"{i}. [{title}]({url})\n"
+                    
+                    logger.info(f"{log_prefix} Successfully appended {len(response.citations)} citations to research output")
+                else:
+                    logger.warning(f"{log_prefix} No citations found in Perplexity response")
+            except Exception as e:
+                logger.warning(f"{log_prefix} Error processing citations: {str(e)}")
+                # Continue without citations if there's an error
+            
             logger.info(f"{log_prefix} Perplexity response: {format_response_summary(research_output)}")
 
             # Send API completion log with timing
