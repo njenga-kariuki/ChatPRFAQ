@@ -503,7 +503,7 @@ body {
     text-overflow: ellipsis;
     white-space: nowrap;
     display: inline-block;
-    vertical-align: top;
+    vertical-align: text-top;
   }
 }
 
