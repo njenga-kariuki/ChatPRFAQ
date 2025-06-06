@@ -26,6 +26,6 @@ export default defineConfig({
     global: 'globalThis',
   },
   build: {
-    outDir: '../static/react' // Output build to a place Flask can find
+    outDir: '../build/react' // Output build to separate location, not used by Flask
   }
 }) 

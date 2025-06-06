@@ -1,46 +1,14 @@
-# React build artifacts
-static/react/
-
-# Python
-__pycache__/
-*.py[cod]
-*$py.class
-*.so
-.Python
+# Build directories - never commit static builds
 build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
+static/react/
+frontend/dist/
 
-# Virtual environments
-venv/
-env/
-ENV/
-
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
-
-# Logs
-*.log
-logs/
-
-# OS
-.DS_Store
-Thumbs.db
+# Dependencies
+node_modules/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
 
 # Environment variables
 .env
@@ -49,13 +17,24 @@ Thumbs.db
 .env.test.local
 .env.production.local
 
-# Node modules (if any end up in root)
-node_modules/
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
 
-# Replit specific
-.replit
-.config/
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Cache
 .cache/
-.upm/
-.pythonlibs/
-.local/ 

@@ -30,51 +30,21 @@ import os
 
 @app.route('/')
 def serve_react_app():
-    """Redirect to Vite dev server in development"""
+    """Always redirect to Vite dev server - no static builds"""
     from flask import redirect
-    # In development, redirect to Vite dev server
-    if app.debug:
-        return redirect('http://localhost:3000')
-    
-    # In production, serve static files
-    try:
-        return send_from_directory('static/react', 'index.html')
-    except:
-        return '''
-        <h1>Development Server</h1>
-        <p>React app should be built first. Run: <code>cd frontend && npm run build</code></p>
-        <p>Or access the Vite dev server at <a href="http://localhost:3000">http://localhost:3000</a></p>
-        '''
+    return redirect('http://localhost:3000')
 
 @app.route('/<path:path>')
 def serve_react_static_files(path):
-    """Handle static files and SPA routing"""
+    """Always redirect to Vite dev server for non-API routes"""
     # Skip API routes
     if path.startswith('api/'):
         from flask import abort
         abort(404)
     
-    # In development, redirect non-API routes to Vite dev server
-    if app.debug and not path.startswith('assets/'):
-        from flask import redirect
-        return redirect(f'http://localhost:3000/{path}')
-    
-    # In production or for assets, serve static files
-    try:
-        if os.path.exists(os.path.join('static/react', path)):
-            return send_from_directory('static/react', path)
-        else:
-            # For SPA routing, redirect to dev server in development
-            if app.debug:
-                from flask import redirect
-                return redirect(f'http://localhost:3000/{path}')
-            else:
-                return send_from_directory('static/react', 'index.html')
-    except:
-        if app.debug:
-            from flask import redirect
-            return redirect(f'http://localhost:3000/{path}')
-        return serve_react_app()
+    # Always redirect to Vite dev server for all other routes
+    from flask import redirect
+    return redirect(f'http://localhost:3000/{path}')
 
 # API routes start here
 @app.route('/api/process', methods=['POST'])
