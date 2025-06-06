@@ -6,7 +6,7 @@ packages = ["openssl", "postgresql"]
 
 [deployment]
 deploymentTarget = "autoscale"
-run = ["gunicorn", "--bind", "0.0.0.0:5000", "--timeout", "300", "main:app"]
+run = ["python", "deploy.py"]
 
 [workflows]
 runButton = "Start application"

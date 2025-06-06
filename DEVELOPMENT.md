@@ -56,22 +56,27 @@ python deploy.py
 
 ## Port Configuration for Deployment
 
-For Replit deployment, ensure `.replit` file has:
-```toml
-[[ports]]
-localPort = 5000
-externalPort = 80
+For Replit deployment, the `.replit` file is configured to:
+- Route external traffic to port 3000 (where Flask serves the built app)
+- Keep development server accessible on port 3000 for local development
+- Flask API server runs on port 5000 during development only
 
-[[ports]]
-localPort = 3000
-externalPort = 3000
-```
+**Deployment Flow:**
+1. `python deploy.py` builds fresh React code and serves it via Flask on port 3000
+2. External traffic routes to port 3000 (matching Flask deployment port)
+3. Flask serves both the React build AND API endpoints (`/api/*`)
 
-This ensures external traffic routes to Flask (port 5000) while keeping development server accessible.
+**Development Flow:**
+1. Vite dev server runs on port 3000 (live frontend)
+2. Flask API server runs on port 5000 (API endpoints)
+3. Vite proxies API calls to Flask backend
 
 ## Key Changes Made
 1. Removed all static build directories
-2. Updated Flask routing to always use live Vite server
+2. Updated Flask routing to always use live Vite server in development
 3. Changed Vite build output to `build/react/`
 4. Added `.gitignore` to prevent committing builds
 5. Created fresh build scripts for deployment
+6. **Fixed Replit deployment port mismatch:** Flask now serves on port 3000 in production
+7. **Enhanced deployment script:** `deploy.py` builds fresh React code and serves via Flask
+8. **Unified deployment:** Single Flask server handles both frontend assets and API routes
