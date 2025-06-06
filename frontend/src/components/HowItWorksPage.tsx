@@ -12,13 +12,13 @@ interface ComparisonRowProps {
 
 const ComparisonRow: React.FC<ComparisonRowProps> = ({ label, oneShot, chatPrfaq, highlight }) => (
   <>
-    <div className="p-6 border-r border-b border-gray-100">
+    <div className="py-2.5 px-4 border-r border-b border-gray-100">
       <p className="font-medium text-gray-900">{label}</p>
     </div>
-    <div className="p-6 border-r border-b border-gray-100 bg-gray-50">
+    <div className="py-2.5 px-4 border-r border-b border-gray-100 bg-gray-50">
       <p className="text-gray-600">{oneShot}</p>
     </div>
-    <div className="p-6 border-b border-gray-100 bg-gray-50">
+    <div className="py-2.5 px-4 border-b border-gray-100 bg-gray-50">
       <p className="font-semibold text-gray-900">{chatPrfaq}</p>
       {highlight && (
         <p className="text-sm text-gray-600 mt-1">{highlight}</p>
@@ -66,7 +66,7 @@ const WorkingBackwardsFlow: React.FC = () => {
               <div className={`rounded-xl p-6 border-2 ${stage.color} transition-all duration-300 hover:shadow-lg`}>
                 <div className="flex items-center gap-3 mb-3">
                   <span className="text-2xl">{stage.icon}</span>
-                  <h4 className="font-semibold text-lg">{stage.phase}</h4>
+                  <h4 className="font-semibold" style={{fontSize: '16px'}}>{stage.phase}</h4>
                 </div>
                 <div className="space-y-2">
                   {stage.steps.map(step => (
@@ -104,17 +104,17 @@ const HowItWorksPage: React.FC = () => {
       <header className="w-full px-4 py-4 md:px-6">
         <div className="max-w-6xl mx-auto relative">
           <Navigation className="absolute top-0 right-0" />
-          <h1 className="text-xl font-semibold">ChatPRFAQ</h1>
+          <h1 className="text-lg font-semibold">ChatPRFAQ</h1>
         </div>
       </header>
 
       {/* Hero Section */}
       <section className="w-full px-4 py-6 md:px-8 md:py-8">
         <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 leading-tight tracking-tight">
+          <h1 className="font-bold mb-6 leading-tight tracking-tight" style={{fontSize: '28px'}}>
             <span className="text-black">"Can't I just ask any LLM for a PRFAQ?"</span>
           </h1>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-gray-600 max-w-2xl mx-auto leading-relaxed" style={{fontSize: '15px'}}>
             Yes. You'll get a document that looks like a PRFAQ in 30 seconds.
             <br />
             <span className="text-gray-900 font-semibold mt-2 inline-block">
@@ -130,19 +130,19 @@ const HowItWorksPage: React.FC = () => {
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow duration-300 overflow-hidden">
             <div className="grid grid-cols-3 gap-0">
               {/* Header Row */}
-              <div className="p-6 md:p-8 border-b border-r border-gray-100">
+              <div className="py-3 px-4 border-b border-r border-gray-100">
                 <div className="space-y-1">
                   <p className="text-sm font-medium text-gray-500 uppercase tracking-wide">Comparison</p>
                 </div>
               </div>
-              <div className="p-6 md:p-8 border-b border-r border-gray-100 bg-gray-50">
+              <div className="py-3 px-4 border-b border-r border-gray-100 bg-gray-50">
                 <h3 className="font-semibold text-gray-600">One-Shot PRFAQ</h3>
                 <p className="text-sm text-gray-400 mt-1">Any LLM</p>
               </div>
-              <div className="p-6 md:p-8 border-b border-gray-100 bg-gray-900 text-white">
+              <div className="py-3 px-4 border-b border-gray-100 text-gray-900" style={{background: 'var(--primary-blue-light)'}}>
                 <h3 className="font-semibold flex items-center gap-2">
                   ChatPRFAQ
-                  <span className="w-2 h-2 bg-[#4B7CF3] rounded-full animate-pulse"></span>
+                  <span className="w-2 h-2 rounded-full animate-pulse" style={{background: 'var(--primary-blue)'}}></span>
                 </h3>
               </div>
 
@@ -183,15 +183,15 @@ const HowItWorksPage: React.FC = () => {
       </section>
 
       {/* Bezos Quote - Bridge Section */}
-      <section className="w-full px-4 py-14 md:px-8">
+      <section className="w-full px-4 py-14 pb-12 md:px-8">
         <div className="max-w-4xl mx-auto text-center">
-          <blockquote className="text-xl md:text-2xl font-medium text-gray-900 leading-relaxed">
+          <blockquote className="text-lg font-medium text-gray-900 leading-relaxed italic">
             "Great memos are written and re-written, shared with colleagues who are asked to improve the work, set aside for a couple of days, 
             and then edited again with a fresh mind. 
             They simply can’t be done in a day or two."
           </blockquote>
-          <cite className="block mt-6 text-gray-600">
-            — Jeff Bezos
+          <cite className="block mt-3 text-base text-gray-600">
+            — Jeff Bezos, 2017 Amazon Shareholder Letter
           </cite>
         </div>
       </section>
@@ -199,11 +199,11 @@ const HowItWorksPage: React.FC = () => {
       {/* Process Visualization */}
       <section className="w-full px-4 py-8 md:px-8">
         <div className="max-w-6xl mx-auto">
-          <h2 className="text-2xl md:text-3xl font-bold text-center mb-12 text-gray-900">
+          <h2 className="font-bold text-center mb-6 text-gray-900" style={{fontSize: '22px'}}>
             The Working Backwards Simulation
           </h2>        
             {/*Simulation Visualization*/}
-            <div className="mt-20 relative">
+            <div className="mt-8 relative">
               <WorkingBackwardsFlow />
             </div>
           {/* Key Differentiators */}
@@ -232,12 +232,12 @@ const HowItWorksPage: React.FC = () => {
       {/* CTA */}
       <section className="w-full px-4 py-16 md:px-8">
         <div className="max-w-4xl mx-auto text-center">
-          <h3 className="text-2xl font-bold mb-6 text-gray-900">
+          <h3 className="font-bold mb-6 text-gray-900" style={{fontSize: '22px'}}>
             See the difference in your first document.
           </h3>
           <Link 
             to="/app"
-            className="inline-flex items-center justify-center px-8 py-4 bg-gray-900 hover:bg-gray-800 text-white font-semibold rounded-xl transition-all duration-200 hover:shadow-lg hover:shadow-gray-900/20 hover:transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-gray-500/20"
+            className="inline-flex items-center justify-center button-premium"
           >
             Get My PRFAQ
             <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">

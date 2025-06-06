@@ -119,7 +119,7 @@ const ProductAnalysisReview: React.FC<ProductAnalysisReviewProps> = ({
             <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-100 rounded-2xl mb-4">
               <div className="w-8 h-8 border-3 border-blue-500 border-t-transparent rounded-full animate-spin" />
             </div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">Refining Analysis</h3>
+            <h3 className="font-semibold text-gray-900 mb-2" style={{fontSize: '18px'}}>Refining Analysis</h3>
             <p className="text-gray-600">Incorporating your feedback to improve the analysis...</p>
           </div>
         </div>
@@ -127,8 +127,8 @@ const ProductAnalysisReview: React.FC<ProductAnalysisReviewProps> = ({
 
       {/* Header */}
       <div className="text-center mb-10">
-        <h3 className="text-3xl font-bold text-gray-900 mb-3">Review Your Input Brief</h3>
-        <p className="text-gray-600 max-w-2xl mx-auto text-lg leading-relaxed">
+        <h3 className="font-bold text-gray-900 mb-3" style={{fontSize: '22px'}}>Review Your Input Brief</h3>
+        <p className="text-gray-600 max-w-2xl mx-auto leading-relaxed" style={{fontSize: '15px'}}>
           We've framed your target customer, problem, and scope. These inputs will guide the team's work. Refine or continue to build your PRFAQ.
         </p>
       </div>
@@ -137,7 +137,7 @@ const ProductAnalysisReview: React.FC<ProductAnalysisReviewProps> = ({
       <div className="grid md:grid-cols-3 gap-6 mb-8">
         {sections.map((section) => (
           <div key={section.key} className="group bg-white rounded-2xl p-6 border border-gray-200 hover:border-gray-300 hover:shadow-lg transition-all duration-300">
-            <h4 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+            <h4 className="font-semibold text-gray-900 mb-4 flex items-center gap-2" style={{fontSize: '16px'}}>
               <span className="text-2xl">{section.icon}</span>
               <span>{section.title}</span>
             </h4>
@@ -154,7 +154,7 @@ const ProductAnalysisReview: React.FC<ProductAnalysisReviewProps> = ({
       {/* Feedback Form */}
       {showFeedbackForm && (
         <div className="bg-blue-50 rounded-2xl p-8 border border-blue-100 mt-8">
-          <h4 className="text-xl font-semibold text-gray-900 mb-6">Provide Feedback</h4>
+          <h4 className="font-semibold text-gray-900 mb-6" style={{fontSize: '18px'}}>Provide Feedback</h4>
           <div className="space-y-6">
             {sections.map((section) => (
               <div key={section.key}>

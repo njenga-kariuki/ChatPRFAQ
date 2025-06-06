@@ -1049,53 +1049,89 @@ This enriched brief combines the original product idea with strategic insights t
         
         prompt = insight_prompts.get(step_id, "Summarize the key finding in one concise sentence.")
         
-        try:
-            # Create Claude-format prompt
-            user_prompt = f"""Thoroughly review the following content and extract the most important insight. Respond with exactly one clear, concise sentence. No quotes around the response. Write with maximum economy. Use only essential words. No adjectives, adverbs, or qualifiers unless absolutely necessary for clarity.
+        # Import time for retry delays
+        import time
+        
+        # Create Claude-format prompt
+        user_prompt = f"""Thoroughly review the following content and extract the most important insight. Respond with exactly one clear, concise sentence. No quotes around the response. Write with maximum economy. Use only essential words. No adjectives, adverbs, or qualifiers unless absolutely necessary for clarity.
 
 Task: {prompt}
 
 Content to analyze:
 {output}"""
-            
-            logger.info(f"[_extract_key_insight - Step {step_id}] Attempting isolated Claude API call with model: {self.insight_claude_model}")
-            logger.debug(f"[_extract_key_insight - Step {step_id}] Prompt task: '{prompt[:100]}...'")
-            
-            # Call isolated Claude client
-            response = self.insight_claude_client.messages.create(
-                model=self.insight_claude_model,
-                max_tokens=60,
-                temperature=0,
-                messages=[
-                    {
-                        "role": "user",
-                        "content": user_prompt
-                    }
-                ]
-            )
-            
-            logger.info(f"[_extract_key_insight - Step {step_id}] Isolated Claude API call completed successfully")
-            
-            # Extract content from response
-            if response.content and len(response.content) > 0:
-                insight_text = response.content[0].text.strip()
-                logger.info(f"[_extract_key_insight - Step {step_id}] Insight extracted (first 50 chars): '{insight_text[:50]}...'")
-                
-                if insight_text:
-                    # Clean up any quotes that might have been added
-                    clean_insight = insight_text.strip().strip('"').strip("'")
-                    logger.debug(f"[_extract_key_insight - Step {step_id}] Cleaned insight: '{clean_insight[:50]}...'")
-                    return clean_insight
+        
+        # Retry logic for 529 "Overloaded" errors
+        max_retries = 3
+        retry_delays = [1.0, 2.0, 3.0]  # Increasing delays between retries
+        
+        for attempt in range(max_retries):
+            try:
+                if attempt == 0:
+                    logger.info(f"[_extract_key_insight - Step {step_id}] Attempting isolated Claude API call with model: {self.insight_claude_model}")
                 else:
-                    logger.warning(f"[_extract_key_insight - Step {step_id}] Empty insight text received from Claude")
-                    return None
-            else:
-                logger.warning(f"[_extract_key_insight - Step {step_id}] No content in Claude response")
-                return None
+                    logger.info(f"[_extract_key_insight - Step {step_id}] Retry attempt {attempt + 1}/{max_retries} after {retry_delays[attempt - 1]}s delay")
                 
-        except Exception as e:
-            logger.error(f"[_extract_key_insight - Step {step_id}] Failed during isolated Claude API call or processing: {e}", exc_info=True)
-            return None
+                logger.debug(f"[_extract_key_insight - Step {step_id}] Prompt task: '{prompt[:100]}...'")
+                
+                # Call isolated Claude client
+                response = self.insight_claude_client.messages.create(
+                    model=self.insight_claude_model,
+                    max_tokens=60,
+                    temperature=0,
+                    messages=[
+                        {
+                            "role": "user",
+                            "content": user_prompt
+                        }
+                    ]
+                )
+                
+                logger.info(f"[_extract_key_insight - Step {step_id}] Isolated Claude API call completed successfully on attempt {attempt + 1}")
+                
+                # Extract content from response
+                if response.content and len(response.content) > 0:
+                    insight_text = response.content[0].text.strip()
+                    logger.info(f"[_extract_key_insight - Step {step_id}] Insight extracted (first 50 chars): '{insight_text[:50]}...'")
+                    
+                    if insight_text:
+                        # Clean up any quotes that might have been added
+                        clean_insight = insight_text.strip().strip('"').strip("'")
+                        logger.debug(f"[_extract_key_insight - Step {step_id}] Cleaned insight: '{clean_insight[:50]}...'")
+                        return clean_insight
+                    else:
+                        logger.warning(f"[_extract_key_insight - Step {step_id}] Empty insight text received from Claude")
+                        return None
+                else:
+                    logger.warning(f"[_extract_key_insight - Step {step_id}] No content in Claude response")
+                    return None
+                    
+            except Exception as e:
+                # Check if this is a 529 "Overloaded" error that we should retry
+                is_529_error = (
+                    hasattr(e, 'status_code') and e.status_code == 529
+                ) or (
+                    'error code: 529' in str(e).lower() or 
+                    'overloaded' in str(e).lower()
+                )
+                
+                if is_529_error and attempt < max_retries - 1:
+                    delay = retry_delays[attempt]
+                    logger.warning(f"[_extract_key_insight - Step {step_id}] 529 Overloaded error on attempt {attempt + 1}, retrying in {delay}s: {str(e)}")
+                    time.sleep(delay)
+                    continue
+                else:
+                    # Either not a 529 error, or we've exhausted retries
+                    if is_529_error:
+                        logger.error(f"[_extract_key_insight - Step {step_id}] 529 Overloaded error persisted after {max_retries} attempts: {str(e)}")
+                    else:
+                        logger.error(f"[_extract_key_insight - Step {step_id}] Non-retryable error during Claude API call: {str(e)}")
+                    
+                    logger.error(f"[_extract_key_insight - Step {step_id}] Failed during isolated Claude API call or processing after {attempt + 1} attempts", exc_info=True)
+                    return None
+        
+        # Should never reach here, but safety fallback
+        logger.error(f"[_extract_key_insight - Step {step_id}] Unexpected: exhausted retry loop without return")
+        return None
 
     def _extract_comparative_insight(self, step_id, before_content, after_content, prompt_template):
         logger.info(f"[_extract_comparative_insight - Step {step_id}] Method called. Before length: {len(before_content)}, After length: {len(after_content)}. Using isolated Claude client: {self.insight_claude_client is not None}")
@@ -1105,53 +1141,89 @@ Content to analyze:
             logger.warning(f"[_extract_comparative_insight - Step {step_id}] Isolated Claude client not initialized - skipping comparative insight extraction")
             return None
 
-        try:
-            # Format the comparison prompt using the template
-            comparison_prompt = prompt_template.format(
-                before=before_content, 
-                after=after_content 
-            )
-            
-            # Create Claude-format prompt for comparison
-            user_prompt = f"""Compare the content and extract a key insight. Respond with exactly one clear, concise sentence. No quotes around the response.
+        # Import time for retry delays
+        import time
+        
+        # Format the comparison prompt using the template
+        comparison_prompt = prompt_template.format(
+            before=before_content, 
+            after=after_content 
+        )
+        
+        # Create Claude-format prompt for comparison
+        user_prompt = f"""Compare the content and extract a key insight. Respond with exactly one clear, concise sentence. No quotes around the response.
 
 {comparison_prompt}"""
-            
-            logger.info(f"[_extract_comparative_insight - Step {step_id}] Attempting isolated Claude API call with model: {self.insight_claude_model}")
-            logger.debug(f"[_extract_comparative_insight - Step {step_id}] Using prompt template for comparison analysis")
-            
-            # Call isolated Claude client
-            response = self.insight_claude_client.messages.create(
-                model=self.insight_claude_model,
-                max_tokens=60,
-                temperature=0,
-                messages=[
-                    {
-                        "role": "user",
-                        "content": user_prompt
-                    }
-                ]
-            )
-
-            logger.info(f"[_extract_comparative_insight - Step {step_id}] Isolated Claude API call completed successfully")
-
-            # Extract content from response
-            if response.content and len(response.content) > 0:
-                insight_text = response.content[0].text.strip()
-                logger.info(f"[_extract_comparative_insight - Step {step_id}] Comparative insight extracted (first 50 chars): '{insight_text[:50]}...'")
-                
-                if insight_text:
-                    # Clean up any quotes that might have been added
-                    clean_insight = insight_text.strip().strip('"').strip("'")
-                    logger.debug(f"[_extract_comparative_insight - Step {step_id}] Cleaned comparative insight: '{clean_insight[:50]}...'")
-                    return clean_insight
+        
+        # Retry logic for 529 "Overloaded" errors
+        max_retries = 3
+        retry_delays = [1.0, 2.0, 3.0]  # Increasing delays between retries
+        
+        for attempt in range(max_retries):
+            try:
+                if attempt == 0:
+                    logger.info(f"[_extract_comparative_insight - Step {step_id}] Attempting isolated Claude API call with model: {self.insight_claude_model}")
                 else:
-                    logger.warning(f"[_extract_comparative_insight - Step {step_id}] Empty insight text received from Claude")
-                    return None
-            else:
-                logger.warning(f"[_extract_comparative_insight - Step {step_id}] No content in Claude response")
-                return None
+                    logger.info(f"[_extract_comparative_insight - Step {step_id}] Retry attempt {attempt + 1}/{max_retries} after {retry_delays[attempt - 1]}s delay")
                 
-        except Exception as e:
-            logger.error(f"[_extract_comparative_insight - Step {step_id}] Failed during isolated Claude API call or processing: {e}", exc_info=True)
-            return None
+                logger.debug(f"[_extract_comparative_insight - Step {step_id}] Using prompt template for comparison analysis")
+                
+                # Call isolated Claude client
+                response = self.insight_claude_client.messages.create(
+                    model=self.insight_claude_model,
+                    max_tokens=60,
+                    temperature=0,
+                    messages=[
+                        {
+                            "role": "user",
+                            "content": user_prompt
+                        }
+                    ]
+                )
+
+                logger.info(f"[_extract_comparative_insight - Step {step_id}] Isolated Claude API call completed successfully on attempt {attempt + 1}")
+
+                # Extract content from response
+                if response.content and len(response.content) > 0:
+                    insight_text = response.content[0].text.strip()
+                    logger.info(f"[_extract_comparative_insight - Step {step_id}] Comparative insight extracted (first 50 chars): '{insight_text[:50]}...'")
+                    
+                    if insight_text:
+                        # Clean up any quotes that might have been added
+                        clean_insight = insight_text.strip().strip('"').strip("'")
+                        logger.debug(f"[_extract_comparative_insight - Step {step_id}] Cleaned comparative insight: '{clean_insight[:50]}...'")
+                        return clean_insight
+                    else:
+                        logger.warning(f"[_extract_comparative_insight - Step {step_id}] Empty insight text received from Claude")
+                        return None
+                else:
+                    logger.warning(f"[_extract_comparative_insight - Step {step_id}] No content in Claude response")
+                    return None
+                    
+            except Exception as e:
+                # Check if this is a 529 "Overloaded" error that we should retry
+                is_529_error = (
+                    hasattr(e, 'status_code') and e.status_code == 529
+                ) or (
+                    'error code: 529' in str(e).lower() or 
+                    'overloaded' in str(e).lower()
+                )
+                
+                if is_529_error and attempt < max_retries - 1:
+                    delay = retry_delays[attempt]
+                    logger.warning(f"[_extract_comparative_insight - Step {step_id}] 529 Overloaded error on attempt {attempt + 1}, retrying in {delay}s: {str(e)}")
+                    time.sleep(delay)
+                    continue
+                else:
+                    # Either not a 529 error, or we've exhausted retries
+                    if is_529_error:
+                        logger.error(f"[_extract_comparative_insight - Step {step_id}] 529 Overloaded error persisted after {max_retries} attempts: {str(e)}")
+                    else:
+                        logger.error(f"[_extract_comparative_insight - Step {step_id}] Non-retryable error during Claude API call: {str(e)}")
+                    
+                    logger.error(f"[_extract_comparative_insight - Step {step_id}] Failed during isolated Claude API call or processing after {attempt + 1} attempts", exc_info=True)
+                    return None
+        
+        # Should never reach here, but safety fallback
+        logger.error(f"[_extract_comparative_insight - Step {step_id}] Unexpected: exhausted retry loop without return")
+        return None

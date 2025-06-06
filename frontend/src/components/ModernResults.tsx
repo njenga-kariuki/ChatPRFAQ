@@ -38,7 +38,7 @@ const ModernResults: React.FC<ModernResultsProps> = ({ finalPrfaq, finalMlpPlan,
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
           </svg>
         </div>
-        <h2 className="text-2xl font-semibold text-gray-900 mb-2">Your Documents Are Ready</h2>
+        <h2 className="font-semibold text-gray-900 mb-2" style={{fontSize: '22px'}}>Your Documents Are Ready</h2>
         <p className="text-gray-600">Review your PRFAQ and MLP plan below</p>
       </div>
 

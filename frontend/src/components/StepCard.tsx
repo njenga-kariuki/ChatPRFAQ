@@ -157,7 +157,7 @@ const StepCard: React.FC<StepCardProps> = ({ step, onToggle }) => {
             </div>
             
             <div className="text-left">
-              <h3 className="font-semibold text-gray-900 text-lg">{step.name}</h3>
+              <h3 className="font-semibold text-gray-900" style={{fontSize: '16px'}}>{step.name}</h3>
               <p className="text-sm text-gray-500 mt-0.5">{step.persona}</p>
             </div>
           </div>

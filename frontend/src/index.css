@@ -40,10 +40,11 @@ body {
 .method-badge {
   text-align: center;
   margin-bottom: 24px;
-  font-size: 14px;
+  font-size: 13px;
   color: #6b7280;
   font-weight: 500;
   letter-spacing: 0.05em;
+  line-height: 1.5;
 }
 
 /* Hero Section */
@@ -57,8 +58,8 @@ body {
 }
 
 .subheadline {
-  font-size: 18px;
-  line-height: 1.4;
+  font-size: 15px;
+  line-height: 1.6;
   color: #4b5563;
   margin: 0 auto;
   max-width: 750px;
@@ -84,16 +85,17 @@ body {
 }
 
 .framework-title {
-    font-size: 24px;
+    font-size: 22px;
     font-weight: 700;
     margin-bottom: 12px;
     color: #111827;
+    line-height: 1.3;
 }
 
 .framework-subtitle {
-    font-size: 16px;
+    font-size: 15px;
     color: #6b7280;
-    line-height: 1.5;
+    line-height: 1.6;
 }
 
 /* Agents Grid */
@@ -111,12 +113,13 @@ body {
 }
 
 .column-title {
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.05em;
     color: #6b7280;
     margin-bottom: 6px;
+    line-height: 1.5;
 }
 
 /* Agent Card */
@@ -297,12 +300,12 @@ body {
 .prose-custom {
   max-width: none;
   color: #6b7280;
-  font-size: 16px !important;
-  line-height: 1.7;
+  font-size: 15px !important;
+  line-height: 1.6;
 }
 
 .prose-custom h1 {
-  font-size: 2rem;
+  font-size: 28px;
   font-weight: 600;
   color: #111827;
   margin-top: 2rem;
@@ -312,7 +315,7 @@ body {
 }
 
 .prose-custom h2 {
-  font-size: 1.5rem;
+  font-size: 22px;
   font-weight: 600;
   color: #111827;
   margin-top: 2rem;
@@ -324,7 +327,7 @@ body {
 }
 
 .prose-custom h3 {
-  font-size: 1.25rem;
+  font-size: 18px;
   font-weight: 600;
   color: #111827;
   margin-top: 1.5rem;
@@ -334,7 +337,7 @@ body {
 }
 
 .prose-custom h4 {
-  font-size: 1.125rem;
+  font-size: 16px;
   font-weight: 600;
   color: #111827;
   margin-top: 1.25rem;
@@ -589,7 +592,8 @@ body {
 }
 
 .faq-answer {
-  @apply text-base text-gray-700 mb-8 leading-relaxed;
+  @apply text-gray-700 mb-8 leading-relaxed;
+  font-size: 15px;
 }
 
 /* FAQ Formatting */
@@ -699,6 +703,7 @@ body {
   background: white;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   font-family: Georgia, 'Times New Roman', serif;
+  font-size: 15px;
   line-height: 1.8;
   min-height: 600px;
   border: 1px solid #e5e7eb;
@@ -859,24 +864,24 @@ body {
 }
 
 .markdown-aware-diff h1.prose-custom-heading {
-  font-size: 2rem;
+  font-size: 28px;
   margin-bottom: 1.5rem;
 }
 
 .markdown-aware-diff h2.prose-custom-heading {
-  font-size: 1.5rem;
+  font-size: 22px;
   padding-bottom: 0.5rem;
   border-bottom: 2px solid #e5e7eb;
 }
 
 .markdown-aware-diff h3.prose-custom-heading {
-  font-size: 1.25rem;
+  font-size: 18px;
   margin-top: 1.5rem;
   margin-bottom: 0.75rem;
 }
 
 .markdown-aware-diff h4.prose-custom-heading {
-  font-size: 1.125rem;
+  font-size: 16px;
   margin-top: 1.25rem;
   margin-bottom: 0.5rem;
 }
@@ -977,11 +982,34 @@ body {
 
 /* Premium button base */
 .button-premium {
-  @apply bg-gray-900 hover:bg-gray-800 text-white font-semibold py-4 px-8 rounded-xl 
-         transition-all duration-200 hover:shadow-lg hover:shadow-gray-900/20 
-         hover:transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 
-         focus:ring-gray-500/20 disabled:opacity-50 disabled:cursor-not-allowed 
-         disabled:hover:transform-none disabled:hover:shadow-none;
+  background: var(--primary-blue);
+  color: white;
+  font-weight: 600;
+  padding: 1rem 2rem;
+  border-radius: 0.75rem;
+  transition: all 200ms ease;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  transform: translateY(0);
+}
+
+.button-premium:hover {
+  background: var(--primary-blue-hover);
+  box-shadow: 0 10px 15px -3px var(--primary-blue-alpha-20);
+  transform: translateY(-2px);
+}
+
+.button-premium:focus {
+  outline: none;
+  ring: 2px;
+  ring-color: var(--primary-blue-alpha-20);
+  ring-offset: 2px;
+}
+
+.button-premium:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: translateY(0);
+  box-shadow: none;
 }
 
 /* Enhanced mobile styles */
@@ -1019,6 +1047,27 @@ body {
 
 .prose-custom.text-gray-600 strong {
   @apply text-gray-800;
+}
+
+/* Font-size specificity fix - ensures typography standards are applied regardless of color class combinations */
+.prose-custom h1,
+.prose-custom.text-gray-600 h1 {
+  font-size: 28px !important;
+}
+
+.prose-custom h2, 
+.prose-custom.text-gray-600 h2 {
+  font-size: 22px !important;
+}
+
+.prose-custom h3,
+.prose-custom.text-gray-600 h3 {
+  font-size: 18px !important;
+}
+
+.prose-custom h4,
+.prose-custom.text-gray-600 h4 {
+  font-size: 16px !important;
 }
 
 /* Smooth transitions for analysis cards */

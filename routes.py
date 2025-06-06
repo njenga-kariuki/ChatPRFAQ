@@ -1,4 +1,4 @@
-from flask import request, jsonify, Response
+from flask import request, jsonify, Response, render_template
 from app import app
 from processors.llm_processor import LLMProcessor
 import logging
@@ -14,6 +14,15 @@ from utils.raw_output_cache import store_raw_llm_output, get_raw_llm_output, get
 
 # Configure logging
 logger = logging.getLogger(__name__)
+
+# Import database service for session tracking (dual-write pattern)
+try:
+    from utils.database_service import get_db_service
+    DATABASE_ENABLED = True
+    logger.info("Database service available for session tracking")
+except ImportError as e:
+    logger.warning(f"Database service not available: {e}")
+    DATABASE_ENABLED = False
 
 # Create LLM processor instance
 logger.info("Creating LLMProcessor instance...")
@@ -52,6 +61,11 @@ def serve_react_static_files(path):
     
     # Skip API routes (always)
     if path.startswith('api/'):
+        from flask import abort
+        abort(404)
+    
+    # Skip reporting route (let Flask handle it directly)
+    if path == 'reporting':
         from flask import abort
         abort(404)
     
@@ -108,6 +122,16 @@ def process_product_idea():
             return jsonify({
                 'error': 'Product idea is too short. Please provide more details.'
             }), 400
+
+        # === NEW: DATABASE SESSION TRACKING (ADDITIVE ONLY) ===
+        if DATABASE_ENABLED:
+            try:
+                db_service = get_db_service()
+                db_service.save_processing_session(request_id, product_idea)
+                logger.debug(f"Database: Started session tracking for {request_id}")
+            except Exception as e:
+                logger.error(f"Database: Failed to start session tracking for {request_id}: {e}")
+                # Continue - don't break processing
             
         # Process the product idea through all steps
         logger.info(f"[{request_id}] Starting LLM processing...")
@@ -119,11 +143,39 @@ def process_product_idea():
         
         if 'error' in results:
             logger.error(f"[{request_id}] LLM processing failed: {results['error']}")
+            
+            # === NEW: DATABASE SESSION COMPLETION TRACKING (ADDITIVE ONLY) ===
+            if DATABASE_ENABLED:
+                try:
+                    db_service = get_db_service()
+                    db_service.update_session_completion(
+                        request_id=request_id,
+                        status='failed',
+                        duration=end_time - start_time,
+                        error=results['error']
+                    )
+                    logger.debug(f"Database: Updated session {request_id} as failed")
+                except Exception as e:
+                    logger.error(f"Database: Failed to update session completion for {request_id}: {e}")
+            
             return jsonify({
                 'error': results['error'],
                 'step': results.get('step', 'unknown'),
                 'request_id': request_id
             }), 500
+
+        # === NEW: DATABASE SESSION COMPLETION TRACKING (ADDITIVE ONLY) ===
+        if DATABASE_ENABLED:
+            try:
+                db_service = get_db_service()
+                db_service.update_session_completion(
+                    request_id=request_id,
+                    status='completed',
+                    duration=end_time - start_time
+                )
+                logger.debug(f"Database: Updated session {request_id} as completed")
+            except Exception as e:
+                logger.error(f"Database: Failed to update session completion for {request_id}: {e}")
             
         logger.info(f"[{request_id}] Returning successful results")
         logger.debug(f"[{request_id}] Results contain {len(results.get('steps', []))} steps")
@@ -170,6 +222,16 @@ def process_product_idea_stream():
             return jsonify({
                 'error': 'Product idea is too short. Please provide more details.'
             }), 400
+
+        # === NEW: DATABASE SESSION TRACKING (ADDITIVE ONLY) ===
+        if DATABASE_ENABLED:
+            try:
+                db_service = get_db_service()
+                db_service.save_processing_session(request_id, product_idea)
+                logger.debug(f"Database: Started session tracking for {request_id} (stream)")
+            except Exception as e:
+                logger.error(f"Database: Failed to start session tracking for {request_id} (stream): {e}")
+                # Continue - don't break processing
         
         def generate():
             logger.info(f"[{request_id}] Starting stream generator")
@@ -199,6 +261,7 @@ def process_product_idea_stream():
                         pass  # Final safety net
             
             def process_in_thread():
+                processing_start_time = time.time()
                 try:
                     logger.info(f"[{request_id}] Background processing thread started")
                     
@@ -231,9 +294,32 @@ def process_product_idea_stream():
                     
                     result = llm_processor.process_all_steps(product_idea, safe_progress_callback, request_id=request_id)
                     result_container['result'] = result
+                    processing_end_time = time.time()
                     
                     # Stop heartbeat thread
                     heartbeat_stop['stop'] = True
+
+                    # === NEW: DATABASE SESSION COMPLETION TRACKING (ADDITIVE ONLY) ===
+                    if DATABASE_ENABLED:
+                        try:
+                            db_service = get_db_service()
+                            if 'error' in result:
+                                db_service.update_session_completion(
+                                    request_id=request_id,
+                                    status='failed',
+                                    duration=processing_end_time - processing_start_time,
+                                    error=result['error']
+                                )
+                                logger.debug(f"Database: Updated session {request_id} as failed (stream)")
+                            else:
+                                db_service.update_session_completion(
+                                    request_id=request_id,
+                                    status='completed',
+                                    duration=processing_end_time - processing_start_time
+                                )
+                                logger.debug(f"Database: Updated session {request_id} as completed (stream)")
+                        except Exception as e:
+                            logger.error(f"Database: Failed to update session completion for {request_id} (stream): {e}")
                     
                     # Send completion log
                     safe_progress_callback({
@@ -249,8 +335,23 @@ def process_product_idea_stream():
                 except Exception as e:
                     # Stop heartbeat thread on error too
                     heartbeat_stop['stop'] = True
+                    processing_end_time = time.time()
                     
                     logger.exception(f"[{request_id}] Error in background processing thread")
+
+                    # === NEW: DATABASE SESSION ERROR TRACKING (ADDITIVE ONLY) ===
+                    if DATABASE_ENABLED:
+                        try:
+                            db_service = get_db_service()
+                            db_service.update_session_completion(
+                                request_id=request_id,
+                                status='failed',
+                                duration=processing_end_time - processing_start_time,
+                                error=str(e)
+                            )
+                            logger.debug(f"Database: Updated session {request_id} as failed due to exception (stream)")
+                        except Exception as db_e:
+                            logger.error(f"Database: Failed to update session exception for {request_id} (stream): {db_e}")
                     
                     # Send error log to frontend
                     safe_progress_callback({
@@ -793,3 +894,341 @@ def get_insights_by_query():
             "request_id": request_id
         }), 500
 # --- END: Safe Insights API Endpoint ---
+
+# =============================================================================
+# REPORTING WEB INTERFACE (ULTRA-SAFE IMPLEMENTATION)
+# =============================================================================
+
+@app.route('/reporting')
+def reporting_dashboard():
+    """
+    Reporting dashboard web interface.
+    Ultra-safe implementation: completely isolated from core functionality.
+    """
+    try:
+        # Completely isolated - just render the template
+        return render_template('reporting.html')
+    except Exception as e:
+        # Graceful failure - never break the app
+        logger.error(f"Reporting dashboard error: {e}")
+        return f"""
+        <html>
+        <head><title>Reporting Dashboard - Error</title></head>
+        <body style="font-family: system-ui; padding: 40px; text-align: center;">
+            <h1>⚠️ Reporting Dashboard Temporarily Unavailable</h1>
+            <p>The reporting system encountered an error and is temporarily unavailable.</p>
+            <p>Your main application continues to work normally.</p>
+            <p>Error: {str(e)}</p>
+            <a href="/" style="color: #3b82f6;">← Return to Main App</a>
+        </body>
+        </html>
+        """, 500
+
+# =============================================================================
+# REPORTING API ENDPOINTS
+# =============================================================================
+
+@app.route('/api/reporting/usage', methods=['GET'])
+def get_usage_report():
+    """
+    Returns usage analytics with filtering capabilities.
+    
+    Query parameters:
+    - start_date: Filter start date (YYYY-MM-DD format)
+    - end_date: Filter end date (YYYY-MM-DD format)  
+    - granularity: Data granularity ('daily', 'weekly', 'monthly')
+    
+    Returns analytics including:
+    - Total ideas processed
+    - Success/failure rates
+    - Average processing time
+    - Step-level performance metrics
+    - Daily trends
+    """
+    logger.info("API /api/reporting/usage endpoint called")
+    
+    if not DATABASE_ENABLED:
+        return jsonify({
+            'error': 'Reporting database not available',
+            'message': 'Database service is not configured'
+        }), 503
+    
+    try:
+        start_date = request.args.get('start_date')
+        end_date = request.args.get('end_date')
+        granularity = request.args.get('granularity', 'daily')
+        
+        # Validate date format if provided
+        if start_date:
+            try:
+                from datetime import datetime
+                datetime.strptime(start_date, '%Y-%m-%d')
+            except ValueError:
+                return jsonify({
+                    'error': 'Invalid start_date format',
+                    'message': 'Please use YYYY-MM-DD format'
+                }), 400
+                
+        if end_date:
+            try:
+                from datetime import datetime
+                datetime.strptime(end_date, '%Y-%m-%d')
+            except ValueError:
+                return jsonify({
+                    'error': 'Invalid end_date format', 
+                    'message': 'Please use YYYY-MM-DD format'
+                }), 400
+        
+        db_service = get_db_service()
+        analytics = db_service.get_usage_analytics(start_date, end_date, granularity)
+        
+        if 'error' in analytics:
+            logger.error(f"Usage analytics failed: {analytics['error']}")
+            return jsonify({
+                'error': 'Failed to generate usage analytics',
+                'details': analytics['error']
+            }), 500
+        
+        logger.info(f"Usage analytics retrieved successfully: {analytics['summary']['total_sessions']} total sessions")
+        return jsonify({
+            'success': True,
+            'data': analytics,
+            'filters': {
+                'start_date': start_date,
+                'end_date': end_date,
+                'granularity': granularity
+            }
+        })
+        
+    except Exception as e:
+        logger.exception("Error in usage analytics endpoint")
+        return jsonify({
+            'error': 'Internal server error',
+            'message': str(e)
+        }), 500
+
+@app.route('/api/reporting/ideas', methods=['GET'])
+def get_ideas_report():
+    """
+    Returns paginated list of processed ideas with search and filtering.
+    
+    Query parameters:
+    - page: Page number (default: 1)
+    - limit: Items per page (default: 50, max: 100)
+    - status: Filter by status ('processing', 'completed', 'failed')
+    - search: Search in idea text
+    
+    Returns paginated list with:
+    - Original idea text (truncated)
+    - Processing status and duration
+    - Timestamp and metadata
+    - Pagination info
+    """
+    logger.info("API /api/reporting/ideas endpoint called")
+    
+    if not DATABASE_ENABLED:
+        return jsonify({
+            'error': 'Reporting database not available',
+            'message': 'Database service is not configured'
+        }), 503
+    
+    try:
+        page = int(request.args.get('page', 1))
+        limit = min(int(request.args.get('limit', 50)), 100)  # Cap at 100
+        status = request.args.get('status')
+        search = request.args.get('search')
+        
+        if page < 1:
+            return jsonify({
+                'error': 'Invalid page number',
+                'message': 'Page must be >= 1'
+            }), 400
+            
+        if limit < 1:
+            return jsonify({
+                'error': 'Invalid limit',
+                'message': 'Limit must be >= 1'
+            }), 400
+            
+        # Validate status filter
+        if status and status not in ['processing', 'completed', 'failed']:
+            return jsonify({
+                'error': 'Invalid status filter',
+                'message': 'Status must be one of: processing, completed, failed'
+            }), 400
+        
+        db_service = get_db_service()
+        ideas_data = db_service.get_ideas_list(page, limit, status, search)
+        
+        if 'error' in ideas_data:
+            logger.error(f"Ideas list failed: {ideas_data['error']}")
+            return jsonify({
+                'error': 'Failed to retrieve ideas list',
+                'details': ideas_data['error']
+            }), 500
+        
+        logger.info(f"Ideas list retrieved: page {page}, {len(ideas_data['ideas'])} items")
+        return jsonify({
+            'success': True,
+            'data': ideas_data,
+            'filters': {
+                'page': page,
+                'limit': limit,
+                'status': status,
+                'search': search
+            }
+        })
+        
+    except ValueError as e:
+        return jsonify({
+            'error': 'Invalid parameter format',
+            'message': str(e)
+        }), 400
+    except Exception as e:
+        logger.exception("Error in ideas list endpoint")
+        return jsonify({
+            'error': 'Internal server error',
+            'message': str(e)
+        }), 500
+
+@app.route('/api/reporting/session/<request_id>', methods=['GET'])
+def get_session_details(request_id):
+    """
+    Returns complete processing details for specific session.
+    
+    URL parameter:
+    - request_id: Unique session identifier
+    
+    Returns detailed session data including:
+    - Original idea and session metadata
+    - Full step-by-step outputs
+    - Timing breakdown
+    - Raw LLM responses
+    - Extracted insights
+    """
+    logger.info(f"API /api/reporting/session/{request_id} endpoint called")
+    
+    if not DATABASE_ENABLED:
+        return jsonify({
+            'error': 'Reporting database not available',
+            'message': 'Database service is not configured'
+        }), 503
+    
+    if not request_id or len(request_id.strip()) == 0:
+        return jsonify({
+            'error': 'Invalid request_id',
+            'message': 'request_id cannot be empty'
+        }), 400
+    
+    try:
+        db_service = get_db_service()
+        session_data = db_service.get_session_details(request_id)
+        
+        if 'error' in session_data:
+            if session_data['error'] == 'Session not found':
+                return jsonify({
+                    'error': 'Session not found',
+                    'message': f'No session found with request_id: {request_id}'
+                }), 404
+            else:
+                logger.error(f"Session details failed for {request_id}: {session_data['error']}")
+                return jsonify({
+                    'error': 'Failed to retrieve session details',
+                    'details': session_data['error']
+                }), 500
+        
+        logger.info(f"Session details retrieved for {request_id}: {len(session_data['steps'])} steps")
+        return jsonify({
+            'success': True,
+            'data': session_data
+        })
+        
+    except Exception as e:
+        logger.exception(f"Error in session details endpoint for {request_id}")
+        return jsonify({
+            'error': 'Internal server error',
+            'message': str(e)
+        }), 500
+
+@app.route('/api/reporting/analytics', methods=['GET'])
+def get_analytics_dashboard():
+    """
+    Returns dashboard-ready analytics and key performance indicators.
+    
+    Query parameters:
+    - timeframe: Analysis timeframe ('7d', '30d', '90d', 'all')
+    - metrics: Comma-separated metrics to include
+    
+    Returns comprehensive analytics including:
+    - Processing trends over time
+    - Performance bottlenecks
+    - Success rate analysis
+    - Cost and usage projections
+    """
+    logger.info("API /api/reporting/analytics endpoint called")
+    
+    if not DATABASE_ENABLED:
+        return jsonify({
+            'error': 'Reporting database not available',
+            'message': 'Database service is not configured'
+        }), 503
+    
+    try:
+        timeframe = request.args.get('timeframe', '30d')
+        requested_metrics = request.args.get('metrics', '').split(',') if request.args.get('metrics') else []
+        
+        # Calculate date range based on timeframe
+        start_date = None
+        if timeframe != 'all':
+            from datetime import datetime, timedelta
+            days_map = {'7d': 7, '30d': 30, '90d': 90}
+            if timeframe in days_map:
+                start_date = (datetime.now() - timedelta(days=days_map[timeframe])).strftime('%Y-%m-%d')
+            else:
+                return jsonify({
+                    'error': 'Invalid timeframe',
+                    'message': 'Timeframe must be one of: 7d, 30d, 90d, all'
+                }), 400
+        
+        db_service = get_db_service()
+        usage_analytics = db_service.get_usage_analytics(start_date, None, 'daily')
+        
+        if 'error' in usage_analytics:
+            logger.error(f"Analytics dashboard failed: {usage_analytics['error']}")
+            return jsonify({
+                'error': 'Failed to generate analytics dashboard',
+                'details': usage_analytics['error']
+            }), 500
+        
+        # Build dashboard-specific response
+        dashboard_data = {
+            'summary': usage_analytics['summary'],
+            'trends': usage_analytics['daily_trends'][:14],  # Last 14 days for chart
+            'step_performance': usage_analytics['step_analytics'],
+            'timeframe': timeframe,
+            'generated_at': time.time()
+        }
+        
+        # Add computed metrics
+        summary = usage_analytics['summary']
+        if summary['total_sessions'] > 0:
+            dashboard_data['computed_metrics'] = {
+                'success_rate_percentage': round(summary['success_rate'], 2),
+                'avg_duration_minutes': round(summary['avg_duration_seconds'] / 60, 2) if summary['avg_duration_seconds'] else 0,
+                'sessions_per_day': round(summary['total_sessions'] / max(len(usage_analytics['daily_trends']), 1), 2),
+                'fastest_step': min(usage_analytics['step_analytics'], key=lambda x: x['avg_duration_seconds'] or float('inf'), default={'step_name': 'N/A', 'avg_duration_seconds': 0})['step_name'],
+                'slowest_step': max(usage_analytics['step_analytics'], key=lambda x: x['avg_duration_seconds'] or 0, default={'step_name': 'N/A', 'avg_duration_seconds': 0})['step_name']
+            }
+        
+        logger.info(f"Analytics dashboard generated: {timeframe} timeframe, {summary['total_sessions']} sessions")
+        return jsonify({
+            'success': True,
+            'data': dashboard_data
+        })
+        
+    except Exception as e:
+        logger.exception("Error in analytics dashboard endpoint")
+        return jsonify({
+            'error': 'Internal server error',
+            'message': str(e)
+        }), 500

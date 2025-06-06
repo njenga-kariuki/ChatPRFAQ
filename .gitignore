@@ -38,3 +38,8 @@ logs/
 
 # Cache
 .cache/
+
+# Database files
+data/
+*.db
+*.sqlite

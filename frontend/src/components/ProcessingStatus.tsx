@@ -44,7 +44,7 @@ const ProcessingStatus: React.FC<ProcessingStatusProps> = ({ progress, currentSt
           </svg>
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="text-center">
-              <div className="text-2xl font-bold text-white">{Math.min(Math.round(normalizedProgress), 100)}%</div>
+              <div className="font-bold text-white" style={{fontSize: '22px'}}>{Math.min(Math.round(normalizedProgress), 100)}%</div>
               <div className="text-xs text-slate-400">Complete</div>
             </div>
           </div>
@@ -53,7 +53,7 @@ const ProcessingStatus: React.FC<ProcessingStatusProps> = ({ progress, currentSt
 
       {/* Current step text with better styling */}
       <div className="text-center">
-        <p className="text-lg font-medium text-slate-200">{currentStepText}</p>
+        <p className="font-medium text-slate-200" style={{fontSize: '15px'}}>{currentStepText}</p>
       </div>
     </div>
   );

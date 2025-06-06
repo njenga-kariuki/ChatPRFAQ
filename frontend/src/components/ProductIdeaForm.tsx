@@ -59,7 +59,7 @@ const ProductIdeaForm: React.FC<ProductIdeaFormProps> = ({ onSubmit, isProcessin
           onKeyDown={handleKeyDown}
           rows={6}
           className="w-full px-5 py-4 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-500 focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all duration-200 resize-none"
-          placeholder="Example: A WhatsApp-based inventory system that lets small retailers track stock levels and automatically reorder from suppliers when running low..."
+          placeholder="A mobile app that helps small business owners..."
           disabled={showLoading}
         />
         {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
@@ -67,7 +67,8 @@ const ProductIdeaForm: React.FC<ProductIdeaFormProps> = ({ onSubmit, isProcessin
       <button
         type="submit"
         disabled={showLoading}
-        className="w-full bg-gray-900 hover:bg-gray-800 text-white font-semibold py-4 px-8 rounded-xl transition-all duration-200 hover:shadow-lg hover:shadow-gray-900/20 hover:transform hover:-translate-y-0.5 flex items-center justify-center gap-3 focus:outline-none focus:ring-2 focus:ring-gray-500/20 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:transform-none disabled:hover:shadow-none"
+        className="w-full button-premium flex items-center justify-center gap-3"
+        style={{fontSize: '15px'}}
       >
         {showLoading ? (
           <>

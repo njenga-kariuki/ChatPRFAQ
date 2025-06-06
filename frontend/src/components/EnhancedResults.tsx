@@ -80,7 +80,7 @@ const EnhancedResults: React.FC<EnhancedResultsProps> = ({
       {/* Minimal Header */}
       <header className="bg-white border-b border-gray-200 px-6 py-4">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
-          <h1 className="text-xl font-semibold">ChatPRFAQ</h1>
+          <h1 className="text-lg font-semibold">ChatPRFAQ</h1>
           <div className="flex items-center gap-6">
             <Navigation />
             <button
@@ -214,7 +214,7 @@ const EnhancedResults: React.FC<EnhancedResultsProps> = ({
         
         {activeTab === 'process' && (
           <div className="bg-white rounded-xl p-8">
-            <h3 className="text-xl font-semibold mb-6">Process Steps</h3>
+            <h3 className="font-semibold mb-6" style={{fontSize: '18px'}}>Process Steps</h3>
             <StepsDisplay 
               steps={localStepsData} 
               onToggleStep={handleStepToggle} 

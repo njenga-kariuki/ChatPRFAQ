@@ -1060,10 +1060,10 @@ function App() {
             <div className="flex flex-col items-center p-4 md:p-8">
               <header className="w-full max-w-6xl mb-12 text-center relative">
                 <Navigation className="absolute top-0 right-0" />
-                <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight tracking-tight text-gray-900">
+                <h1 className="font-bold mb-6 leading-tight tracking-tight text-gray-900" style={{fontSize: '28px'}}>
                   ChatPRFAQ
                 </h1>
-                <p className="text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed">
+                <p className="text-gray-600 max-w-2xl mx-auto leading-relaxed" style={{fontSize: '15px'}}>
                   Turn product ideas into C-Suite ready PRFAQs in 5 minutes.
                   <br />
                   <span className="text-gray-600">Powered by 10 specialized AI agents.</span>
@@ -1143,8 +1143,8 @@ function App() {
               <main className="w-full max-w-6xl space-y-8">
                 <section id="product-idea-section" className="py-8 md:py-12">
                   <div className="bg-white rounded-2xl p-8 md:p-10 border border-gray-100 shadow-sm hover:shadow-md transition-shadow duration-300">
-                    <h2 className="text-2xl font-semibold text-gray-900 mb-2">Describe your product idea</h2>
-                    <p className="text-gray-600 mb-6">What problem does your product solve? Who is it for?</p>
+                    <h2 className="font-semibold text-gray-900 mb-2" style={{fontSize: '22px'}}>Describe your product idea</h2>
+                    <p className="text-gray-600 mb-6" style={{fontSize: '14px'}}>What problem does your product solve? Who is it for?</p>
                     <ProductIdeaForm 
                       onSubmit={handleFormSubmit} 
                       isProcessing={isProcessing}
@@ -1170,7 +1170,7 @@ function App() {
                   <Navigation className="absolute top-0 right-0" />
                 )}
                 
-                <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4 leading-tight">
+                <h1 className="font-bold mb-4 leading-tight" style={{fontSize: '28px'}}>
                   <span className="text-black">
                     ChatPRFAQ
                   </span>
@@ -1215,7 +1215,7 @@ function App() {
                 {analysisPhase === 'analyzing' && (
                   <section className="py-12 md:py-16">
                     <div className="bg-white rounded-2xl p-8 border border-gray-100">
-                      <h2 className="text-2xl font-semibold text-gray-900 mb-6">Working Backwards Process</h2>
+                      <h2 className="font-semibold text-gray-900 mb-6" style={{fontSize: '22px'}}>Working Backwards Process</h2>
                       
                       {/* Progress Section */}
                       <div className="mb-8 bg-gradient-to-br from-gray-50 to-white rounded-2xl p-6 border border-gray-100 shadow-sm">
@@ -1240,7 +1240,7 @@ function App() {
                           </div>
                           
                           {/* Percentage with modern mono font */}
-                          <div className="text-2xl font-mono font-semibold text-gray-900">
+                          <div className="font-mono font-semibold text-gray-900" style={{fontSize: '22px'}}>
                             {Math.round(progress)}%
                           </div>
                         </div>
@@ -1299,7 +1299,7 @@ function App() {
                 {(showWorkingBackwards || analysisPhase === 'complete') && (
                   <section id="steps-display-section" className="py-8 md:py-12">
                     <div className="bg-white rounded-2xl p-8 md:p-10 border border-gray-100 shadow-sm hover:shadow-md transition-shadow duration-300">
-                      <h2 className="text-2xl font-semibold text-gray-900 mb-8">Working Backwards Process</h2>
+                      <h2 className="font-semibold text-gray-900 mb-8" style={{fontSize: '22px'}}>Working Backwards Process</h2>
                       
                       {/* Progress Section - Always visible above tabs */}
                       {(isProcessing || progress > 0 || stepsData.some(s => s.status !== 'pending') || !!generalError || analysisPhase === 'analyzing') && (
@@ -1335,7 +1335,7 @@ function App() {
                             </div>
                             
                             {/* Percentage with modern mono font */}
-                            <div className="text-2xl font-mono font-semibold text-gray-900">
+                            <div className="font-mono font-semibold text-gray-900" style={{fontSize: '22px'}}>
                               {Math.round(progress)}%
                             </div>
                           </div>

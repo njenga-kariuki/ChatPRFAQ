@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Working Backwards - Reporting Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='reporting.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>📊 Working Backwards - Reporting Dashboard</h1>
+            <p class="subtitle">Analytics and insights for your product idea processing pipeline</p>
+        </header>
+
+        <nav class="tabs">
+            <button class="tab-button active" data-tab="usage">📈 Usage Analytics</button>
+            <button class="tab-button" data-tab="ideas">💡 Ideas Management</button>
+            <button class="tab-button" data-tab="session">🔍 Session Details</button>
+            <button class="tab-button" data-tab="analytics">📊 Dashboard Analytics</button>
+        </nav>
+
+        <!-- Usage Analytics Tab -->
+        <div id="usage" class="tab-content active">
+            <div class="filters">
+                <label>
+                    Start Date: <input type="date" id="usageStartDate">
+                </label>
+                <label>
+                    End Date: <input type="date" id="usageEndDate">
+                </label>
+                <label>
+                    Granularity: 
+                    <select id="usageGranularity">
+                        <option value="daily">Daily</option>
+                        <option value="weekly">Weekly</option>
+                        <option value="monthly">Monthly</option>
+                    </select>
+                </label>
+                <button onclick="loadUsageAnalytics()" class="btn-primary">Apply Filters</button>
+            </div>
+
+            <div class="kpi-cards">
+                <div class="kpi-card">
+                    <h3>Total Sessions</h3>
+                    <div class="kpi-value" id="totalSessions">-</div>
+                </div>
+                <div class="kpi-card">
+                    <h3>Success Rate</h3>
+                    <div class="kpi-value" id="successRate">-</div>
+                </div>
+                <div class="kpi-card">
+                    <h3>Avg Duration</h3>
+                    <div class="kpi-value" id="avgDuration">-</div>
+                </div>
+                <div class="kpi-card">
+                    <h3>Completed</h3>
+                    <div class="kpi-value" id="completedSessions">-</div>
+                </div>
+            </div>
+
+            <div class="chart-section">
+                <h3>Daily Processing Trends</h3>
+                <canvas id="trendsChart" width="400" height="200"></canvas>
+            </div>
+
+            <div class="table-section">
+                <h3>Step Performance Metrics</h3>
+                <div class="table-container">
+                    <table id="stepPerformanceTable">
+                        <thead>
+                            <tr>
+                                <th>Step</th>
+                                <th>Step Name</th>
+                                <th>Executions</th>
+                                <th>Avg Duration (s)</th>
+                                <th>Total Tokens</th>
+                                <th>Est. Cost</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ideas Management Tab -->
+        <div id="ideas" class="tab-content">
+            <div class="filters">
+                <label>
+                    Search: <input type="text" id="ideasSearch" placeholder="Search in idea text...">
+                </label>
+                <label>
+                    Status: 
+                    <select id="ideasStatus">
+                        <option value="">All</option>
+                        <option value="processing">Processing</option>
+                        <option value="completed">Completed</option>
+                        <option value="failed">Failed</option>
+                    </select>
+                </label>
+                <label>
+                    Per Page: 
+                    <select id="ideasLimit">
+                        <option value="10">10</option>
+                        <option value="25">25</option>
+                        <option value="50">50</option>
+                    </select>
+                </label>
+                <button onclick="loadIdeasList()" class="btn-primary">Apply Filters</button>
+            </div>
+
+            <div class="table-section">
+                <div class="table-container">
+                    <table id="ideasTable">
+                        <thead>
+                            <tr>
+                                <th>Request ID</th>
+                                <th>Idea Preview</th>
+                                <th>Status</th>
+                                <th>Created</th>
+                                <th>Duration</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="pagination" id="ideasPagination">
+                <!-- Populated by JavaScript -->
+            </div>
+        </div>
+
+        <!-- Session Details Tab -->
+        <div id="session" class="tab-content">
+            <div class="filters">
+                <label>
+                    Request ID: <input type="text" id="sessionRequestId" placeholder="Enter request ID...">
+                </label>
+                <button onclick="loadSessionDetails()" class="btn-primary">Load Session</button>
+            </div>
+
+            <div id="sessionContent">
+                <!-- Populated by JavaScript -->
+            </div>
+        </div>
+
+        <!-- Analytics Dashboard Tab -->
+        <div id="analytics" class="tab-content">
+            <div class="filters">
+                <label>
+                    Timeframe: 
+                    <select id="analyticsTimeframe">
+                        <option value="7d">Last 7 days</option>
+                        <option value="30d" selected>Last 30 days</option>
+                        <option value="90d">Last 90 days</option>
+                        <option value="all">All time</option>
+                    </select>
+                </label>
+                <button onclick="loadAnalyticsDashboard()" class="btn-primary">Refresh</button>
+            </div>
+
+            <div class="kpi-cards" id="analyticsKpis">
+                <!-- Populated by JavaScript -->
+            </div>
+
+            <div class="analytics-grid">
+                <div class="chart-section">
+                    <h3>Performance Overview</h3>
+                    <canvas id="performanceChart" width="400" height="200"></canvas>
+                </div>
+                <div class="chart-section">
+                    <h3>Success Rate Trends</h3>
+                    <canvas id="successChart" width="400" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading and Error States -->
+        <div id="loading" class="loading hidden">
+            <div class="spinner"></div>
+            <p>Loading data...</p>
+        </div>
+
+        <div id="error" class="error hidden">
+            <h3>⚠️ Error</h3>
+            <p id="errorMessage">Something went wrong</p>
+            <button onclick="hideError()" class="btn-secondary">Dismiss</button>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='reporting.js') }}"></script>
+</body>
+</html> 

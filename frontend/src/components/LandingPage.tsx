@@ -36,7 +36,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onStartEvaluation }) => {
       <header className="w-full px-4 py-4 md:px-6">
         <div className="max-w-6xl mx-auto relative">
           <Navigation className="absolute top-0 right-0" />
-          <h1 className="text-xl font-semibold">ChatPRFAQ</h1>
+          <h1 className="text-lg font-semibold">ChatPRFAQ</h1>
         </div>
       </header>
 
@@ -44,7 +44,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onStartEvaluation }) => {
       <section className="w-full px-4 py-4 md:px-8 md:py-6">
         <div className="max-w-4xl mx-auto text-center">
           {/* Hero Headline */}
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-5 leading-tight">
+          <h1 className="font-bold mb-5 leading-tight" style={{fontSize: '28px'}}>
             <span className="text-black">C-Suite Ready PRFAQs in 5 Minutes</span>
           </h1>
           
@@ -56,9 +56,9 @@ const LandingPage: React.FC<LandingPageProps> = ({ onStartEvaluation }) => {
           {/* NEW ENHANCED SOLUTION PILL - This is the main visual change */}
           <div className="inline-flex items-center gap-3 bg-gray-900 text-white px-7 py-3.5 rounded-full font-semibold text-base shadow-lg mt-8 mb-8 hover:shadow-xl hover:shadow-gray-900/20 hover:transform hover:-translate-y-0.5 transition-all duration-200">
             <span>Idea</span>
-            <span className="text-[#4B7CF3] text-lg">→</span>
+            <span className="text-lg" style={{color: 'var(--primary-blue)'}}>→</span>
             <span>AI Team</span>
-            <span className="text-[#4B7CF3] text-lg">→</span>
+            <span className="text-lg" style={{color: 'var(--primary-blue)'}}>→</span>
             <span>C-Suite PRFAQ</span>
           </div>
           
@@ -76,7 +76,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onStartEvaluation }) => {
           
           {/* Framework Header */}
           <div style={{textAlign: 'center', marginBottom: '32px'}}>
-            <h2 className="text-2xl md:text-3xl font-semibold mb-2 text-gray-900">
+            <h2 className="font-semibold mb-2 text-gray-900" style={{fontSize: '22px'}}>
               Your AI Team
             </h2>
             <p className="text-base text-gray-500 leading-relaxed">
@@ -88,18 +88,18 @@ const LandingPage: React.FC<LandingPageProps> = ({ onStartEvaluation }) => {
           <div className="text-center">
             <h4 className="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-4 relative inline-block group">
               Working Group
-              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#4B7CF3] group-hover:w-full transition-all duration-300"></span>
+              <span className="absolute bottom-0 left-0 w-0 h-0.5 group-hover:w-full transition-all duration-300" style={{background: 'var(--primary-blue)'}}></span>
             </h4>
-            <div className="flex flex-wrap justify-center items-center gap-2 text-gray-900 text-lg">
-              <span className="font-medium whitespace-nowrap hover:text-[#4B7CF3] transition-colors duration-200 cursor-default">Market Analyst</span>
-              <span className="text-[#4B7CF3]">•</span>
-              <span className="font-medium whitespace-nowrap hover:text-[#4B7CF3] transition-colors duration-200 cursor-default">User Researcher</span>
-              <span className="text-[#4B7CF3]">•</span>
-              <span className="font-medium whitespace-nowrap hover:text-[#4B7CF3] transition-colors duration-200 cursor-default">PM</span>
-              <span className="text-[#4B7CF3]">•</span>
-              <span className="font-medium whitespace-nowrap hover:text-[#4B7CF3] transition-colors duration-200 cursor-default">Tech Lead</span>
-              <span className="text-[#4B7CF3]">•</span>
-              <span className="font-medium whitespace-nowrap hover:text-[#4B7CF3] transition-colors duration-200 cursor-default">Editor</span>
+            <div className="flex flex-wrap justify-center items-center gap-2 text-gray-900" style={{fontSize: '16px'}}>
+              <span className="font-medium whitespace-nowrap transition-colors duration-200 cursor-default" onMouseEnter={(e) => (e.target as HTMLElement).style.color = 'var(--primary-blue)'} onMouseLeave={(e) => (e.target as HTMLElement).style.color = ''}>Market Analyst</span>
+              <span style={{color: 'var(--primary-blue)'}}>•</span>
+              <span className="font-medium whitespace-nowrap transition-colors duration-200 cursor-default" onMouseEnter={(e) => (e.target as HTMLElement).style.color = 'var(--primary-blue)'} onMouseLeave={(e) => (e.target as HTMLElement).style.color = ''}>User Researcher</span>
+              <span style={{color: 'var(--primary-blue)'}}>•</span>
+              <span className="font-medium whitespace-nowrap transition-colors duration-200 cursor-default" onMouseEnter={(e) => (e.target as HTMLElement).style.color = 'var(--primary-blue)'} onMouseLeave={(e) => (e.target as HTMLElement).style.color = ''}>PM</span>
+              <span style={{color: 'var(--primary-blue)'}}>•</span>
+              <span className="font-medium whitespace-nowrap transition-colors duration-200 cursor-default" onMouseEnter={(e) => (e.target as HTMLElement).style.color = 'var(--primary-blue)'} onMouseLeave={(e) => (e.target as HTMLElement).style.color = ''}>Tech Lead</span>
+              <span style={{color: 'var(--primary-blue)'}}>•</span>
+              <span className="font-medium whitespace-nowrap transition-colors duration-200 cursor-default" onMouseEnter={(e) => (e.target as HTMLElement).style.color = 'var(--primary-blue)'} onMouseLeave={(e) => (e.target as HTMLElement).style.color = ''}>Editor</span>
             </div>
           </div>
 
@@ -110,14 +110,14 @@ const LandingPage: React.FC<LandingPageProps> = ({ onStartEvaluation }) => {
           <div className="text-center">
             <h4 className="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-4 relative inline-block group">
               Functional Input
-              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#4B7CF3] group-hover:w-full transition-all duration-300"></span>
+              <span className="absolute bottom-0 left-0 w-0 h-0.5 group-hover:w-full transition-all duration-300" style={{background: 'var(--primary-blue)'}}></span>
             </h4>
-            <div className="flex justify-center items-center gap-2 text-gray-900 text-lg">
-              <span className="font-medium whitespace-nowrap hover:text-[#4B7CF3] transition-colors duration-200 cursor-default">Marketing</span>
-              <span className="text-[#4B7CF3]">•</span>
-              <span className="font-medium whitespace-nowrap hover:text-[#4B7CF3] transition-colors duration-200 cursor-default">Finance</span>
-              <span className="text-[#4B7CF3]">•</span>
-              <span className="font-medium whitespace-nowrap hover:text-[#4B7CF3] transition-colors duration-200 cursor-default">Legal</span>
+            <div className="flex justify-center items-center gap-2 text-gray-900" style={{fontSize: '16px'}}>
+              <span className="font-medium whitespace-nowrap transition-colors duration-200 cursor-default" onMouseEnter={(e) => (e.target as HTMLElement).style.color = 'var(--primary-blue)'} onMouseLeave={(e) => (e.target as HTMLElement).style.color = ''}>Marketing</span>
+              <span style={{color: 'var(--primary-blue)'}}>•</span>
+              <span className="font-medium whitespace-nowrap transition-colors duration-200 cursor-default" onMouseEnter={(e) => (e.target as HTMLElement).style.color = 'var(--primary-blue)'} onMouseLeave={(e) => (e.target as HTMLElement).style.color = ''}>Finance</span>
+              <span style={{color: 'var(--primary-blue)'}}>•</span>
+              <span className="font-medium whitespace-nowrap transition-colors duration-200 cursor-default" onMouseEnter={(e) => (e.target as HTMLElement).style.color = 'var(--primary-blue)'} onMouseLeave={(e) => (e.target as HTMLElement).style.color = ''}>Legal</span>
             </div>
           </div>
 
@@ -128,12 +128,12 @@ const LandingPage: React.FC<LandingPageProps> = ({ onStartEvaluation }) => {
           <div className="text-center">
             <h4 className="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-4 relative inline-block group">
               Exec Reviewers
-              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#4B7CF3] group-hover:w-full transition-all duration-300"></span>
+              <span className="absolute bottom-0 left-0 w-0 h-0.5 group-hover:w-full transition-all duration-300" style={{background: 'var(--primary-blue)'}}></span>
             </h4>
-            <div className="flex justify-center items-center gap-2 text-gray-900 text-lg">
-              <span className="font-medium whitespace-nowrap hover:text-[#4B7CF3] transition-colors duration-200 cursor-default">VP Product</span>
-              <span className="text-[#4B7CF3]">•</span>
-              <span className="font-medium whitespace-nowrap hover:text-[#4B7CF3] transition-colors duration-200 cursor-default">VP Engineering</span>
+            <div className="flex justify-center items-center gap-2 text-gray-900" style={{fontSize: '16px'}}>
+              <span className="font-medium whitespace-nowrap transition-colors duration-200 cursor-default" onMouseEnter={(e) => (e.target as HTMLElement).style.color = 'var(--primary-blue)'} onMouseLeave={(e) => (e.target as HTMLElement).style.color = ''}>VP Product</span>
+              <span style={{color: 'var(--primary-blue)'}}>•</span>
+              <span className="font-medium whitespace-nowrap transition-colors duration-200 cursor-default" onMouseEnter={(e) => (e.target as HTMLElement).style.color = 'var(--primary-blue)'} onMouseLeave={(e) => (e.target as HTMLElement).style.color = ''}>VP Engineering</span>
             </div>
           </div>
         </div>
@@ -144,14 +144,14 @@ const LandingPage: React.FC<LandingPageProps> = ({ onStartEvaluation }) => {
         <div className="max-w-4xl mx-auto">
           {/* Input Section - Simplified */}
           <div className="max-w-3xl mx-auto text-center">
-            <h3 className="text-2xl md:text-3xl font-semibold mb-4 text-gray-900">
+            <h3 className="font-semibold mb-4 text-gray-900" style={{fontSize: '22px'}}>
               Describe your product idea
             </h3>
             <div className="mb-4">
               <textarea
                 className="w-full p-6 border border-gray-200 rounded-xl resize-none focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 bg-white text-gray-900 transition-all duration-200 placeholder-gray-500"
                 rows={6}
-                placeholder="Example: A WhatsApp-based inventory system that lets small retailers track stock levels and automatically reorder from suppliers when running low..."
+                placeholder="A mobile app that helps small business owners..."
                 value={productIdea}
                 onChange={handleInputChange}
                 onKeyDown={handleKeyDown}
@@ -160,7 +160,8 @@ const LandingPage: React.FC<LandingPageProps> = ({ onStartEvaluation }) => {
             </div>
             <button
               onClick={handleStartClick}
-              className="w-full px-8 py-4 bg-gray-900 text-white font-semibold rounded-xl transition-all duration-200 hover:bg-gray-800 hover:shadow-lg hover:shadow-gray-900/20 hover:transform hover:-translate-y-0.5 text-lg focus:outline-none focus:ring-2 focus:ring-gray-500/20"
+              className="w-full button-premium"
+              style={{fontSize: '15px'}}
             >
               Get My PRFAQ
             </button>
