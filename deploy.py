@@ -80,13 +80,17 @@ if __name__ == "__main__":
     print("🚀 Starting production deployment...")
     print("📍 This will serve the application on port 3000")
     
+    # Set production mode flag to disable development redirects
+    os.environ['FLASK_DEPLOYMENT_MODE'] = 'production'
+    print("🔧 Production mode flag set - development redirects disabled")
+    
     # Build fresh frontend
     if not build_frontend():
         print("❌ Deployment failed due to build errors")
         sys.exit(1)
     
-    # Set up production routes
-    setup_production_routes()
+    # Production routes are now handled conditionally in routes.py
+    print("🔧 Production routes enabled via conditional logic")
     
     print("🌐 Starting production server on port 3000...")
     print("🔗 External traffic will be routed to this port")

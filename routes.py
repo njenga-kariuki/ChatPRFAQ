@@ -30,19 +30,47 @@ import os
 
 @app.route('/')
 def serve_react_app():
-    """Always redirect to Vite dev server - no static builds"""
+    """Redirect to Vite dev server in development, serve production build in deployment"""
+    import os
+    
+    # In production mode, serve the built React app instead of redirecting
+    if os.environ.get('FLASK_DEPLOYMENT_MODE') == 'production':
+        try:
+            from flask import send_from_directory
+            return send_from_directory('build/react', 'index.html')
+        except Exception as e:
+            return f"Error loading application: {e}", 500
+    
+    # Development mode: redirect to Vite dev server as before (preserves exact behavior)
     from flask import redirect
     return redirect('http://localhost:3000')
 
 @app.route('/<path:path>')
 def serve_react_static_files(path):
-    """Always redirect to Vite dev server for non-API routes"""
-    # Skip API routes
+    """Redirect to Vite dev server in development, serve production assets in deployment"""
+    import os
+    
+    # Skip API routes (always)
     if path.startswith('api/'):
         from flask import abort
         abort(404)
     
-    # Always redirect to Vite dev server for all other routes
+    # In production mode, serve built assets or SPA fallback
+    if os.environ.get('FLASK_DEPLOYMENT_MODE') == 'production':
+        try:
+            from flask import send_from_directory
+            build_path = os.path.join('build/react', path)
+            if os.path.exists(build_path) and os.path.isfile(build_path):
+                # Serve the actual asset file
+                return send_from_directory('build/react', path)
+            else:
+                # SPA fallback - serve index.html for client-side routing
+                return send_from_directory('build/react', 'index.html')
+        except Exception as e:
+            # Final fallback
+            return send_from_directory('build/react', 'index.html')
+    
+    # Development mode: redirect to Vite dev server as before (preserves exact behavior)
     from flask import redirect
     return redirect(f'http://localhost:3000/{path}')
 
