@@ -13,13 +13,13 @@ interface ComparisonRowProps {
 const ComparisonRow: React.FC<ComparisonRowProps> = ({ label, oneShot, chatPrfaq, highlight }) => (
   <>
     <div className="py-2.5 px-4 border-r border-b border-gray-100">
-      <p className="font-medium text-gray-900">{label}</p>
+      <p className="font-medium text-gray-900" style={{fontSize: '15px'}}>{label}</p>
     </div>
     <div className="py-2.5 px-4 border-r border-b border-gray-100 bg-gray-50">
-      <p className="text-gray-600">{oneShot}</p>
+      <p className="text-gray-600" style={{fontSize: '15px'}}>{oneShot}</p>
     </div>
     <div className="py-2.5 px-4 border-b border-gray-100 bg-gray-50">
-      <p className="font-semibold text-gray-900">{chatPrfaq}</p>
+      <p className="font-semibold text-gray-900" style={{fontSize: '15px'}}>{chatPrfaq}</p>
       {highlight && (
         <p className="text-sm text-gray-600 mt-1">{highlight}</p>
       )}
@@ -104,7 +104,7 @@ const HowItWorksPage: React.FC = () => {
       <header className="w-full px-4 py-4 md:px-6">
         <div className="max-w-6xl mx-auto relative">
           <Navigation className="absolute top-0 right-0" />
-          <h1 className="text-lg font-semibold">ChatPRFAQ</h1>
+          <h1 className="text-base font-semibold">ChatPRFAQ</h1>
         </div>
       </header>
 
@@ -136,11 +136,11 @@ const HowItWorksPage: React.FC = () => {
                 </div>
               </div>
               <div className="py-3 px-4 border-b border-r border-gray-100 bg-gray-50">
-                <h3 className="font-semibold text-gray-600">One-Shot PRFAQ</h3>
+                <h3 className="font-semibold text-gray-600" style={{fontSize: '16px'}}>One-Shot PRFAQ</h3>
                 <p className="text-sm text-gray-400 mt-1">Any LLM</p>
               </div>
               <div className="py-3 px-4 border-b border-gray-100 text-gray-900" style={{background: 'var(--primary-blue-light)'}}>
-                <h3 className="font-semibold flex items-center gap-2">
+                <h3 className="font-semibold flex items-center gap-2" style={{fontSize: '16px'}}>
                   ChatPRFAQ
                   <span className="w-2 h-2 rounded-full animate-pulse" style={{background: 'var(--primary-blue)'}}></span>
                 </h3>
@@ -185,12 +185,12 @@ const HowItWorksPage: React.FC = () => {
       {/* Bezos Quote - Bridge Section */}
       <section className="w-full px-4 py-14 pb-12 md:px-8">
         <div className="max-w-4xl mx-auto text-center">
-          <blockquote className="text-lg font-medium text-gray-900 leading-relaxed italic">
+          <blockquote className="font-medium text-gray-900 leading-relaxed italic" style={{fontSize: '16px'}}>
             "Great memos are written and re-written, shared with colleagues who are asked to improve the work, set aside for a couple of days, 
             and then edited again with a fresh mind. 
             They simply can’t be done in a day or two."
           </blockquote>
-          <cite className="block mt-3 text-base text-gray-600">
+          <cite className="block mt-3 text-gray-600" style={{fontSize: '14px'}}>
             — Jeff Bezos, 2017 Amazon Shareholder Letter
           </cite>
         </div>
@@ -210,19 +210,19 @@ const HowItWorksPage: React.FC = () => {
           <div className="grid md:grid-cols-3 gap-6 mt-16">
             <div className="bg-white rounded-2xl p-6 border border-gray-100 hover:border-gray-200 hover:shadow-lg transition-all duration-300 group">
               <div className="text-3xl mb-3">🎭</div>
-              <h4 className="font-semibold text-gray-900 mb-2">True Specialization</h4>
+              <h4 className="font-semibold text-gray-900 mb-2" style={{fontSize: '16px'}}>True Specialization</h4>
               <p className="text-sm text-gray-600">10 roles, 10 optimized AI configurations using role-specific benchmarks.</p>
             </div>
 
             <div className="bg-white rounded-2xl p-6 border border-gray-100 hover:border-gray-200 hover:shadow-lg transition-all duration-300 group">
               <div className="text-3xl mb-3">🔄</div>
-              <h4 className="font-semibold text-gray-900 mb-2">Iterative Depth</h4>
+              <h4 className="font-semibold text-gray-900 mb-2" style={{fontSize: '16px'}}>Iterative Depth</h4>
               <p className="text-sm text-gray-600">Each step informed by the last. Like a real team building on each other's work.</p>
             </div>
 
             <div className="bg-white rounded-2xl p-6 border border-gray-100 hover:border-gray-200 hover:shadow-lg transition-all duration-300 group">
               <div className="text-3xl mb-3">🎯</div>
-              <h4 className="font-semibold text-gray-900 mb-2">Battle-Tested Patterns</h4>
+              <h4 className="font-semibold text-gray-900 mb-2" style={{fontSize: '16px'}}>Battle-Tested Patterns</h4>
               <p className="text-sm text-gray-600">Built on 10 years of Amazon PRFAQs. Not theory—proven patterns.</p>
             </div>
           </div>
