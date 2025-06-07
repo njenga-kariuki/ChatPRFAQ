@@ -128,7 +128,8 @@ const HowItWorksPage: React.FC = () => {
       <section className="w-full px-4 md:px-8">
         <div className="max-w-5xl mx-auto">
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow duration-300 overflow-hidden">
-            <div className="grid grid-cols-3 gap-0">
+            <div className="overflow-x-auto">
+              <div className="grid grid-cols-3 gap-0 min-w-[500px]">
               {/* Header Row */}
               <div className="py-3 px-4 border-b border-r border-gray-100">
                 <div className="space-y-1">
@@ -177,6 +178,7 @@ const HowItWorksPage: React.FC = () => {
                 chatPrfaq="Evidence-based narrative"
                 highlight="Market data, user insights, validation"
               />
+              </div>
             </div>
           </div>
         </div>
