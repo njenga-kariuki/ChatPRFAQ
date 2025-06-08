@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { useNavigate, useLocation, Routes, Route } from 'react-router-dom';
+import { useNavigate, useLocation, Routes, Route, Link } from 'react-router-dom';
 import './index.css'; // Ensure Tailwind styles are imported
 import ProductIdeaForm from './components/ProductIdeaForm';
 import ProcessingStatus from './components/ProcessingStatus'; // Import ProcessingStatus
@@ -1060,9 +1060,9 @@ function App() {
             <div className="flex flex-col items-center p-4 md:p-8">
               <header className="w-full max-w-6xl mb-12 text-center relative">
                 <Navigation className="absolute top-0 right-0" />
-                <h1 className="font-bold mb-6 leading-tight tracking-tight text-gray-900" style={{fontSize: '28px'}}>
+                <Link to="/" className="font-bold mb-6 leading-tight tracking-tight text-gray-900" style={{fontSize: '28px', display: 'block'}}>
                   ChatPRFAQ
-                </h1>
+                </Link>
                 <p className="text-gray-600 max-w-2xl mx-auto leading-relaxed" style={{fontSize: '15px'}}>
                   Turn product ideas into C-Suite ready PRFAQs in 5 minutes.
                   <br />
@@ -1170,11 +1170,11 @@ function App() {
                   <Navigation className="absolute top-0 right-0" />
                 )}
                 
-                <h1 className="font-bold mb-4 leading-tight" style={{fontSize: '28px'}}>
+                <Link to="/" className="font-bold mb-4 leading-tight" style={{fontSize: '28px', display: 'block'}}>
                   <span className="text-black">
                     ChatPRFAQ
                   </span>
-                </h1>
+                </Link>
                 
                 <p className="subheadline">
                   Turn product ideas into C-Suite ready PRFAQs in 5 minutes.<br />Powered by 10 specialized AI agents.
