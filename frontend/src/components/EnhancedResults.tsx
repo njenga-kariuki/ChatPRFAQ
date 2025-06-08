@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import MarkdownRenderer from './MarkdownRenderer';
 import { StepData, PRVersions, ResearchArtifacts } from '../types';
 import PressReleaseEvolution from './PressReleaseEvolution';
@@ -80,7 +81,7 @@ const EnhancedResults: React.FC<EnhancedResultsProps> = ({
       {/* Minimal Header */}
       <header className="bg-white border-b border-gray-200 px-6 py-4">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
-          <h1 className="text-base font-semibold">ChatPRFAQ</h1>
+          <Link to="/" className="text-base font-semibold">ChatPRFAQ</Link>
           <div className="flex items-center gap-6">
             <Navigation />
             <button

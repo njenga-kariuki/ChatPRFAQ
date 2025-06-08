@@ -104,7 +104,7 @@ const HowItWorksPage: React.FC = () => {
       <header className="w-full px-4 py-4 md:px-6">
         <div className="max-w-6xl mx-auto relative">
           <Navigation className="absolute top-0 right-0" />
-          <h1 className="text-base font-semibold">ChatPRFAQ</h1>
+          <Link to="/" className="text-base font-semibold" style={{display: 'block'}}>ChatPRFAQ</Link>
         </div>
       </header>
 
