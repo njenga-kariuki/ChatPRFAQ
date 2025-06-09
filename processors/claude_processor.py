@@ -1,6 +1,7 @@
 import logging
 import anthropic
 import httpx
+import os
 from config import ANTHROPIC_API_KEY, CLAUDE_MODEL
 import time
 
@@ -208,6 +209,10 @@ class ClaudeProcessor:
                             "progress": p
                         })).start()
             
+            # Enhanced diagnostic logging for payload analysis
+            total_prompt_size = len(system_prompt) + len(user_prompt)
+            logger.info(f"{log_prefix} Step {step_id} payload size: {total_prompt_size} chars (system: {len(system_prompt)}, user: {len(user_prompt)})")
+            logger.info(f"{log_prefix} Step {step_id} production mode: {os.environ.get('FLASK_DEPLOYMENT_MODE') == 'production'}")
             logger.info(f"{log_prefix} Calling Claude API with model: {self.model}")
             logger.debug(f"{log_prefix} System prompt length: {len(system_prompt)}")
             logger.debug(f"{log_prefix} User prompt length: {len(user_prompt)}")
@@ -246,6 +251,9 @@ class ClaudeProcessor:
             
             output = response.content[0].text
             logger.info(f"{log_prefix} Claude response: {format_response_summary(output)}")
+
+            # Enhanced diagnostic logging for response analysis
+            logger.info(f"{log_prefix} Step {step_id} API response time: {api_duration:.2f}s, response size: {len(output)} chars")
 
             # Send API completion log with timing
             safe_callback({
