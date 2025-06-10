@@ -874,70 +874,89 @@ function App() {
     }
   }, [currentRequestId, viewMode, activeTab, showFinalTab]);
 
-  // NEW: Completion detection polling for stuck requests (Step 9 hang fix)
+  // NEW: Universal hang detection system for SSE communication failures
+  // This addresses the root cause where backend completes successfully but frontend
+  // never receives step completion updates due to SSE stream failures in production.
+  // Works for ANY step (not just Step 9) that gets stuck due to communication breakdown.
   useEffect(() => {
     if (!currentRequestId || !isProcessing) return;
     
-    // Find if Step 9 is currently processing
-    const step9 = stepsData.find(s => s.id === 9 && s.status === 'processing');
-    if (!step9) return;
+    // Find any step currently processing
+    const processingStep = stepsData.find(s => s.status === 'processing');
+    if (!processingStep) return;
     
-    logToStorage('info', '🔍 Step 9 detected as processing - starting hang detection timer');
+    logToStorage('info', '🔍 Step hang detection active', { 
+      stepId: processingStep.id, 
+      stepName: processingStep.name 
+    });
     
-    // Start polling after 60 seconds of Step 9 processing
+    // Start polling after 45 seconds of any step processing
     const hangDetectionTimer = setTimeout(() => {
-      logToStorage('info', '⏰ Step 9 has been processing for 60s - starting completion polling');
+      logToStorage('info', '⏰ Step hang detected - starting completion polling', { 
+        stepId: processingStep.id, 
+        stepName: processingStep.name 
+      });
       
-      const pollCompletion = async () => {
-        try {
-          const response = await fetch(`/api/check-completion/${currentRequestId}`);
-          const data = await response.json();
-          
-          if (data.found && data.status === 'completed' && data.result) {
-            logToStorage('info', '✅ COMPLETION DETECTED via polling - updating UI', { 
-              requestId: currentRequestId,
-              status: data.status 
-            });
-            
-            // Process completed - update UI with results
-            setCurrentStepText('Evaluation Complete! All steps processed.');
-            setFinalPrfaq(data.result.prfaq || 'Not available');
-            setFinalMlpPlan(data.result.mlp_plan || 'Not available');
-            setStepsData(prev => prev.map(s => ({
-              ...s, 
-              status: (s.status === 'pending' || s.status === 'processing') ? 'completed' : s.status, 
-              isActive: s.id === initialStepsData[initialStepsData.length - 1].id 
-            })));
-            setIsProcessing(false);
-            setProgress(100);
-            
-            // Generate result ID and switch to results view
-            const newResultId = Date.now().toString(36) + Math.random().toString(36).substr(2);
-            setResultId(newResultId);
-            setViewMode('results');
-            setShowFinalTab(true);
-            
-            setTimeout(() => {
-              setShowNotification(true);
-            }, 1000);
-            
-            return true; // Stop polling
-          } else if (data.found && data.status === 'failed') {
-            logToStorage('error', '❌ FAILURE DETECTED via polling', { 
-              requestId: currentRequestId,
-              error: data.error 
-            });
-            
-            // Process failed - show error
-            setGeneralError(data.error || 'Processing failed');
-            setIsProcessing(false);
-            setCurrentStepText('Processing failed - please try again');
-            setStepsData(prev => prev.map(s => 
-              s.id === 9 ? { ...s, status: 'error', error: data.error || 'Processing failed' } : s
-            ));
-            
-            return true; // Stop polling
-          }
+               const pollCompletion = async () => {
+         try {
+           const response = await fetch(`/api/check-completion/${currentRequestId}`);
+           const data = await response.json();
+           
+           if (data.found && data.status === 'processing') {
+             // Still processing - just log for monitoring
+             logToStorage('info', '📊 Backend still processing', { 
+               requestId: currentRequestId,
+               stuckStep: processingStep.id,
+               backendStatus: data.status
+             });
+             return false; // Continue polling
+           } else if (data.found && data.status === 'completed' && data.result) {
+             logToStorage('info', '✅ COMPLETION DETECTED via polling - updating UI', { 
+               requestId: currentRequestId,
+               status: data.status,
+               stuckStep: processingStep.id
+             });
+             
+             // Process completed - update UI with results
+             setCurrentStepText('Evaluation Complete! All steps processed.');
+             setFinalPrfaq(data.result.prfaq || 'Not available');
+             setFinalMlpPlan(data.result.mlp_plan || 'Not available');
+             setStepsData(prev => prev.map(s => ({
+               ...s, 
+               status: (s.status === 'pending' || s.status === 'processing') ? 'completed' : s.status, 
+               isActive: s.id === initialStepsData[initialStepsData.length - 1].id 
+             })));
+             setIsProcessing(false);
+             setProgress(100);
+             
+             // Generate result ID and switch to results view
+             const newResultId = Date.now().toString(36) + Math.random().toString(36).substr(2);
+             setResultId(newResultId);
+             setViewMode('results');
+             setShowFinalTab(true);
+             
+             setTimeout(() => {
+               setShowNotification(true);
+             }, 1000);
+             
+             return true; // Stop polling
+           } else if (data.found && data.status === 'failed') {
+             logToStorage('error', '❌ FAILURE DETECTED via polling', { 
+               requestId: currentRequestId,
+               error: data.error,
+               stuckStep: processingStep.id
+             });
+             
+             // Process failed - show error
+             setGeneralError(data.error || 'Processing failed');
+             setIsProcessing(false);
+             setCurrentStepText('Processing failed - please try again');
+             setStepsData(prev => prev.map(s => 
+               s.id === processingStep.id ? { ...s, status: 'error', error: data.error || 'Processing failed' } : s
+             ));
+             
+             return true; // Stop polling
+           }
           
           return false; // Continue polling
         } catch (error) {
@@ -964,7 +983,7 @@ function App() {
       }, 600000);
       
       return () => clearInterval(pollInterval);
-    }, 60000); // 60 second delay
+    }, 45000); // 45 second delay - more responsive hang detection
     
     return () => clearTimeout(hangDetectionTimer);
   }, [currentRequestId, isProcessing, stepsData]);
