@@ -26,9 +26,17 @@ def format_response_summary(text: str, max_length: int = 150) -> str:
 
 class ClaudeProcessor:
     def __init__(self):
+        # Production-resilient timeout configuration
+        if os.environ.get('FLASK_DEPLOYMENT_MODE') == 'production':
+            # Production: More aggressive timeout settings for infrastructure resilience
+            timeout_config = httpx.Timeout(300.0, connect=30.0, read=270.0)  # 5min total, 4.5min read
+        else:
+            # Development: Current settings
+            timeout_config = httpx.Timeout(180.0)  # 3 minute HTTP timeout
+            
         self.client = anthropic.Anthropic(
             api_key=ANTHROPIC_API_KEY,
-            timeout=httpx.Timeout(180.0)  # 3 minute HTTP timeout
+            timeout=timeout_config
         )
         self.model = CLAUDE_MODEL
         logger.info(f"ClaudeProcessor initialized with model: {self.model}")
@@ -226,16 +234,50 @@ class ClaudeProcessor:
                 'request_id': request_id
             })
             
-            response = self.client.messages.create(
-                model=self.model,
-                max_tokens=8192,
-                temperature=0.3,
-                top_p=0.95,
-                system=system_prompt,
-                messages=[
-                    {"role": "user", "content": user_prompt}
-                ]
-            )
+            # Universal retry logic for production resilience
+            max_retries = 3 if step_id >= 7 else 2  # Extra retries for complex later steps
+            retry_delays = [2.0, 5.0, 10.0]  # Progressive backoff
+            
+            response = None
+            for attempt in range(max_retries):
+                try:
+                    response = self.client.messages.create(
+                        model=self.model,
+                        max_tokens=8192,
+                        temperature=0.3,
+                        top_p=0.95,
+                        system=system_prompt,
+                        messages=[
+                            {"role": "user", "content": user_prompt}
+                        ]
+                    )
+                    # Success - exit retry loop
+                    break
+                    
+                except Exception as e:
+                    # Check for retryable errors (rate limits, timeouts, overloaded)
+                    is_retryable_error = (
+                        'rate' in str(e).lower() or 
+                        'overloaded' in str(e).lower() or
+                        'timeout' in str(e).lower() or
+                        '529' in str(e) or
+                        'connection' in str(e).lower()
+                    )
+                    
+                    if is_retryable_error and attempt < max_retries - 1:
+                        delay = retry_delays[attempt]
+                        logger.warning(f"{log_prefix} Step {step_id} retry {attempt + 1}/{max_retries} after {delay}s: {str(e)}")
+                        safe_callback({
+                            'type': 'log',
+                            'level': 'warn',
+                            'message': f'⚠️ Step {step_id} retrying in {delay}s (attempt {attempt + 1}/{max_retries})',
+                            'request_id': request_id
+                        })
+                        time.sleep(delay)
+                        continue
+                    else:
+                        # Re-raise for existing error handling
+                        raise
             
             api_duration = time.time() - api_start_time
             
