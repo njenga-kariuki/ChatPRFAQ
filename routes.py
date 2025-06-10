@@ -15,6 +15,34 @@ from utils.raw_output_cache import store_raw_llm_output, get_raw_llm_output, get
 # Configure logging
 logger = logging.getLogger(__name__)
 
+# NEW: Completion state tracking (independent of streaming)
+completion_states = {}
+
+def store_completion_state(request_id, status, result=None, error=None):
+    """Store completion state independently of streaming mechanism"""
+    completion_states[request_id] = {
+        'status': status,  # 'processing', 'completed', 'failed'
+        'result': result,
+        'error': error,
+        'timestamp': time.time()
+    }
+    logger.info(f"[{request_id}] Stored completion state: {status}")
+
+def get_completion_state(request_id):
+    """Get completion state for a request"""
+    # Clean up old completion states (older than 1 hour)
+    current_time = time.time()
+    old_request_ids = []
+    for req_id, state in completion_states.items():
+        if current_time - state['timestamp'] > 3600:  # 1 hour
+            old_request_ids.append(req_id)
+    
+    for old_id in old_request_ids:
+        del completion_states[old_id]
+        logger.info(f"[{old_id}] Cleaned up old completion state")
+    
+    return completion_states.get(request_id, None)
+
 # Import database service for session tracking (dual-write pattern)
 try:
     from utils.database_service import get_db_service
@@ -265,6 +293,9 @@ def process_product_idea_stream():
                 try:
                     logger.info(f"[{request_id}] Background processing thread started")
                     
+                    # NEW: Track processing start
+                    store_completion_state(request_id, 'processing')
+                    
                     # Send thread start log to frontend
                     safe_progress_callback({
                         'type': 'log',
@@ -295,6 +326,12 @@ def process_product_idea_stream():
                     result = llm_processor.process_all_steps(product_idea, safe_progress_callback, request_id=request_id)
                     result_container['result'] = result
                     processing_end_time = time.time()
+                    
+                    # NEW: Track completion state independently
+                    if 'error' in result:
+                        store_completion_state(request_id, 'failed', error=result['error'])
+                    else:
+                        store_completion_state(request_id, 'completed', result=result)
                     
                     # Stop heartbeat thread
                     heartbeat_stop['stop'] = True
@@ -336,6 +373,9 @@ def process_product_idea_stream():
                     # Stop heartbeat thread on error too
                     heartbeat_stop['stop'] = True
                     processing_end_time = time.time()
+                    
+                    # NEW: Track error state independently
+                    store_completion_state(request_id, 'failed', error=str(e))
                     
                     logger.exception(f"[{request_id}] Error in background processing thread")
 
@@ -763,6 +803,44 @@ def debug_status():
         return jsonify(status)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+@app.route('/api/check-completion/<request_id>', methods=['GET'])
+def check_completion_status(request_id):
+    """Check completion status independently of streaming (for stuck requests)"""
+    try:
+        completion_state = get_completion_state(request_id)
+        
+        if not completion_state:
+            return jsonify({
+                "found": False,
+                "status": "unknown",
+                "request_id": request_id
+            })
+        
+        response_data = {
+            "found": True,
+            "status": completion_state['status'],
+            "request_id": request_id,
+            "timestamp": completion_state['timestamp']
+        }
+        
+        # Include result or error if available
+        if completion_state['status'] == 'completed' and completion_state['result']:
+            response_data['result'] = completion_state['result']
+        elif completion_state['status'] == 'failed' and completion_state['error']:
+            response_data['error'] = completion_state['error']
+        
+        logger.info(f"[{request_id}] Completion status checked: {completion_state['status']}")
+        return jsonify(response_data)
+        
+    except Exception as e:
+        logger.error(f"[{request_id}] Error checking completion status: {e}")
+        return jsonify({
+            "found": False,
+            "status": "error",
+            "error": str(e),
+            "request_id": request_id
+        }), 500
 
 @app.route('/api/debug/production-health', methods=['GET'])
 def production_health_check():

@@ -874,6 +874,101 @@ function App() {
     }
   }, [currentRequestId, viewMode, activeTab, showFinalTab]);
 
+  // NEW: Completion detection polling for stuck requests (Step 9 hang fix)
+  useEffect(() => {
+    if (!currentRequestId || !isProcessing) return;
+    
+    // Find if Step 9 is currently processing
+    const step9 = stepsData.find(s => s.id === 9 && s.status === 'processing');
+    if (!step9) return;
+    
+    logToStorage('info', '🔍 Step 9 detected as processing - starting hang detection timer');
+    
+    // Start polling after 60 seconds of Step 9 processing
+    const hangDetectionTimer = setTimeout(() => {
+      logToStorage('info', '⏰ Step 9 has been processing for 60s - starting completion polling');
+      
+      const pollCompletion = async () => {
+        try {
+          const response = await fetch(`/api/check-completion/${currentRequestId}`);
+          const data = await response.json();
+          
+          if (data.found && data.status === 'completed' && data.result) {
+            logToStorage('info', '✅ COMPLETION DETECTED via polling - updating UI', { 
+              requestId: currentRequestId,
+              status: data.status 
+            });
+            
+            // Process completed - update UI with results
+            setCurrentStepText('Evaluation Complete! All steps processed.');
+            setFinalPrfaq(data.result.prfaq || 'Not available');
+            setFinalMlpPlan(data.result.mlp_plan || 'Not available');
+            setStepsData(prev => prev.map(s => ({
+              ...s, 
+              status: (s.status === 'pending' || s.status === 'processing') ? 'completed' : s.status, 
+              isActive: s.id === initialStepsData[initialStepsData.length - 1].id 
+            })));
+            setIsProcessing(false);
+            setProgress(100);
+            
+            // Generate result ID and switch to results view
+            const newResultId = Date.now().toString(36) + Math.random().toString(36).substr(2);
+            setResultId(newResultId);
+            setViewMode('results');
+            setShowFinalTab(true);
+            
+            setTimeout(() => {
+              setShowNotification(true);
+            }, 1000);
+            
+            return true; // Stop polling
+          } else if (data.found && data.status === 'failed') {
+            logToStorage('error', '❌ FAILURE DETECTED via polling', { 
+              requestId: currentRequestId,
+              error: data.error 
+            });
+            
+            // Process failed - show error
+            setGeneralError(data.error || 'Processing failed');
+            setIsProcessing(false);
+            setCurrentStepText('Processing failed - please try again');
+            setStepsData(prev => prev.map(s => 
+              s.id === 9 ? { ...s, status: 'error', error: data.error || 'Processing failed' } : s
+            ));
+            
+            return true; // Stop polling
+          }
+          
+          return false; // Continue polling
+        } catch (error) {
+          logToStorage('warn', '⚠️ Completion polling error', { 
+            requestId: currentRequestId,
+            error: error instanceof Error ? error.message : String(error)
+          });
+          return false; // Continue polling despite error
+        }
+      };
+      
+      // Start polling every 5 seconds
+      const pollInterval = setInterval(async () => {
+        const shouldStop = await pollCompletion();
+        if (shouldStop) {
+          clearInterval(pollInterval);
+        }
+      }, 5000);
+      
+      // Stop polling after 10 minutes maximum
+      setTimeout(() => {
+        clearInterval(pollInterval);
+        logToStorage('info', '⏹️ Stopped completion polling after 10 minutes');
+      }, 600000);
+      
+      return () => clearInterval(pollInterval);
+    }, 60000); // 60 second delay
+    
+    return () => clearTimeout(hangDetectionTimer);
+  }, [currentRequestId, isProcessing, stepsData]);
+
   const generateReportText = () => {
     let report = `Product Concept Evaluation Report\n`;
     report += `Generated: ${new Date().toLocaleDateString()}\n\n`;
