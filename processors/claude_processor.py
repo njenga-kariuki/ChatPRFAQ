@@ -252,6 +252,23 @@ class ClaudeProcessor:
             response = None
             for attempt in range(max_retries):
                 try:
+                    # Comprehensive HTTP diagnostic logging
+                    request_start = time.time()
+                    logger.info(f"{log_prefix} Step {step_id} attempt {attempt + 1}: HTTP request starting")
+                    safe_callback({
+                        'type': 'log',
+                        'level': 'info',
+                        'message': f'🔗 Step {step_id} HTTP request starting (attempt {attempt + 1})',
+                        'request_id': request_id
+                    })
+                    
+                    # Safe client configuration logging
+                    try:
+                        timeout_info = str(getattr(self.client, '_timeout', 'unknown'))
+                        logger.info(f"{log_prefix} Step {step_id} client timeout: {timeout_info}")
+                    except Exception:
+                        logger.info(f"{log_prefix} Step {step_id} client timeout: unable to determine")
+                    
                     response = self.client.messages.create(
                         model=self.model,
                         max_tokens=8192,
@@ -262,26 +279,52 @@ class ClaudeProcessor:
                             {"role": "user", "content": user_prompt}
                         ]
                     )
+                    
+                    request_duration = time.time() - request_start
+                    logger.info(f"{log_prefix} Step {step_id} attempt {attempt + 1}: HTTP request completed in {request_duration:.2f}s")
+                    safe_callback({
+                        'type': 'log',
+                        'level': 'info',
+                        'message': f'✅ Step {step_id} HTTP request completed ({request_duration:.2f}s)',
+                        'request_id': request_id
+                    })
+                    
                     # Success - exit retry loop
                     break
                     
                 except Exception as e:
+                    request_duration = time.time() - request_start
+                    error_type = type(e).__name__
+                    error_msg = str(e)
+                    
+                    # Comprehensive error logging
+                    logger.error(f"{log_prefix} Step {step_id} attempt {attempt + 1}: HTTP request failed after {request_duration:.2f}s")
+                    logger.error(f"{log_prefix} Step {step_id} error type: {error_type}")
+                    logger.error(f"{log_prefix} Step {step_id} error message: {error_msg}")
+                    
+                    safe_callback({
+                        'type': 'log',
+                        'level': 'error',
+                        'message': f'❌ Step {step_id} HTTP error: {error_type} after {request_duration:.2f}s',
+                        'request_id': request_id
+                    })
+                    
                     # Check for retryable errors (rate limits, timeouts, overloaded)
                     is_retryable_error = (
-                        'rate' in str(e).lower() or 
-                        'overloaded' in str(e).lower() or
-                        'timeout' in str(e).lower() or
-                        '529' in str(e) or
-                        'connection' in str(e).lower()
+                        'rate' in error_msg.lower() or 
+                        'overloaded' in error_msg.lower() or
+                        'timeout' in error_msg.lower() or
+                        '529' in error_msg or
+                        'connection' in error_msg.lower()
                     )
                     
                     if is_retryable_error and attempt < max_retries - 1:
                         delay = retry_delays[attempt]
-                        logger.warning(f"{log_prefix} Step {step_id} retry {attempt + 1}/{max_retries} after {delay}s: {str(e)}")
+                        logger.warning(f"{log_prefix} Step {step_id} retry {attempt + 1}/{max_retries} after {delay}s: {error_msg}")
                         safe_callback({
                             'type': 'log',
                             'level': 'warn',
-                            'message': f'⚠️ Step {step_id} retrying in {delay}s (attempt {attempt + 1}/{max_retries})',
+                            'message': f'⚠️ Step {step_id} retrying in {delay}s (attempt {attempt + 1}/{max_retries}): {error_type}',
                             'request_id': request_id
                         })
                         time.sleep(delay)
