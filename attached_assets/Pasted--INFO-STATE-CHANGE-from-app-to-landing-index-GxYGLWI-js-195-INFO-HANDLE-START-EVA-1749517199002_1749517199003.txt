@@ -1,0 +1,142 @@
+[INFO] 📱 STATE CHANGE {from: 'app', to: 'landing'}
+index-_GxYGLWI.js:195 [INFO] 🚀 HANDLE START EVALUATION CALLED {hasProductIdea: true}
+index-_GxYGLWI.js:195 [INFO] 📱 STATE CHANGE {from: 'landing', to: 'app'}
+index-_GxYGLWI.js:195 [INFO] 📝 HANDLE FORM SUBMIT CALLED {ideaLength: 95}
+index-_GxYGLWI.js:195 [INFO] 🔄 RESET STATE CALLED 
+index-_GxYGLWI.js:195 [INFO] 📱 STATE CHANGE {from: 'landing', to: 'processing'}
+index-_GxYGLWI.js:168 LLM Analysis Request ID: 7d85a296
+index-_GxYGLWI.js:195 [INFO] 🔍 LLM ANALYSIS REQUEST ID {requestId: '7d85a296'}
+index-_GxYGLWI.js:195 [INFO] 🧵 Background processing thread started {backend: true, requestId: '57981b38', timestamp: '2025-06-10T00:39:27.325Z'}
+index-_GxYGLWI.js:195 [INFO] 💓 Backend thread heartbeat {backend: true, requestId: '57981b38', timestamp: 1749515967.297902}
+index-_GxYGLWI.js:195 [INFO] 🚀 Starting 10-step Working Backwards process {backend: true, requestId: '57981b38', timestamp: '2025-06-10T00:39:27.325Z'}
+index-_GxYGLWI.js:195 [INFO] 📊 Step 1/10: Market Research & Analysis {backend: true, requestId: '57981b38', timestamp: '2025-06-10T00:39:27.326Z'}
+index-_GxYGLWI.js:195 [INFO] 🎯 Step 1 starting Perplexity market research {backend: true, requestId: '57981b38', timestamp: '2025-06-10T00:39:27.326Z'}
+index-_GxYGLWI.js:195 [INFO] 📊 STEP PROCESSING {stepId: 1, stepName: 'Market Research & Analysis', status: 'processing', progress: 8}
+index-_GxYGLWI.js:195 [INFO] 🔄 Step 1 calling Perplexity API (model: sonar-pro) {backend: true, requestId: '57981b38', timestamp: '2025-06-10T00:39:27.326Z'}
+index-_GxYGLWI.js:195 [INFO] 💓 Backend thread heartbeat {backend: true, requestId: '57981b38', timestamp: 1749515982.298062}
+index-_GxYGLWI.js:195 [INFO] 💓 Backend thread heartbeat {backend: true, requestId: '57981b38', timestamp: 1749515997.298289}
+index-_GxYGLWI.js:195 [INFO] ✅ Step 1 Perplexity API completed in 40.4s (8233 chars) {backend: true, requestId: '57981b38', timestamp: '2025-06-10T00:40:07.736Z'}
+index-_GxYGLWI.js:195 [INFO] 📊 STEP COMPLETED {stepId: 1, stepName: 'Market Research & Analysis', status: 'completed', progress: 8}
+index-_GxYGLWI.js:195 [INFO] ✅ STEP COMPLETED - ACTIVATING NEXT {completedStepId: 1, completedStepName: 'Market Research & Analysis'}
+index-_GxYGLWI.js:195 [INFO] 📊 CAPTURED MARKET RESEARCH {length: 8233}
+index-_GxYGLWI.js:195 [INFO] 🔄 ACTIVATING NEXT STEP {nextStepId: 2, nextStepName: 'Problem Validation Research'}
+index-_GxYGLWI.js:195 [INFO] 📊 Step 2/10: Problem Validation Research {backend: true, requestId: '57981b38', timestamp: '2025-06-10T00:40:07.746Z'}
+index-_GxYGLWI.js:195 [INFO] 🎯 Step 2 starting Claude API call {backend: true, requestId: '57981b38', timestamp: '2025-06-10T00:40:07.746Z'}
+index-_GxYGLWI.js:195 [INFO] 📊 STEP PROCESSING {stepId: 2, stepName: 'Problem Validation Research', status: 'processing', progress: 8}
+index-_GxYGLWI.js:195 [INFO] 📊 Step 2 payload: 12164 chars (production: True) {backend: true, requestId: '57981b38', timestamp: '2025-06-10T00:40:07.747Z'}
+index-_GxYGLWI.js:195 [INFO] 🔄 Step 2 calling Claude API (model: claude-sonnet-4-20250514) {backend: true, requestId: '57981b38', timestamp: '2025-06-10T00:40:07.747Z'}
+index-_GxYGLWI.js:195 [INFO] 🔗 Step 2 HTTP request starting (attempt 1) {backend: true, requestId: '57981b38', timestamp: '2025-06-10T00:40:07.747Z'}
+index-_GxYGLWI.js:195 [INFO] 📊 STEP PROCESSING {stepId: 2, stepName: 'Problem Validation Research', status: 'processing', progress: 8}
+index-_GxYGLWI.js:195 [INFO] 📊 STEP PROCESSING {stepId: 2, stepName: 'Problem Validation Research', status: 'processing', progress: 8}
+index-_GxYGLWI.js:195 [INFO] 💓 Backend thread heartbeat {backend: true, requestId: '57981b38', timestamp: 1749516012.2985442}
+index-_GxYGLWI.js:195 [INFO] 💓 Backend thread heartbeat {backend: true, requestId: '57981b38', timestamp: 1749516027.2988229}
+index-_GxYGLWI.js:195 [INFO] 💓 Backend thread heartbeat {backend: true, requestId: '57981b38', timestamp: 1749516042.299763}
+index-_GxYGLWI.js:195 [INFO] 💓 Backend thread heartbeat {backend: true, requestId: '57981b38', timestamp: 1749516057.300052}
+index-_GxYGLWI.js:195 [INFO] ✅ Step 2 HTTP request completed (50.45s) {backend: true, requestId: '57981b38', timestamp: '2025-06-10T00:40:58.189Z'}
+index-_GxYGLWI.js:195 [INFO] ✅ Step 2 Claude API completed in 50.4s (8854 chars) {backend: true, requestId: '57981b38', timestamp: '2025-06-10T00:40:58.189Z'}
+index-_GxYGLWI.js:195 [INFO] 📊 STEP COMPLETED {stepId: 2, stepName: 'Problem Validation Research', status: 'completed', progress: 8}
+index-_GxYGLWI.js:195 [INFO] ✅ STEP COMPLETED - ACTIVATING NEXT {completedStepId: 2, completedStepName: 'Problem Validation Research'}
+index-_GxYGLWI.js:195 [INFO] 🔍 CAPTURED PROBLEM VALIDATION {length: 8854}
+index-_GxYGLWI.js:195 [INFO] 🔄 ACTIVATING NEXT STEP {nextStepId: 3, nextStepName: 'Drafting Press Release'}
+index-_GxYGLWI.js:195 [INFO] 📊 Step 3/10: Draft Press Release {backend: true, requestId: '57981b38', timestamp: '2025-06-10T00:40:58.203Z'}
+index-_GxYGLWI.js:195 [INFO] 🎯 Step 3 starting Claude API call {backend: true, requestId: '57981b38', timestamp: '2025-06-10T00:40:58.203Z'}
+index-_GxYGLWI.js:195 [INFO] 📊 STEP PROCESSING {stepId: 3, stepName: 'Drafting Press Release', status: 'processing', progress: 8}
+index-_GxYGLWI.js:195 [INFO] 📊 Step 3 payload: 22279 chars (production: True) {backend: true, requestId: '57981b38', timestamp: '2025-06-10T00:40:58.223Z'}
+index-_GxYGLWI.js:195 [INFO] 🔄 Step 3 calling Claude API (model: claude-sonnet-4-20250514) {backend: true, requestId: '57981b38', timestamp: '2025-06-10T00:40:58.224Z'}
+index-_GxYGLWI.js:195 [INFO] 🔗 Step 3 HTTP request starting (attempt 1) {backend: true, requestId: '57981b38', timestamp: '2025-06-10T00:40:58.224Z'}
+index-_GxYGLWI.js:195 [INFO] 📊 STEP PROCESSING {stepId: 3, stepName: 'Drafting Press Release', status: 'processing', progress: 8}
+index-_GxYGLWI.js:195 [INFO] 📊 STEP PROCESSING {stepId: 3, stepName: 'Drafting Press Release', status: 'processing', progress: 8}
+index-_GxYGLWI.js:195 [INFO] 💓 Backend thread heartbeat {backend: true, requestId: '57981b38', timestamp: 1749516072.3002863}
+index-_GxYGLWI.js:195 [INFO] ✅ Step 3 HTTP request completed (24.34s) {backend: true, requestId: '57981b38', timestamp: '2025-06-10T00:41:22.545Z'}
+index-_GxYGLWI.js:195 [INFO] ✅ Step 3 Claude API completed in 24.3s (4470 chars) {backend: true, requestId: '57981b38', timestamp: '2025-06-10T00:41:22.545Z'}
+index-_GxYGLWI.js:195 [INFO] 📊 STEP COMPLETED {stepId: 3, stepName: 'Drafting Press Release', status: 'completed', progress: 8}
+index-_GxYGLWI.js:195 [INFO] ✅ STEP COMPLETED - ACTIVATING NEXT {completedStepId: 3, completedStepName: 'Drafting Press Release'}
+index-_GxYGLWI.js:195 [INFO] 📝 CAPTURED PR V1 DRAFT {length: 4470}
+index-_GxYGLWI.js:195 [INFO] 🔄 ACTIVATING NEXT STEP {nextStepId: 4, nextStepName: 'Refining Press Release'}
+index-_GxYGLWI.js:195 [INFO] 📊 Step 4/10: Refine Press Release {backend: true, requestId: '57981b38', timestamp: '2025-06-10T00:41:22.556Z'}
+index-_GxYGLWI.js:195 [INFO] 🎯 Step 4 starting Claude API call {backend: true, requestId: '57981b38', timestamp: '2025-06-10T00:41:22.556Z'}
+index-_GxYGLWI.js:195 [INFO] 📊 STEP PROCESSING {stepId: 4, stepName: 'Refining Press Release', status: 'processing', progress: 8}
+index-_GxYGLWI.js:195 [INFO] 📊 Step 4 payload: 25618 chars (production: True) {backend: true, requestId: '57981b38', timestamp: '2025-06-10T00:41:22.557Z'}
+index-_GxYGLWI.js:195 [INFO] 🔄 Step 4 calling Claude API (model: claude-sonnet-4-20250514) {backend: true, requestId: '57981b38', timestamp: '2025-06-10T00:41:22.557Z'}
+index-_GxYGLWI.js:195 [INFO] 🔗 Step 4 HTTP request starting (attempt 1) {backend: true, requestId: '57981b38', timestamp: '2025-06-10T00:41:22.557Z'}
+index-_GxYGLWI.js:195 [INFO] 📊 STEP PROCESSING {stepId: 4, stepName: 'Refining Press Release', status: 'processing', progress: 8}
+index-_GxYGLWI.js:195 [INFO] 📊 STEP PROCESSING {stepId: 4, stepName: 'Refining Press Release', status: 'processing', progress: 8}
+index-_GxYGLWI.js:195 [INFO] 💓 Backend thread heartbeat {backend: true, requestId: '57981b38', timestamp: 1749516087.300511}
+index-_GxYGLWI.js:195 [INFO] 💓 Backend thread heartbeat {backend: true, requestId: '57981b38', timestamp: 1749516102.300701}
+index-_GxYGLWI.js:195 [INFO] ✅ Step 4 HTTP request completed (32.14s) {backend: true, requestId: '57981b38', timestamp: '2025-06-10T00:41:54.687Z'}
+index-_GxYGLWI.js:195 [INFO] ✅ Step 4 Claude API completed in 32.1s (5748 chars) {backend: true, requestId: '57981b38', timestamp: '2025-06-10T00:41:54.688Z'}
+index-_GxYGLWI.js:195 [INFO] 📊 STEP COMPLETED {stepId: 4, stepName: 'Refining Press Release', status: 'completed', progress: 8}
+index-_GxYGLWI.js:195 [INFO] ✅ STEP COMPLETED - ACTIVATING NEXT {completedStepId: 4, completedStepName: 'Refining Press Release'}
+index-_GxYGLWI.js:195 [INFO] 📝 CAPTURED PR V2 REFINED FROM VP REFINEMENT {step4ContentLength: 5748, extractedLength: 4648, pattern: 'found'}
+index-_GxYGLWI.js:195 [INFO] 🔄 ACTIVATING NEXT STEP {nextStepId: 5, nextStepName: 'Drafting Internal FAQ'}
+index-_GxYGLWI.js:195 [INFO] 📊 Step 5/10: Internal FAQ {backend: true, requestId: '57981b38', timestamp: '2025-06-10T00:41:54.733Z'}
+index-_GxYGLWI.js:195 [INFO] 🎯 Step 5 starting Claude API call {backend: true, requestId: '57981b38', timestamp: '2025-06-10T00:41:54.733Z'}
+index-_GxYGLWI.js:195 [INFO] 📊 STEP PROCESSING {stepId: 5, stepName: 'Drafting Internal FAQ', status: 'processing', progress: 8}
+index-_GxYGLWI.js:195 [INFO] 📊 Step 5 payload: 28357 chars (production: True) {backend: true, requestId: '57981b38', timestamp: '2025-06-10T00:41:54.734Z'}
+index-_GxYGLWI.js:195 [INFO] 🔄 Step 5 calling Claude API (model: claude-sonnet-4-20250514) {backend: true, requestId: '57981b38', timestamp: '2025-06-10T00:41:54.734Z'}
+index-_GxYGLWI.js:195 [INFO] 🔗 Step 5 HTTP request starting (attempt 1) {backend: true, requestId: '57981b38', timestamp: '2025-06-10T00:41:54.734Z'}
+index-_GxYGLWI.js:195 [INFO] 📊 STEP PROCESSING {stepId: 5, stepName: 'Drafting Internal FAQ', status: 'processing', progress: 8}
+index-_GxYGLWI.js:195 [INFO] 💓 Backend thread heartbeat {backend: true, requestId: '57981b38', timestamp: 1749516117.300907}
+index-_GxYGLWI.js:195 [INFO] 📊 STEP PROCESSING {stepId: 5, stepName: 'Drafting Internal FAQ', status: 'processing', progress: 8}
+index-_GxYGLWI.js:195 [INFO] 📊 STEP PROCESSING {stepId: 5, stepName: 'Drafting Internal FAQ', status: 'processing', progress: 8}
+index-_GxYGLWI.js:195 [INFO] 💓 Backend thread heartbeat {backend: true, requestId: '57981b38', timestamp: 1749516132.3010929}
+index-_GxYGLWI.js:195 [INFO] 💓 Backend thread heartbeat {backend: true, requestId: '57981b38', timestamp: 1749516147.301324}
+index-_GxYGLWI.js:195 [INFO] 💓 Backend thread heartbeat {backend: true, requestId: '57981b38', timestamp: 1749516162.3015127}
+index-_GxYGLWI.js:195 [INFO] 💓 Backend thread heartbeat {backend: true, requestId: '57981b38', timestamp: 1749516177.3017035}
+index-_GxYGLWI.js:195 [INFO] ✅ Step 5 HTTP request completed (63.99s) {backend: true, requestId: '57981b38', timestamp: '2025-06-10T00:42:58.687Z'}
+index-_GxYGLWI.js:195 [INFO] ✅ Step 5 Claude API completed in 64.0s (12757 chars) {backend: true, requestId: '57981b38', timestamp: '2025-06-10T00:42:58.688Z'}
+index-_GxYGLWI.js:195 [INFO] 📊 STEP COMPLETED {stepId: 5, stepName: 'Drafting Internal FAQ', status: 'completed', progress: 8}
+index-_GxYGLWI.js:195 [INFO] ✅ STEP COMPLETED - ACTIVATING NEXT {completedStepId: 5, completedStepName: 'Drafting Internal FAQ'}
+index-_GxYGLWI.js:195 [INFO] 🔄 ACTIVATING NEXT STEP {nextStepId: 6, nextStepName: 'Concept Validation Research'}
+index-_GxYGLWI.js:195 [INFO] 📊 Step 6/10: Concept Validation Research {backend: true, requestId: '57981b38', timestamp: '2025-06-10T00:42:58.702Z'}
+index-_GxYGLWI.js:195 [INFO] 🎯 Step 6 starting Claude API call {backend: true, requestId: '57981b38', timestamp: '2025-06-10T00:42:58.702Z'}
+index-_GxYGLWI.js:195 [INFO] 📊 STEP PROCESSING {stepId: 6, stepName: 'Concept Validation Research', status: 'processing', progress: 8}
+index-_GxYGLWI.js:195 [INFO] 📊 Step 6 payload: 19184 chars (production: True) {backend: true, requestId: '57981b38', timestamp: '2025-06-10T00:42:58.746Z'}
+index-_GxYGLWI.js:195 [INFO] 🔄 Step 6 calling Claude API (model: claude-sonnet-4-20250514) {backend: true, requestId: '57981b38', timestamp: '2025-06-10T00:42:58.747Z'}
+index-_GxYGLWI.js:195 [INFO] 🔗 Step 6 HTTP request starting (attempt 1) {backend: true, requestId: '57981b38', timestamp: '2025-06-10T00:42:58.747Z'}
+index-_GxYGLWI.js:195 [INFO] 📊 STEP PROCESSING {stepId: 6, stepName: 'Concept Validation Research', status: 'processing', progress: 8}
+index-_GxYGLWI.js:195 [INFO] 📊 STEP PROCESSING {stepId: 6, stepName: 'Concept Validation Research', status: 'processing', progress: 8}
+index-_GxYGLWI.js:195 [INFO] 📊 STEP PROCESSING {stepId: 6, stepName: 'Concept Validation Research', status: 'processing', progress: 8}
+index-_GxYGLWI.js:195 [INFO] 💓 Backend thread heartbeat {backend: true, requestId: '57981b38', timestamp: 1749516192.3019135}
+index-_GxYGLWI.js:195 [INFO] 💓 Backend thread heartbeat {backend: true, requestId: '57981b38', timestamp: 1749516207.3021522}
+index-_GxYGLWI.js:195 [INFO] ✅ Step 6 HTTP request completed (36.34s) {backend: true, requestId: '57981b38', timestamp: '2025-06-10T00:43:35.045Z'}
+index-_GxYGLWI.js:195 [INFO] ✅ Step 6 Claude API completed in 36.3s (5974 chars) {backend: true, requestId: '57981b38', timestamp: '2025-06-10T00:43:35.046Z'}
+index-_GxYGLWI.js:195 [INFO] 📊 STEP COMPLETED {stepId: 6, stepName: 'Concept Validation Research', status: 'completed', progress: 8}
+index-_GxYGLWI.js:195 [INFO] ✅ STEP COMPLETED - ACTIVATING NEXT {completedStepId: 6, completedStepName: 'Concept Validation Research'}
+index-_GxYGLWI.js:195 [INFO] ✅ CAPTURED CONCEPT VALIDATION {length: 5974}
+index-_GxYGLWI.js:195 [INFO] 🔄 ACTIVATING NEXT STEP {nextStepId: 7, nextStepName: 'Solution Refinement'}
+index-_GxYGLWI.js:195 [INFO] 📊 Step 7/10: Solution Refinement {backend: true, requestId: '57981b38', timestamp: '2025-06-10T00:43:35.051Z'}
+index-_GxYGLWI.js:195 [INFO] 🎯 Step 7 starting Claude API call {backend: true, requestId: '57981b38', timestamp: '2025-06-10T00:43:35.097Z'}
+index-_GxYGLWI.js:195 [INFO] 📊 STEP PROCESSING {stepId: 7, stepName: 'Solution Refinement', status: 'processing', progress: 8}
+index-_GxYGLWI.js:195 [INFO] 📊 Step 7 payload: 16597 chars (production: True) {backend: true, requestId: '57981b38', timestamp: '2025-06-10T00:43:35.097Z'}
+index-_GxYGLWI.js:195 [INFO] 🔄 Step 7 calling Claude API (model: claude-sonnet-4-20250514) {backend: true, requestId: '57981b38', timestamp: '2025-06-10T00:43:35.098Z'}
+index-_GxYGLWI.js:195 [INFO] 🔗 Step 7 HTTP request starting (attempt 1) {backend: true, requestId: '57981b38', timestamp: '2025-06-10T00:43:35.098Z'}
+index-_GxYGLWI.js:195 [INFO] 📊 STEP PROCESSING {stepId: 7, stepName: 'Solution Refinement', status: 'processing', progress: 8}
+index-_GxYGLWI.js:195 [INFO] 📊 STEP PROCESSING {stepId: 7, stepName: 'Solution Refinement', status: 'processing', progress: 8}
+index-_GxYGLWI.js:195 [INFO] 💓 Backend thread heartbeat {backend: true, requestId: '57981b38', timestamp: 1749516222.3023467}
+index-_GxYGLWI.js:195 [INFO] 💓 Backend thread heartbeat {backend: true, requestId: '57981b38', timestamp: 1749516237.3025615}
+index-_GxYGLWI.js:195 [INFO] ✅ Step 7 HTTP request completed (31.68s) {backend: true, requestId: '57981b38', timestamp: '2025-06-10T00:44:06.732Z'}
+index-_GxYGLWI.js:195 [INFO] ✅ Step 7 Claude API completed in 31.7s (5778 chars) {backend: true, requestId: '57981b38', timestamp: '2025-06-10T00:44:06.733Z'}
+index-_GxYGLWI.js:195 [INFO] 📊 STEP COMPLETED {stepId: 7, stepName: 'Solution Refinement', status: 'completed', progress: 8}
+index-_GxYGLWI.js:195 [INFO] ✅ STEP COMPLETED - ACTIVATING NEXT {completedStepId: 7, completedStepName: 'Solution Refinement'}
+index-_GxYGLWI.js:195 [INFO] 📝 CAPTURED PR V3 VALIDATED FROM SOLUTION REFINEMENT {solutionRefinementLength: 5778, extractedLength: 4913, pattern: 'found'}
+index-_GxYGLWI.js:195 [INFO] 🔄 ACTIVATING NEXT STEP {nextStepId: 8, nextStepName: 'Drafting External FAQ'}
+index-_GxYGLWI.js:195 [INFO] 📊 Step 8/10: External FAQ {backend: true, requestId: '57981b38', timestamp: '2025-06-10T00:44:06.740Z'}
+index-_GxYGLWI.js:195 [INFO] 🎯 Step 8 starting Claude API call {backend: true, requestId: '57981b38', timestamp: '2025-06-10T00:44:06.740Z'}
+index-_GxYGLWI.js:195 [INFO] 📊 STEP PROCESSING {stepId: 8, stepName: 'Drafting External FAQ', status: 'processing', progress: 8}
+index-_GxYGLWI.js:195 [INFO] 📊 Step 8 payload: 13771 chars (production: True) {backend: true, requestId: '57981b38', timestamp: '2025-06-10T00:44:06.777Z'}
+index-_GxYGLWI.js:195 [INFO] 🔄 Step 8 calling Claude API (model: claude-sonnet-4-20250514) {backend: true, requestId: '57981b38', timestamp: '2025-06-10T00:44:06.777Z'}
+index-_GxYGLWI.js:195 [INFO] 🔗 Step 8 HTTP request starting (attempt 1) {backend: true, requestId: '57981b38', timestamp: '2025-06-10T00:44:06.777Z'}
+index-_GxYGLWI.js:195 [INFO] 📊 STEP PROCESSING {stepId: 8, stepName: 'Drafting External FAQ', status: 'processing', progress: 8}
+index-_GxYGLWI.js:195 [INFO] 💓 Backend thread heartbeat {backend: true, requestId: '57981b38', timestamp: 1749516252.3027558}
+index-_GxYGLWI.js:195 [INFO] ✅ Step 8 HTTP request completed (18.76s) {backend: true, requestId: '57981b38', timestamp: '2025-06-10T00:44:25.499Z'}
+index-_GxYGLWI.js:195 [INFO] ✅ Step 8 Claude API completed in 18.8s (3217 chars) {backend: true, requestId: '57981b38', timestamp: '2025-06-10T00:44:25.500Z'}
+index-_GxYGLWI.js:195 [INFO] 📊 STEP COMPLETED {stepId: 8, stepName: 'Drafting External FAQ', status: 'completed', progress: 8}
+index-_GxYGLWI.js:195 [INFO] ✅ STEP COMPLETED - ACTIVATING NEXT {completedStepId: 8, completedStepName: 'Drafting External FAQ'}
+index-_GxYGLWI.js:195 [INFO] 🔄 ACTIVATING NEXT STEP {nextStepId: 9, nextStepName: 'Synthesizing PRFAQ Document'}
+index-_GxYGLWI.js:195 [INFO] 📊 Step 9/10: Synthesize PRFAQ {backend: true, requestId: '57981b38', timestamp: '2025-06-10T00:44:25.506Z'}
+index-_GxYGLWI.js:195 [INFO] 🎯 Step 9 starting Claude API call {backend: true, requestId: '57981b38', timestamp: '2025-06-10T00:44:25.506Z'}
+index-_GxYGLWI.js:195 [INFO] 📊 STEP PROCESSING {stepId: 9, stepName: 'Synthesizing PRFAQ Document', status: 'processing', progress: 8}
+index-_GxYGLWI.js:195 [INFO] 📊 Step 9 payload: 35322 chars (production: True) {backend: true, requestId: '57981b38', timestamp: '2025-06-10T00:44:25.507Z'}
+index-_GxYGLWI.js:195 [INFO] 🔄 Step 9 calling Claude API (model: claude-sonnet-4-20250514) {backend: true, requestId: '57981b38', timestamp: '2025-06-10T00:44:25.556Z'}
+index-_GxYGLWI.js:195 [INFO] 🔗 Step 9 HTTP request starting (attempt 1) {backend: true, requestId: '57981b38', timestamp: '2025-06-10T00:44:25.556Z'}
