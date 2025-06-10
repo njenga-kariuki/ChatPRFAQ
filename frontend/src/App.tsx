@@ -921,10 +921,127 @@ function App() {
              logToStorage('info', '✅ COMPLETION DETECTED via polling - updating UI', { 
                requestId: currentRequestId,
                status: data.status,
-               stuckStep: processingStep.id
+               stuckStep: processingStep.id,
+               hasStepOutputs: !!data.step_outputs
              });
              
-             // Process completed - update UI with results
+             // Process missing steps through existing SSE pipeline for identical rendering
+             if (data.step_outputs) {
+               logToStorage('info', '🔄 Processing missing steps through SSE pipeline', {
+                 availableSteps: Object.keys(data.step_outputs)
+               });
+               
+               // Process each missing step through existing step completion logic
+                                Object.entries(data.step_outputs).forEach(([stepId, stepData]: [string, any]) => {
+                   const stepNumber = parseInt(stepId);
+                   // Handle both old format (string) and new format (object with input/output)
+                   const output = typeof stepData === 'string' ? stepData : stepData?.output;
+                   const input = typeof stepData === 'object' ? stepData?.input : null;
+                   
+                   if (output) {
+                                        // Simulate SSE step completion event with identical structure
+                     const simulatedEventData = {
+                       step: stepNumber,
+                       status: 'completed',
+                       input: input,
+                       output: output
+                     };
+                     
+                     logToStorage('info', '📋 Simulating step completion', { 
+                       stepId: stepNumber, 
+                       hasOutput: !!output
+                     });
+                   
+                                        // Process through existing step completion logic (same as SSE)
+                     setStepsData(prev => prev.map(s => {
+                       if (s.id === stepNumber) {
+                         let updatedStep: Partial<StepData> = { 
+                           status: simulatedEventData.status as 'completed', 
+                           isActive: false 
+                         };
+                       if (simulatedEventData.input) updatedStep.input = simulatedEventData.input;
+                       if (simulatedEventData.output) updatedStep.output = simulatedEventData.output;
+                       return { ...s, ...updatedStep };
+                     }
+                     return s;
+                   }));
+                   
+                   // Process output for PR versions and research artifacts (same logic as SSE)
+                   if (simulatedEventData.output) {
+                     switch (stepNumber) {
+                       case 1:
+                         setResearchArtifacts(prev => ({ ...prev, marketResearch: simulatedEventData.output }));
+                         break;
+                       case 2:
+                         setResearchArtifacts(prev => ({ ...prev, problemValidation: simulatedEventData.output }));
+                         break;
+                       case 3:
+                         setPRVersions(prev => ({ ...prev, v1_draft: simulatedEventData.output }));
+                         break;
+                       case 4:
+                         const step4Content = simulatedEventData.output;
+                         let prRefinedMatch = step4Content.match(/## Refined Press Release[\s\S]*?(?=##|$)/);
+                         if (!prRefinedMatch) {
+                           prRefinedMatch = step4Content.match(/##\s*Refined Press Release[\s\S]*?(?=##|$)/);
+                         }
+                         if (!prRefinedMatch) {
+                           prRefinedMatch = step4Content.match(/Refined Press Release[\s\S]*?(?=##|$)/);
+                         }
+                         if (prRefinedMatch) {
+                           let cleanedPR = prRefinedMatch[0]
+                             .replace(/^#{1,3}\s*Refined Press Release\s*\n?/i, '')
+                             .trim();
+                           setPRVersions(prev => ({ ...prev, v2_refined: cleanedPR }));
+                         } else {
+                           setPRVersions(prev => ({ ...prev, v2_refined: step4Content }));
+                         }
+                         break;
+                       case 6:
+                         setResearchArtifacts(prev => ({ ...prev, conceptValidation: simulatedEventData.output }));
+                         break;
+                       case 7:
+                         const solutionRefinementContent = simulatedEventData.output;
+                         let prUpdateMatch = solutionRefinementContent.match(/### Updated Press Release[\s\S]*?(?=###|$)/);
+                         if (!prUpdateMatch) {
+                           prUpdateMatch = solutionRefinementContent.match(/##\s*Updated Press Release[\s\S]*?(?=##|$)/);
+                         }
+                         if (!prUpdateMatch) {
+                           prUpdateMatch = solutionRefinementContent.match(/Updated Press Release[\s\S]*?(?=###|##|What We Intentionally|$)/);
+                         }
+                         if (prUpdateMatch) {
+                           let cleanedPR = prUpdateMatch[0]
+                             .replace(/^#{1,3}\s*Updated Press Release\s*\n?/i, '')
+                             .trim();
+                           setPRVersions(prev => ({ ...prev, v3_validated: cleanedPR }));
+                         } else {
+                           setPRVersions(prev => ({ ...prev, v3_validated: solutionRefinementContent }));
+                         }
+                         break;
+                       case 9:
+                         const prfaqContent = simulatedEventData.output;
+                         let prMatch = prfaqContent.match(/## Press Release[\s\S]*?(?=##|$)/);
+                         if (!prMatch) {
+                           prMatch = prfaqContent.match(/Section 2: Press Release[\s\S]*?(?=Section \d+|##|$)/);
+                         }
+                         if (!prMatch) {
+                           prMatch = prfaqContent.match(/Press Release[\s\S]*?(?=##|Section \d+|Customer FAQ|Internal FAQ|$)/);
+                         }
+                         if (prMatch) {
+                           let cleanedPR = prMatch[0]
+                             .replace(/^#{1,3}\s*\*{0,2}\s*Press Release\s*\*{0,2}\s*\n?/i, '')
+                             .trim();
+                           setPRVersions(prev => ({ ...prev, v4_final: cleanedPR }));
+                         } else {
+                           setPRVersions(prev => ({ ...prev, v4_final: prfaqContent }));
+                         }
+                         break;
+                     }
+                   }
+                 }
+               });
+             }
+             
+             // Process completed - update UI with final results
              setCurrentStepText('Evaluation Complete! All steps processed.');
              setFinalPrfaq(data.result.prfaq || 'Not available');
              setFinalMlpPlan(data.result.mlp_plan || 'Not available');
@@ -990,7 +1107,7 @@ function App() {
       }, 600000);
       
       return () => clearInterval(pollInterval);
-    }, 45000); // 45 second delay - more responsive hang detection
+    }, 30000); // 30 second delay - faster hang detection
     
     return () => clearTimeout(hangDetectionTimer);
   }, [currentRequestId, isProcessing, stepsData]);
