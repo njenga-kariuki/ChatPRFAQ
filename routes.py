@@ -447,8 +447,13 @@ def process_product_idea_stream():
                         yield f"data: {json.dumps({'error': 'Processing appears to be stuck. Please try again.', 'request_id': request_id})}\n\n"
                         break
                     
-                    # Step-aware timeout: longer timeout for steps 9-10 (PRFAQ synthesis and MLP plan)
-                    timeout_threshold = 180 if current_step_id and current_step_id >= 9 else 120
+                    # Production-aware timeout: extended timeouts for production environment
+                    if os.environ.get('FLASK_DEPLOYMENT_MODE') == 'production':
+                        # Production: Extended timeouts for all steps due to infrastructure constraints
+                        timeout_threshold = 300 if current_step_id and current_step_id >= 7 else 240
+                    else:
+                        # Development: Step-aware timeout for steps 9-10 (PRFAQ synthesis and MLP plan)
+                        timeout_threshold = 180 if current_step_id and current_step_id >= 9 else 120
                     
                     # If we've been stuck for too long, consider it a failure
                     if elapsed_time > timeout_threshold:
@@ -758,6 +763,36 @@ def debug_status():
         return jsonify(status)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+@app.route('/api/debug/production-health', methods=['GET'])
+def production_health_check():
+    """Production-specific health check for Claude API"""
+    if os.environ.get('FLASK_DEPLOYMENT_MODE') != 'production':
+        return jsonify({"error": "Only available in production"}), 403
+    
+    try:
+        start_time = time.time()
+        # Simple API test
+        response = llm_processor.claude_processor.client.messages.create(
+            model=llm_processor.claude_processor.model,
+            max_tokens=50,
+            messages=[{"role": "user", "content": "Reply 'OK' only"}]
+        )
+        duration = time.time() - start_time
+        
+        return jsonify({
+            "status": "healthy",
+            "api_response_time": duration,
+            "response_length": len(response.content[0].text) if response.content else 0,
+            "production_mode": True
+        })
+    except Exception as e:
+        return jsonify({
+            "status": "unhealthy",
+            "error": str(e),
+            "error_type": type(e).__name__,
+            "production_mode": True
+        }), 500
 
 @app.route('/api/debug/test-step/<int:step_id>', methods=['POST'])
 def debug_test_step(step_id):
