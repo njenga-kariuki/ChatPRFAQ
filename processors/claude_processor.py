@@ -219,11 +219,22 @@ class ClaudeProcessor:
             
             # Enhanced diagnostic logging for payload analysis
             total_prompt_size = len(system_prompt) + len(user_prompt)
+            is_production = os.environ.get('FLASK_DEPLOYMENT_MODE') == 'production'
+            
+            # Backend logs
             logger.info(f"{log_prefix} Step {step_id} payload size: {total_prompt_size} chars (system: {len(system_prompt)}, user: {len(user_prompt)})")
-            logger.info(f"{log_prefix} Step {step_id} production mode: {os.environ.get('FLASK_DEPLOYMENT_MODE') == 'production'}")
+            logger.info(f"{log_prefix} Step {step_id} production mode: {is_production}")
             logger.info(f"{log_prefix} Calling Claude API with model: {self.model}")
             logger.debug(f"{log_prefix} System prompt length: {len(system_prompt)}")
             logger.debug(f"{log_prefix} User prompt length: {len(user_prompt)}")
+            
+            # Frontend console diagnostic info
+            safe_callback({
+                'type': 'log',
+                'level': 'info',
+                'message': f'📊 Step {step_id} payload: {total_prompt_size} chars (production: {is_production})',
+                'request_id': request_id
+            })
             
             # Send API call start log with timing
             api_start_time = time.time()
