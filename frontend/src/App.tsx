@@ -506,8 +506,15 @@ function App() {
             try {
               const eventData = JSON.parse(line.substring(5));
 
-              if (eventData.request_id && !currentRequestId) {
-                setCurrentRequestId(eventData.request_id);
+              if (eventData.request_id) {
+                // Always update to main workflow request ID (may differ from analysis ID)
+                if (currentRequestId !== eventData.request_id) {
+                  logToStorage('info', '🔄 REQUEST ID UPDATED', { 
+                    previousId: currentRequestId, 
+                    newId: eventData.request_id 
+                  });
+                  setCurrentRequestId(eventData.request_id);
+                }
                 console.log("LLM Stream Request ID:", eventData.request_id);
                 logToStorage('info', '🌊 LLM STREAM REQUEST ID', { requestId: eventData.request_id });
               }
