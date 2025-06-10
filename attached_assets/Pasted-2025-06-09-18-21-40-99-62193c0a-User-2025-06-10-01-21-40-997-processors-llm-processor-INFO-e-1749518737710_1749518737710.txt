@@ -1,0 +1,156 @@
+2025-06-09 18:21:40.99
+62193c0a
+User
+2025-06-10 01:21:40,997 | processors.llm_processor | INFO | [_extract_key_insight - Step 9] Isolated Claude API call completed successfully on attempt 1
+2025-06-09 18:21:40.99
+62193c0a
+User
+2025-06-10 01:21:40,997 | processors.llm_processor | INFO | [_extract_key_insight - Step 9] Insight extracted (first 50 chars): 'CalmPup provides portable, stigma-free robotic emo...'
+2025-06-09 18:21:40.99
+62193c0a
+User
+2025-06-10 01:21:40,997 | processors.llm_processor | INFO | [INSIGHT THREAD - Step 9] Insight generation attempt completed. Insight: 'CalmPup provides portable, stigma-free robotic emo...', Label: Thesis:
+2025-06-09 18:21:40.99
+62193c0a
+User
+2025-06-10 01:21:40,997 | processors.llm_processor | INFO | [INSIGHT THREAD - Step 9] Storing insight in cache for potential late retrieval
+2025-06-09 18:21:41.05
+62193c0a
+User
+2025-06-10 01:21:40,997 | utils.raw_output_cache | INFO | Stored insight for request_id '16861314', step 9: 'CalmPup provides portable, stigma-free robotic emo...' with label 'Thesis:'
+2025-06-09 18:21:41.36
+62193c0a
+User
+2025-06-10 01:21:41,360 | routes | INFO | [16861314] Step 10 | processing
+2025-06-09 18:21:41.36
+62193c0a
+User
+2025-06-10 01:21:41,360 | processors.llm_processor | INFO | [INSIGHT THREAD - Step 9] Insight is valid. Sending to frontend via progress_callback.
+2025-06-09 18:21:41.36
+62193c0a
+User
+2025-06-10 01:21:41,360 | routes | INFO | [16861314] Step 9 | unknown
+2025-06-09 18:21:41.36
+62193c0a
+User
+2025-06-10 01:21:41,360 | processors.llm_processor | INFO | [INSIGHT THREAD - Step 9] Thread finished.
+2025-06-09 18:22:28.97
+62193c0a
+User
+2025-06-10 01:22:28,978 | httpx | INFO | HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-06-09 18:22:28.98
+62193c0a
+User
+2025-06-10 01:22:28,980 | processors.claude_processor | INFO | [16861314] Step 10 attempt 1: HTTP request completed in 51.52s
+2025-06-09 18:22:28.98
+62193c0a
+User
+2025-06-10 01:22:28,980 | routes | INFO | [16861314] Step ? | unknown
+2025-06-09 18:22:28.98
+62193c0a
+User
+2025-06-10 01:22:28,980 | processors.claude_processor | INFO | [16861314] Claude response: ## Executive Summary CalmPup proposes a $199 robotic companion that reduces student stress during isolated study sessions, with a $49 rental model ta... (9860 chars total)
+2025-06-09 18:22:28.98
+62193c0a
+User
+2025-06-10 01:22:28,980 | processors.claude_processor | INFO | [16861314] Step 10 API response time: 51.52s, response size: 9860 chars
+2025-06-09 18:22:28.98
+62193c0a
+User
+2025-06-10 01:22:28,980 | routes | INFO | [16861314] Step ? | unknown
+2025-06-09 18:22:29.26
+62193c0a
+User
+2025-06-10 01:22:29,260 | processors.claude_processor | INFO | [16861314] Claude response appears to be of appropriate length
+2025-06-09 18:22:29.26
+62193c0a
+User
+2025-06-10 01:22:29,260 | routes | INFO | [16861314] Step 10 | completed
+2025-06-09 18:22:29.26
+62193c0a
+User
+2025-06-10 01:22:29,260 | processors.claude_processor | INFO | [16861314] Claude API call completed successfully
+2025-06-09 18:22:29.26
+62193c0a
+User
+2025-06-10 01:22:29,260 | processors.llm_processor | INFO | [16861314] Step 10 response received - length: 9860 characters
+2025-06-09 18:22:29.36
+62193c0a
+User
+2025-06-10 01:22:29,359 | processors.llm_processor | INFO | [INSIGHT THREAD - Step 10] Thread started.
+2025-06-09 18:22:29.36
+62193c0a
+User
+2025-06-10 01:22:29,360 | processors.llm_processor | INFO | [_extract_key_insight - Step 10] Method called. Output length: 9860. Using isolated Claude client: True
+2025-06-09 18:22:29.45
+62193c0a
+User
+2025-06-10 01:22:29,360 | processors.llm_processor | INFO | [_extract_key_insight - Step 10] Attempting isolated Claude API call with model: claude-3-5-haiku-20241022
+2025-06-09 18:22:29.56
+62193c0a
+User
+2025-06-10 01:22:29,559 | processors.llm_processor | INFO | [16861314] Step 10 completed, waiting for insight extraction...
+2025-06-09 18:22:29.56
+62193c0a
+User
+2025-06-10 01:22:29,559 | processors.llm_processor | INFO | [16861314] Waiting for step 10 insight extraction (timeout: 2s)...
+2025-06-09 18:22:31.56
+62193c0a
+User
+2025-06-10 01:22:31,560 | processors.llm_processor | WARNING | [16861314] Step 10 insight not found after 2.0s timeout - will rely on late retrieval
+2025-06-09 18:22:31.56
+62193c0a
+User
+2025-06-10 01:22:31,560 | routes | INFO | [16861314] Step ? | unknown
+2025-06-09 18:22:31.56
+62193c0a
+User
+2025-06-10 01:22:31,560 | processors.llm_processor | INFO | [16861314] Complete Working Backwards process completed successfully
+2025-06-09 18:22:31.66
+62193c0a
+User
+2025-06-10 01:22:31,659 | routes | INFO | [16861314] Step ? | unknown
+2025-06-09 18:22:31.66
+62193c0a
+User
+2025-06-10 01:22:31,659 | routes | INFO | [16861314] Background processing thread completed
+2025-06-09 18:22:31.68
+62193c0a
+User
+2025-06-10 01:22:31,680 | httpx | INFO | HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-06-09 18:22:31.75
+62193c0a
+User
+2025-06-10 01:22:31,681 | processors.llm_processor | INFO | [_extract_key_insight - Step 10] Isolated Claude API call completed successfully on attempt 1
+2025-06-09 18:22:31.75
+62193c0a
+User
+2025-06-10 01:22:31,681 | processors.llm_processor | INFO | [_extract_key_insight - Step 10] Insight extracted (first 50 chars): 'The sustained engagement hypothesis is most critic...'
+2025-06-09 18:22:31.85
+62193c0a
+User
+2025-06-10 01:22:31,859 | processors.llm_processor | INFO | [INSIGHT THREAD - Step 10] Insight generation attempt completed. Insight: 'The sustained engagement hypothesis is most critic...', Label: Must nail:
+2025-06-09 18:22:31.85
+62193c0a
+User
+2025-06-10 01:22:31,859 | processors.llm_processor | INFO | [INSIGHT THREAD - Step 10] Storing insight in cache for potential late retrieval
+2025-06-09 18:22:31.85
+62193c0a
+User
+2025-06-10 01:22:31,859 | utils.raw_output_cache | INFO | Stored insight for request_id '16861314', step 10: 'The sustained engagement hypothesis is most critic...' with label 'Must nail:'
+2025-06-09 18:22:32.06
+62193c0a
+User
+2025-06-10 01:22:32,059 | processors.llm_processor | INFO | [INSIGHT THREAD - Step 10] Insight is valid. Sending to frontend via progress_callback.
+2025-06-09 18:22:32.06
+62193c0a
+User
+2025-06-10 01:22:32,059 | routes | INFO | [16861314] Step 10 | unknown
+2025-06-09 18:22:32.06
+62193c0a
+User
+2025-06-10 01:22:32,060 | processors.llm_processor | INFO | [INSIGHT THREAD - Step 10] Thread finished.
+
+Wrap
+
+Colors
