@@ -18,12 +18,13 @@ logger = logging.getLogger(__name__)
 # NEW: Completion state tracking (independent of streaming)
 completion_states = {}
 
-def store_completion_state(request_id, status, result=None, error=None):
+def store_completion_state(request_id, status, result=None, error=None, step_outputs=None):
     """Store completion state independently of streaming mechanism"""
     completion_states[request_id] = {
         'status': status,  # 'processing', 'completed', 'failed'
         'result': result,
         'error': error,
+        'step_outputs': step_outputs or {},  # Store all step outputs for recovery
         'timestamp': time.time()
     }
     logger.info(f"[{request_id}] Stored completion state: {status}")
@@ -327,11 +328,15 @@ def process_product_idea_stream():
                     result_container['result'] = result
                     processing_end_time = time.time()
                     
-                    # NEW: Track completion state independently
+                    # NEW: Track completion state independently with step outputs
                     if 'error' in result:
                         store_completion_state(request_id, 'failed', error=result['error'])
                     else:
-                        store_completion_state(request_id, 'completed', result=result)
+                        # Collect all step outputs for recovery
+                        step_outputs = {}
+                        if hasattr(llm_processor, 'step_outputs') and llm_processor.step_outputs:
+                            step_outputs = llm_processor.step_outputs.copy()
+                        store_completion_state(request_id, 'completed', result=result, step_outputs=step_outputs)
                     
                     # Stop heartbeat thread
                     heartbeat_stop['stop'] = True
@@ -827,6 +832,9 @@ def check_completion_status(request_id):
         # Include result or error if available
         if completion_state['status'] == 'completed' and completion_state['result']:
             response_data['result'] = completion_state['result']
+            # Include step outputs for missing step recovery
+            if completion_state.get('step_outputs'):
+                response_data['step_outputs'] = completion_state['step_outputs']
         elif completion_state['status'] == 'failed' and completion_state['error']:
             response_data['error'] = completion_state['error']
         

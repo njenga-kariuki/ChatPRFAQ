@@ -149,8 +149,12 @@ class LLMProcessor:
             output = result["output"]
             logger.info(f"[{request_id or 'NO_REQ_ID'}] Step {step_id_for_log} response received - length: {len(output)} characters")
             
-            # Store output for potential use by comparative insights in later steps
-            self.step_outputs[step_id_for_log] = output
+            # Store complete step data for recovery (both input and output)
+            self.step_outputs[step_id_for_log] = {
+                'input': product_idea[:1000] if product_idea else None,  # Store first 1000 chars of input
+                'output': output,
+                'status': 'completed'
+            }
             
             # Trigger insight extraction in background thread (same as other steps)
             logger.debug(f"[{request_id or 'NO_REQ_ID'}] Step {step_id_for_log}: Triggering insight extraction for market research")
@@ -500,7 +504,12 @@ Concept Validation Key Findings:
                 # Continue with original output - don't break the pipeline
                 output = original_output
         
-        self.step_outputs[step_id] = output
+        # Store complete step data for recovery (both input and output)
+        self.step_outputs[step_id] = {
+            'input': formatted_prompt[:1000] if formatted_prompt else None,  # Store first 1000 chars of input
+            'output': output,
+            'status': 'completed'
+        }
         
         # NEW: Fire-and-forget insight extraction
         self._trigger_insight_extraction(step_id, output, progress_callback, request_id)
@@ -947,7 +956,8 @@ This enriched brief combines the original product idea with strategic insights t
                 logger.debug(f"[INSIGHT THREAD - Step {step_id}] Initial check: isolated Claude client available: {self.insight_claude_client is not None}")
                 
                 if step_id == 4:  # PR Refinement
-                    draft_pr = self.step_outputs.get(3, "")
+                    draft_pr_data = self.step_outputs.get(3, {})
+                    draft_pr = draft_pr_data.get('output', '') if isinstance(draft_pr_data, dict) else str(draft_pr_data)
                     logger.debug(f"[INSIGHT THREAD - Step {step_id}] Comparative insight for step 4. Draft PR (len: {len(draft_pr)}): '{draft_pr[:50]}...'")
                     if draft_pr:
                         insight = self._extract_comparative_insight(
@@ -963,7 +973,8 @@ This enriched brief combines the original product idea with strategic insights t
                         label = "Key change:"
                         
                 elif step_id == 7:  # Solution Refinement
-                    validation_feedback = self.step_outputs.get(6, "")
+                    validation_feedback_data = self.step_outputs.get(6, {})
+                    validation_feedback = validation_feedback_data.get('output', '') if isinstance(validation_feedback_data, dict) else str(validation_feedback_data)
                     logger.debug(f"[INSIGHT THREAD - Step {step_id}] Comparative insight for step 7. Validation feedback (len: {len(validation_feedback)}): '{validation_feedback[:50]}...'")
                     if validation_feedback:
                         insight = self._extract_comparative_insight(
