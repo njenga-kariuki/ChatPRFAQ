@@ -52,7 +52,7 @@ const WorkingBackwardsFlow: React.FC = () => {
     {
       phase: "Synthesis",
       steps: ["Final Edit", "PRFAQ Synthesis", "MLP Plan"],
-      color: "bg-gray-900 text-white",
+      color: "bg-gray-900 text-white border-gray-700",
       icon: "📄"
     }
   ];
