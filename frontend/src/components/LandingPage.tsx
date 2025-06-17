@@ -177,7 +177,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onStartEvaluation }) => {
             Used by PMs at OpenAI, Anthropic, Meta, Google, and Stripe.
           </p>
           <p className="text-gray-600 text-sm">
-            &copy; {new Date().getFullYear()} Work Back AI LLC
+            &copy; {new Date().getFullYear()} Kilele LLC
           </p>
         </div>
       </footer>
