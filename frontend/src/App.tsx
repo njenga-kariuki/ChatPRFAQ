@@ -1394,7 +1394,7 @@ function App() {
               
               <footer className="w-full max-w-6xl mt-16 pt-8 border-t border-gray-100 text-center">
                 <p className="text-gray-500 text-sm">
-                  &copy; {new Date().getFullYear()} Work Back AI LLC. All rights reserved.
+                  &copy; {new Date().getFullYear()} Kilele LLC. All rights reserved.
                 </p>
               </footer>
             </div>
