@@ -11,6 +11,9 @@ A web app that automates Amazon's "Working Backwards" methodology using orchestr
     </a>
   </div>
 
+  
+<a href="chatprfaq.replit.app/">Try It</a>
+
 ## Project Context
 
 After 10 years as an Amazon PM writing countless PRFAQs, I built this as a love letter to the methodology and a fun chance to learn more complex AI orchestration. The challenge: translating Amazon's nuanced, iterative product development culture into a deterministic system that maintains executive-level rigor and quality.
