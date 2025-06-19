@@ -1,6 +1,15 @@
 # ChatPRFAQ: AI-Powered Working Backwards Implementation
 
-A sophisticated web application that automates Amazon's "Working Backwards" methodology using orchestrated AI agents, transforming product ideas into executive-ready PRFAQs in minutes instead of weeks.
+A web app that automates Amazon's "Working Backwards" methodology using orchestrated AI agents, transforming product ideas into exec-ready PRFAQs in minutes instead of weeks.
+
+<div>
+    <a href="https://www.loom.com/share/7fa90080455846d2a626f6a45d65a4f2">
+      <p>Demo Video</p>
+    </a>
+    <a href="https://www.loom.com/share/7fa90080455846d2a626f6a45d65a4f2">
+      <img style="max-width:300px;" src="https://cdn.loom.com/sessions/thumbnails/7fa90080455846d2a626f6a45d65a4f2-2dbb1461dee0a8ca-full-play.gif">
+    </a>
+  </div>
 
 ## Project Context
 
