@@ -1,0 +1,586 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ChatPRFAQ Frontier Refresh</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  :root {
+    --paper: #FAF9F5;
+    --paper-2: #F1EFE8;
+    --ink: #1B1B19;
+    --ink-2: #3A3936;
+    --muted: #67665F;
+    --rule: #E4E2DA;
+    --rule-2: #D2CFC4;
+    --accent: #2F4FBF;
+    --accent-ink: #FFFFFF;
+    --accent-soft: rgba(47, 79, 191, 0.10);
+    --ins: #2F4FBF;
+    --ins-bg: rgba(47, 79, 191, 0.10);
+    --del: #A33A3A;
+    --del-bg: rgba(163, 58, 58, 0.10);
+    --warn: #8A6A1E;
+    --warn-bg: rgba(138, 106, 30, 0.10);
+    --p0: #6B5BD2; --p1: #2E7DB8; --p2: #1F8F7A; --p3: #B8702A; --p4: #B33F62;
+    --p5: #5E7E2E; --p6: #1F8F7A; --p7: #B8702A; --p8: #2C8A9E; --p9: #7A5230;
+    --p9b: #8C3A8A; --p10: #4E6AB3;
+    --serif: "Source Serif 4", Charter, Georgia, "Times New Roman", serif;
+    --sans: "IBM Plex Sans", "Helvetica Neue", Arial, system-ui, sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    color-scheme: light dark;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #131311; --paper-2: #1B1B18; --ink: #ECEAE3; --ink-2: #CFCDC4; --muted: #9C9A91;
+      --rule: #2B2A26; --rule-2: #3A3934; --accent: #8AA0F2; --accent-ink: #0F1424;
+      --accent-soft: rgba(138, 160, 242, 0.16); --ins: #8AA0F2; --ins-bg: rgba(138, 160, 242, 0.16);
+      --del: #E08A8A; --del-bg: rgba(224, 138, 138, 0.14); --warn: #D9B25C; --warn-bg: rgba(217, 178, 92, 0.14);
+      --p0: #A89AF0; --p1: #7DB6E4; --p2: #6CC7B4; --p3: #E2A768; --p4: #E58AA6;
+      --p5: #A3C06F; --p6: #6CC7B4; --p7: #E2A768; --p8: #74C3D4; --p9: #C89A78;
+      --p9b: #CF8FCD; --p10: #98ABE6;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #131311; --paper-2: #1B1B18; --ink: #ECEAE3; --ink-2: #CFCDC4; --muted: #9C9A91;
+    --rule: #2B2A26; --rule-2: #3A3934; --accent: #8AA0F2; --accent-ink: #0F1424;
+    --accent-soft: rgba(138, 160, 242, 0.16); --ins: #8AA0F2; --ins-bg: rgba(138, 160, 242, 0.16);
+    --del: #E08A8A; --del-bg: rgba(224, 138, 138, 0.14); --warn: #D9B25C; --warn-bg: rgba(217, 178, 92, 0.14);
+    --p0: #A89AF0; --p1: #7DB6E4; --p2: #6CC7B4; --p3: #E2A768; --p4: #E58AA6;
+    --p5: #A3C06F; --p6: #6CC7B4; --p7: #E2A768; --p8: #74C3D4; --p9: #C89A78;
+    --p9b: #CF8FCD; --p10: #98ABE6;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--paper); color: var(--ink);
+    font-family: var(--sans); font-size: 15px; line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover, a:focus-visible { text-decoration: underline; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  .page { max-width: 1180px; margin: 0 auto; padding: 40px 28px 96px; }
+  .shell { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 56px; align-items: start; }
+  @media (max-width: 1023px) { .shell { grid-template-columns: minmax(0, 1fr); gap: 0; } .toc { display: none; } }
+
+  .toc { position: sticky; top: 28px; font-size: 13px; }
+  .toc .eyebrow { margin-bottom: 10px; }
+  .toc ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+  .toc li a { color: var(--muted); display: block; padding: 3px 0 3px 12px; border-left: 2px solid var(--rule); }
+  .toc li a:hover { color: var(--ink); border-left-color: var(--rule-2); text-decoration: none; }
+  .toc .meta { margin-top: 24px; color: var(--muted); font-size: 12px; line-height: 1.5; }
+  .toc .meta code { font-size: 11px; }
+
+  .main { min-width: 0; }
+  .measure { max-width: 70ch; }
+
+  header.masthead { padding-bottom: 28px; border-bottom: 1px solid var(--rule); margin-bottom: 40px; }
+  .eyebrow { font-family: var(--sans); font-size: 12px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+  h1 { font-family: var(--serif); font-weight: 600; font-size: 40px; line-height: 1.12; margin: 10px 0 14px; letter-spacing: -0.01em; text-wrap: balance; }
+  .deck { font-family: var(--serif); font-size: 19px; line-height: 1.5; color: var(--ink-2); max-width: 62ch; margin: 0 0 18px; }
+  .masthead .meta { color: var(--muted); font-size: 13px; display: flex; flex-wrap: wrap; gap: 6px 18px; }
+  h2 { font-family: var(--serif); font-weight: 600; font-size: 28px; line-height: 1.2; margin: 0 0 6px; letter-spacing: -0.01em; text-wrap: balance; }
+  h3 { font-family: var(--sans); font-weight: 600; font-size: 16px; margin: 32px 0 10px; }
+  h4 { font-family: var(--sans); font-weight: 600; font-size: 14px; margin: 22px 0 6px; }
+  section { padding: 44px 0; border-top: 1px solid var(--rule); scroll-margin-top: 20px; }
+  section:first-of-type { border-top: 0; padding-top: 0; }
+  .section-head { display: grid; grid-template-columns: 44px minmax(0, 1fr); gap: 16px; align-items: baseline; margin-bottom: 18px; }
+  .section-head .num { font-family: var(--mono); font-size: 13px; color: var(--muted); }
+  .lede { font-size: 16px; color: var(--ink-2); max-width: 66ch; margin: 0 0 8px; }
+  p { margin: 0 0 14px; }
+  ul, ol { margin: 0 0 14px; padding-left: 22px; }
+  li { margin-bottom: 6px; }
+  li > ul { margin-top: 6px; }
+  strong { font-weight: 600; }
+  code { font-family: var(--mono); font-size: 0.88em; background: var(--paper-2); padding: 1px 5px; border-radius: 3px; }
+  pre { font-family: var(--mono); font-size: 12.5px; line-height: 1.55; background: var(--paper-2); border: 1px solid var(--rule); padding: 14px 16px; overflow-x: auto; margin: 0 0 16px; }
+  pre code { background: none; padding: 0; font-size: inherit; }
+
+  .table-wrap { overflow-x: auto; margin: 0 0 18px; border: 1px solid var(--rule); }
+  table { border-collapse: collapse; width: 100%; font-size: 13.5px; }
+  th, td { text-align: left; vertical-align: top; padding: 9px 12px; border-bottom: 1px solid var(--rule); }
+  th { font-weight: 600; font-size: 12px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); background: var(--paper-2); white-space: nowrap; }
+  tbody tr:last-child td { border-bottom: 0; }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  td.mono { font-family: var(--mono); font-size: 12.5px; white-space: nowrap; }
+  .table-wrap.tight td, .table-wrap.tight th { padding: 7px 10px; }
+
+  .mono { font-family: var(--mono); font-size: 12.5px; }
+  .muted { color: var(--muted); }
+  .small { font-size: 13px; }
+
+  .note { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 12px 16px; margin: 18px 0; font-size: 14px; }
+  .note.warn { border-left-color: var(--warn); background: var(--warn-bg); }
+  .note p:last-child { margin-bottom: 0; }
+
+  .kv { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 8px 18px; font-size: 14px; margin: 0 0 16px; }
+  .kv dt { color: var(--muted); }
+  .kv dd { margin: 0; }
+
+  .cols-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px 36px; }
+  @media (max-width: 720px) { .cols-2 { grid-template-columns: minmax(0, 1fr); } }
+
+  /* persona monograms */
+  .mono-badge { display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 26px; border-radius: 50%; font-family: var(--sans); font-size: 10.5px; font-weight: 600; letter-spacing: 0.02em; color: var(--paper); background: var(--hue, var(--muted)); flex: none; vertical-align: middle; }
+  .persona { display: inline-flex; align-items: center; gap: 8px; white-space: nowrap; }
+  .roster { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 10px 18px; margin: 12px 0 22px; }
+  .roster .persona { white-space: normal; font-size: 13.5px; align-items: flex-start; }
+  .roster .persona .mono-badge { margin-top: 2px; }
+  .roster .persona span.t { display: block; color: var(--muted); font-size: 12px; }
+
+  /* DAG */
+  .diagram { border: 1px solid var(--rule); background: var(--paper-2); padding: 18px 16px 12px; margin: 14px 0 8px; overflow-x: auto; }
+  .diagram svg { display: block; min-width: 900px; width: 100%; height: auto; font-family: var(--sans); }
+  .caption { font-size: 13px; color: var(--muted); margin: 0 0 20px; }
+
+  /* dossier stack */
+  .stack { display: grid; gap: 8px; margin: 12px 0 8px; font-size: 13px; }
+  .stack .row { display: grid; grid-template-columns: 116px minmax(0, 1fr); gap: 12px; align-items: stretch; }
+  .stack .lab { color: var(--muted); font-family: var(--mono); font-size: 12px; padding-top: 8px; }
+  .stack .blocks { display: flex; flex-wrap: wrap; gap: 6px; }
+  .stack .blk { border: 1px solid var(--rule-2); background: var(--paper); padding: 6px 10px; font-family: var(--mono); font-size: 12px; }
+  .stack .blk.sys { border-color: var(--accent); background: var(--accent-soft); }
+  .stack .blk.task { border-style: dashed; }
+  .stack .blk .cc { color: var(--accent); font-size: 11px; margin-left: 6px; }
+  .stack .blk.new { border-color: var(--ins); }
+
+  /* redline sample */
+  .doc-sample { border: 1px solid var(--rule); background: var(--paper); padding: 26px 28px; margin: 16px 0 6px; display: grid; grid-template-columns: minmax(0, 1fr) 250px; gap: 28px; }
+  @media (max-width: 860px) { .doc-sample { grid-template-columns: minmax(0, 1fr); } }
+  .doc-sample .prose { font-family: var(--serif); font-size: 16.5px; line-height: 1.65; color: var(--ink); }
+  .doc-sample .prose h5 { font-family: var(--serif); font-weight: 600; font-size: 20px; margin: 0 0 4px; }
+  .doc-sample .prose .sub { font-style: italic; color: var(--ink-2); margin: 0 0 16px; }
+  .doc-sample .prose p { margin: 0 0 12px; }
+  ins { text-decoration: none; color: var(--ins); background: var(--ins-bg); border-bottom: 1px solid var(--ins); }
+  del { color: var(--del); background: var(--del-bg); text-decoration: line-through; }
+  .gutter { font-size: 12.5px; line-height: 1.5; display: grid; gap: 14px; align-content: start; }
+  .gutter .g-note { border-left: 2px solid var(--p4); padding-left: 12px; }
+  .gutter .who { display: flex; align-items: center; gap: 8px; font-weight: 600; margin-bottom: 4px; }
+  .gutter .who .mono-badge { width: 20px; height: 20px; font-size: 8.5px; }
+  .chip { display: inline-block; font-family: var(--mono); font-size: 11px; padding: 2px 7px; border: 1px solid var(--rule-2); background: var(--paper-2); margin: 6px 6px 0 0; }
+  .chip.assume { border-color: var(--warn); color: var(--warn); }
+
+  /* mock step cards */
+  .cards { display: grid; gap: 10px; margin: 12px 0 8px; }
+  .card { border: 1px solid var(--rule); background: var(--paper); padding: 12px 14px; display: grid; grid-template-columns: 34px minmax(0, 1fr); gap: 12px; align-items: start; font-size: 13.5px; }
+  .card .mono-badge { width: 30px; height: 30px; font-size: 11px; }
+  .card.working .mono-badge { box-shadow: 0 0 0 4px color-mix(in srgb, var(--hue) 28%, transparent); animation: breathe 2s ease-in-out infinite; }
+  @keyframes breathe { 0%, 100% { box-shadow: 0 0 0 3px color-mix(in srgb, var(--hue) 18%, transparent); } 50% { box-shadow: 0 0 0 6px color-mix(in srgb, var(--hue) 34%, transparent); } }
+  @media (prefers-reduced-motion: reduce) { .card.working .mono-badge { animation: none; } }
+  .card .title { font-weight: 600; }
+  .card .line { color: var(--muted); font-size: 12.5px; margin-top: 2px; }
+  .card .insight { margin-top: 6px; }
+  .card .insight .lab { font-family: var(--mono); font-size: 11px; color: var(--muted); margin-right: 6px; }
+  .card .peek { font-family: var(--serif); font-size: 14px; color: var(--ink-2); margin-top: 8px; border-top: 1px dashed var(--rule); padding-top: 8px; }
+  .card .elapsed { font-family: var(--mono); font-size: 12px; color: var(--muted); float: right; font-variant-numeric: tabular-nums; }
+  .handoff { color: var(--muted); font-size: 12.5px; padding: 0 0 0 26px; border-left: 1px solid var(--rule-2); margin-left: 15px; }
+  .handoff .v { font-family: var(--mono); font-size: 11px; color: var(--accent); border: 1px solid var(--accent); padding: 0 5px; margin-left: 6px; }
+
+  .stops { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; margin: 12px 0 6px; }
+  .stop { border: 1px solid var(--rule); padding: 8px 10px; font-size: 12.5px; }
+  .stop.active { border-color: var(--accent); background: var(--accent-soft); }
+  .stop .v { font-family: var(--mono); font-size: 11px; color: var(--muted); }
+  .stop .n { font-weight: 600; display: flex; align-items: center; gap: 6px; }
+  .stop .n .mono-badge { width: 18px; height: 18px; font-size: 8px; }
+  @media (max-width: 720px) { .stops { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+  .phase { border-top: 1px solid var(--rule); padding: 18px 0 6px; }
+  .phase h3 { margin: 0 0 8px; }
+  .phase .done { font-size: 13px; color: var(--ink-2); border-left: 3px solid var(--rule-2); padding-left: 12px; margin-top: 8px; }
+
+  .decisions td:first-child { white-space: nowrap; }
+  footer { margin-top: 48px; padding-top: 18px; border-top: 1px solid var(--rule); color: var(--muted); font-size: 12.5px; }
+</style>
+</head>
+<body>
+
+<div class="page">
+<div class="shell">
+  <nav class="toc" aria-label="Sections">
+    <div class="eyebrow">Contents</div>
+    <ol>
+      <li><a href="#summary">Summary</a></li>
+      <li><a href="#today">The council today</a></li>
+      <li><a href="#architecture">Frontier architecture</a></li>
+      <li><a href="#design">Design direction</a></li>
+      <li><a href="#surgical">Surgical changes</a></li>
+      <li><a href="#plan">Project outline</a></li>
+      <li><a href="#decisions">Decisions</a></li>
+    </ol>
+    <div class="meta">Full documents in the repo under <code>docs/refresh/</code> on branch <code>claude/critical-project-frontier-refresh-87z5r1</code>.</div>
+  </nav>
+
+  <div class="main">
+    <header class="masthead">
+      <div class="eyebrow">Proposal · September 2026</div>
+      <h1>ChatPRFAQ Frontier Refresh</h1>
+      <p class="deck">Rebuild the Working Backwards council on the current Claude platform so the same sequence of colleagues, the same four passes over the press release, and the same human gate produce a document that is deeper, evidenced, faster to watch, and impossible to lose.</p>
+      <div class="meta"><span>Against <code>main</code>, last changed June 2025</span><span>Owner: Njenga Kariuki</span><span>Prepared with a separate design pass on the council progression and document evolution</span></div>
+    </header>
+
+    <section id="summary">
+      <div class="section-head"><span class="num">01</span><h2>Summary</h2></div>
+      <div class="measure">
+        <p class="lede">The intent was right and the prompts are good. The implementation is a 2025 single-shot pipeline: retired model IDs, no streaming, two seats starved to 500 characters of context, structure recovered from prose by regex, and a run that lives only in one browser tab. The refresh keeps the council and replaces the machinery.</p>
+        <ol>
+          <li><strong>Keep the council and its order.</strong> Eleven seats (the original ten plus an optional Bar Raiser), four press-release checkpoints, the human gate after framing. The prompts' craft is ported; their formatting scaffolding is deleted.</li>
+          <li><strong>Frontier models per seat.</strong> Claude Fable 5.1 on the judgment seats, Claude Sonnet 5 on the simple ones, Claude Opus 5 as reviewer and automatic fallback. Adaptive thinking everywhere; effort tuned per seat by an eval.</li>
+          <li><strong>One frozen council charter as the system prompt</strong>, cached for an hour and shared by every step of every run, carrying the whole persona roster so each colleague knows who came before and who comes next.</li>
+          <li><strong>An append-only dossier</strong> in canonical order as the user message, so each seat reads the entire prior context from cache and no persona is ever truncated.</li>
+          <li><strong>Structured outputs for every seat.</strong> The press release is eight typed slots; refinement seats return per-slot edits with rationale and evidence ids; FAQs, findings, hypotheses and insights are fields, not regex targets.</li>
+          <li><strong>Live research with real citations</strong> through Claude's web search and fetch tools, distilled into an evidence ledger that later seats cite by id. Numbers with no finding behind them are flagged as assumptions.</li>
+          <li><strong>Streaming from the first token</strong>, the model's own progress notes replacing the timer-driven "team dynamics" fiction, and reasoning summaries available as working notes.</li>
+          <li><strong>Persist first, stream second.</strong> Every event is logged before it is sent; the stream replays from any point, so refresh, reconnect, share links and history all work and five compensating mechanisms are deleted.</li>
+          <li><strong>A design built on the eight slots and the roster</strong>: handoff connectors, a four-stop version control with a provenance gutter, an edit walkthrough, per-paragraph history, and a tracked-changes Word export attributed to the personas.</li>
+          <li><strong>Quality made measurable</strong> with a Bar Raiser rubric on every run and a twelve-idea eval set graded by an LLM judge.</li>
+        </ol>
+      </div>
+      <h3>What changes, dimension by dimension</h3>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Dimension</th><th>Today</th><th>Refresh</th></tr></thead>
+        <tbody>
+          <tr><td>Model</td><td>Sonnet 4 (deprecated), 8K output, no thinking, temperature-sampled; Haiku 3.5 (retired) for insights</td><td>Fable 5.1 / Sonnet 5 / Opus 5 with adaptive thinking, 1M context, structured outputs, server-side fallbacks</td></tr>
+          <tr><td>Context per persona</td><td>Ad-hoc dict; problem-validation research cut to 500 characters in seats 6 and 9</td><td>Complete, canonical, cached dossier; the largest prompt is well under 100K tokens</td></tr>
+          <tr><td>Research</td><td>One Perplexity call; citation titles guessed from URL slugs</td><td>Agentic web search and fetch with cited passages; an evidence ledger; claims traced to sources</td></tr>
+          <tr><td>Edits</td><td>Full rewrite each pass, regex-recovered, three-engine heuristic diff</td><td>Per-slot edits with rationale and evidence; exact word-level diffs inside a slot</td></tr>
+          <tr><td>Waiting</td><td>Blank 40–90 s per step; fixed-timer narration; a percent that never moves</td><td>Token streaming, real progress notes, thinking summaries, per-step elapsed time</td></tr>
+          <tr><td>Reliability</td><td>Threads, queue, heartbeat, poller, localStorage resume, a global singleton shared by all users</td><td>Persisted event log, replayable stream, resume from any seat, multi-tenant safe</td></tr>
+          <tr><td>Quality control</td><td>None</td><td>Schema validation with retry, Bar Raiser rubric, eval set with regression threshold</td></tr>
+          <tr><td>Runs</td><td>Lost on refresh; no URL</td><td>Durable, shareable, listed in a library</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <section id="today">
+      <div class="section-head"><span class="num">02</span><h2>The council today</h2></div>
+      <div class="measure">
+        <p class="lede">A user enters an idea. Seat 0 reframes it as Target Customer, Customer Problem and Product Scope; the user confirms or refines. Ten seats then run strictly in sequence, each consuming specific prior outputs, each surfacing a one-line insight, and four of them producing a new version of the press release.</p>
+      </div>
+      <div class="roster">
+        <span class="persona"><span class="mono-badge" style="--hue: var(--p0)">ST</span><span>Product Strategy Expert<span class="t">seat 0 · frames the idea</span></span></span>
+        <span class="persona"><span class="mono-badge" style="--hue: var(--p1)">MA</span><span>Market Research Analyst<span class="t">seat 1 · live web research</span></span></span>
+        <span class="persona"><span class="mono-badge" style="--hue: var(--p2)">UR</span><span>User Researcher<span class="t">seats 2 and 6 · two simulated panels</span></span></span>
+        <span class="persona"><span class="mono-badge" style="--hue: var(--p3)">PM</span><span>Principal PM<span class="t">seats 3 and 7 · drafts v1, writes v3</span></span></span>
+        <span class="persona"><span class="mono-badge" style="--hue: var(--p4)">VP</span><span>VP Product<span class="t">seat 4 · refines v1 into v2</span></span></span>
+        <span class="persona"><span class="mono-badge" style="--hue: var(--p5)">BE</span><span>VP Business + Principal Engineer<span class="t">seat 5 · 16 internal questions</span></span></span>
+        <span class="persona"><span class="mono-badge" style="--hue: var(--p8)">CS</span><span>Customer Success Lead<span class="t">seat 8 · external FAQ</span></span></span>
+        <span class="persona"><span class="mono-badge" style="--hue: var(--p9)">ED</span><span>Senior Editor<span class="t">seat 9 · synthesises v4 and the PRFAQ</span></span></span>
+        <span class="persona"><span class="mono-badge" style="--hue: var(--p10)">HV</span><span>Head of Validation<span class="t">seat 10 · ICE-scored hypotheses</span></span></span>
+      </div>
+      <div class="table-wrap tight"><table>
+        <thead><tr><th>#</th><th>Seat</th><th>Runs on</th><th>Consumes</th><th>Produces</th></tr></thead>
+        <tbody>
+          <tr><td class="mono">0</td><td>Analyze Product Concept</td><td>Claude</td><td>Raw idea, then user feedback</td><td>Three-section framing; enriched brief</td></tr>
+          <tr><td class="mono">1</td><td>Market Research &amp; Analysis</td><td>Perplexity sonar-pro</td><td>Brief</td><td>Market research with a source list</td></tr>
+          <tr><td class="mono">2</td><td>Problem Validation Research</td><td>Claude</td><td>Brief, market research</td><td>Ten personas (3 acute, 4 moderate, 2 edge, 1 skeptic)</td></tr>
+          <tr><td class="mono">3</td><td>Drafting Press Release</td><td>Claude</td><td>Brief, research, problem validation</td><td><strong>PR v1</strong></td></tr>
+          <tr><td class="mono">4</td><td>Refining Press Release</td><td>Claude</td><td>v1, research, problem validation</td><td>Key refinements + <strong>PR v2</strong></td></tr>
+          <tr><td class="mono">5</td><td>Drafting Internal FAQ</td><td>Claude</td><td>v2, research, problem validation</td><td>16 numbered Q/A across five sections</td></tr>
+          <tr><td class="mono">6</td><td>Concept Validation Research</td><td>Claude</td><td>v2, research, problem validation (<span class="muted">first 500 chars</span>)</td><td>Ten-participant concept test</td></tr>
+          <tr><td class="mono">7</td><td>Solution Refinement</td><td>Claude</td><td>v2, concept validation</td><td>Key refinements + <strong>PR v3</strong></td></tr>
+          <tr><td class="mono">8</td><td>Drafting External FAQ</td><td>Claude</td><td>v3, concept validation</td><td>Five customer Q/A</td></tr>
+          <tr><td class="mono">9</td><td>Synthesizing PRFAQ Document</td><td>Claude</td><td>v3, research, both FAQs, insights (<span class="muted">500 chars each</span>)</td><td>Executive summary, <strong>PR v4</strong>, customer FAQ, internal FAQ</td></tr>
+          <tr><td class="mono">10</td><td>Hypothesis-Driven Validation Plan</td><td>Claude</td><td>PRFAQ prose only</td><td>ICE-ranked hypotheses, three phases, top-five test plans</td></tr>
+        </tbody>
+      </table></div>
+      <div class="cols-2">
+        <div>
+          <h3>What was deliberate and must survive</h3>
+          <ul>
+            <li>Handoffs, not a bag of agents: every prompt is written as "you are receiving X from colleague Y".</li>
+            <li>The press release as a living document with four checkpoints, refined by surgical edits only (preserve paragraph purpose, stay within 10% of word count, add no features).</li>
+            <li>Two simulated customer panels bracketing the drafting: problem validation before v1, concept validation after the VP pass.</li>
+            <li>A single human gate after framing, with per-section feedback.</li>
+            <li>Narration of the team at work while a step runs, and a labelled one-line insight per step (Pain: / Refined: / Risk: / Top Q: / Must nail:).</li>
+            <li>Evidence discipline in the prompts: "do not make up any data", "use language directly from customer research".</li>
+          </ul>
+        </div>
+        <div>
+          <h3>What is broken or fragile</h3>
+          <ul>
+            <li>The insight model was retired in February 2026 and returns 404; the council model is deprecated; the Gemini preview ID is dead.</li>
+            <li>The SDK is pinned two major versions back; <code>temperature</code> and <code>top_p</code> are rejected by current models; 8K <code>max_tokens</code> now caps thinking plus text.</li>
+            <li>Seats 6 and 9 are told to use the problem-validation findings and handed 500 characters of them.</li>
+            <li>PR versions are recovered by regex, with a fallback that stores the whole step output as the version, so v4 can be the entire PRFAQ diffed against a bare press release.</li>
+            <li>A module-level singleton holds run state, so two concurrent users overwrite each other.</li>
+            <li>A debug endpoint returns the first 20 characters of the API key to any caller; reporting and debug routes are unauthenticated; CORS is open.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="architecture">
+      <div class="section-head"><span class="num">03</span><h2>Frontier architecture</h2></div>
+      <div class="measure">
+        <p class="lede">The council is a deterministic sequence with typed inputs and outputs per seat, so it belongs on the Claude API as a code-controlled workflow: one Messages request per seat, orchestrated by our own dependency graph. Managed Agents was considered and rejected; it would hand the ordering to the model and the UI to an event stream we do not shape. Every seat is a fresh single-turn request, which also keeps the pipeline clear of Fable 5.1's preserved-thinking history rules.</p>
+      </div>
+
+      <h3>Model strategy</h3>
+      <div class="table-wrap tight"><table>
+        <thead><tr><th>Seat</th><th>Model</th><th>Effort</th><th>Why</th></tr></thead>
+        <tbody>
+          <tr><td>0 Framing</td><td class="mono">claude-sonnet-5</td><td>medium</td><td>Short, structured, the user is waiting to review</td></tr>
+          <tr><td>1 Market research</td><td class="mono">claude-fable-5-1</td><td>high</td><td>Multistep web research is a headline Fable 5.1 strength; everything downstream depends on it</td></tr>
+          <tr><td>1b Evidence ledger</td><td class="mono">claude-sonnet-5</td><td>low</td><td>Pure extraction into a schema</td></tr>
+          <tr><td>2, 6 Simulated panels</td><td class="mono">claude-fable-5-1</td><td>high</td><td>Believable, specific, non-generic voices</td></tr>
+          <tr><td>3, 4, 7, 9 The document</td><td class="mono">claude-fable-5-1</td><td>high (test xhigh on 3)</td><td>Drafting and surgical, evidence-grounded editing</td></tr>
+          <tr><td>5 Internal FAQ</td><td class="mono">claude-fable-5-1</td><td>high</td><td>TAM, business model options, risks: the hardest reasoning in the run</td></tr>
+          <tr><td>8 External FAQ</td><td class="mono">claude-sonnet-5</td><td>medium</td><td>Formatting-heavy, derived from seat 6</td></tr>
+          <tr><td>9b Bar Raiser (new)</td><td class="mono">claude-opus-5</td><td>high</td><td>The reviewer should be a different model than the author</td></tr>
+          <tr><td>10 Validation plan</td><td class="mono">claude-fable-5-1</td><td>high</td><td>Hypothesis decomposition and ICE scoring</td></tr>
+          <tr><td>Insights</td><td class="muted">none</td><td></td><td>A field in every seat's schema; no extra call, never late</td></tr>
+        </tbody>
+      </table></div>
+      <div class="note"><p><strong>Facts that shape every call.</strong> Thinking is always on for Fable 5.1 (omit the parameter; depth is <code>output_config.effort</code>). No sampling parameters, no prefill, no forced tool choice. <code>max_tokens</code> caps thinking plus text, so size it at 16–32K and always stream. Opt into server-side fallbacks on every call (<code>fallbacks="default"</code> with beta <code>server-side-fallback-2026-07-01</code>) and check <code>stop_reason == "refusal"</code> before reading content. Fable 5.1 requires 30-day data retention on the workspace. Pricing per million tokens: Fable 5.1 $10 in / $50 out with cache reads at $0.25; Opus 5 $5 / $25; Sonnet 5 $2 / $10.</p></div>
+
+      <h3>The context system: a cached charter and an append-only dossier</h3>
+      <div class="measure">
+        <p>Two rules. The <strong>system prompt is frozen</strong> for the whole council: the Working Backwards charter plus the full persona roster, marked for a one-hour cache and byte-identical across every seat of every run. The seat's role selection sits at the end of the user message, because changing the system prompt per seat would invalidate the message cache on every step. The <strong>dossier is append-only</strong> in a canonical order, one text block per artifact, so seat N+1's prompt is seat N's prompt plus new blocks and each seat reads the whole prior context from cache.</p>
+      </div>
+      <div class="stack">
+        <div class="row"><div class="lab">system</div><div class="blocks"><span class="blk sys">council charter + roster<span class="cc">cache 1h</span></span></div></div>
+        <div class="row"><div class="lab">messages[0]</div><div class="blocks"><span class="blk">brief</span><span class="blk">market_research</span><span class="blk">findings_ledger</span><span class="blk">problem_validation</span><span class="blk">pr_v1</span><span class="blk">pr_v2</span><span class="blk">internal_faq</span><span class="blk">concept_validation</span><span class="blk new">pr_v3<span class="cc">cache 5m</span></span><span class="blk task">task: "You are seat 8, the Customer Success Lead…"</span></div></div>
+      </div>
+      <p class="caption">Seat 8's prompt. Every block before the task is byte-identical to what seat 7 sent plus the new <code>pr_v3</code>, so it is served from cache. Parallel seats share the prefix: fire seat 5, await its first streamed token, then fire seat 6.</p>
+
+      <h3>Dependency graph and execution</h3>
+      <div class="diagram"><svg viewBox="0 0 1110 200" role="img" aria-label="Council dependency graph: seats 0 through 4 in sequence, seats 5 and 6 in parallel, then 7, 8, 9, 9b and 10 in sequence">
+        <defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="var(--muted)"/></marker></defs>
+        <g stroke="var(--muted)" stroke-width="1.2" fill="none" marker-end="url(#arr)">
+          <line x1="84" y1="100" x2="100" y2="100"/><line x1="176" y1="100" x2="192" y2="100"/><line x1="268" y1="100" x2="284" y2="100"/><line x1="360" y1="100" x2="376" y2="100"/><line x1="452" y1="100" x2="468" y2="100"/>
+          <line x1="544" y1="100" x2="560" y2="50"/><line x1="544" y1="100" x2="560" y2="150"/>
+          <line x1="636" y1="50" x2="652" y2="100"/><line x1="636" y1="150" x2="652" y2="100"/>
+          <line x1="728" y1="100" x2="744" y2="100"/><line x1="820" y1="100" x2="836" y2="100"/><line x1="912" y1="100" x2="928" y2="100"/><line x1="1004" y1="100" x2="1020" y2="100"/>
+        </g>
+        <g font-size="12" font-weight="500" text-anchor="middle" dominant-baseline="middle">
+          <rect x="8" y="84" width="76" height="32" rx="4" fill="color-mix(in srgb, var(--p0) 20%, var(--paper))" stroke="var(--p0)"/><text x="46" y="101" fill="var(--ink)">0 Frame</text>
+          <rect x="100" y="84" width="76" height="32" rx="4" fill="color-mix(in srgb, var(--p1) 20%, var(--paper))" stroke="var(--p1)"/><text x="138" y="101" fill="var(--ink)">1 Research</text>
+          <rect x="192" y="84" width="76" height="32" rx="4" fill="color-mix(in srgb, var(--p1) 20%, var(--paper))" stroke="var(--p1)"/><text x="230" y="101" fill="var(--ink)">1b Ledger</text>
+          <rect x="284" y="84" width="76" height="32" rx="4" fill="color-mix(in srgb, var(--p2) 20%, var(--paper))" stroke="var(--p2)"/><text x="322" y="101" fill="var(--ink)">2 Problem</text>
+          <rect x="376" y="84" width="76" height="32" rx="4" fill="color-mix(in srgb, var(--p3) 20%, var(--paper))" stroke="var(--p3)"/><text x="414" y="101" fill="var(--ink)">3 Draft</text>
+          <rect x="468" y="84" width="76" height="32" rx="4" fill="color-mix(in srgb, var(--p4) 20%, var(--paper))" stroke="var(--p4)"/><text x="506" y="101" fill="var(--ink)">4 VP</text>
+          <rect x="560" y="34" width="76" height="32" rx="4" fill="color-mix(in srgb, var(--p5) 20%, var(--paper))" stroke="var(--p5)"/><text x="598" y="51" fill="var(--ink)">5 Int. FAQ</text>
+          <rect x="560" y="134" width="76" height="32" rx="4" fill="color-mix(in srgb, var(--p6) 20%, var(--paper))" stroke="var(--p6)"/><text x="598" y="151" fill="var(--ink)">6 Concept</text>
+          <rect x="652" y="84" width="76" height="32" rx="4" fill="color-mix(in srgb, var(--p7) 20%, var(--paper))" stroke="var(--p7)"/><text x="690" y="101" fill="var(--ink)">7 Refine</text>
+          <rect x="744" y="84" width="76" height="32" rx="4" fill="color-mix(in srgb, var(--p8) 20%, var(--paper))" stroke="var(--p8)"/><text x="782" y="101" fill="var(--ink)">8 Ext. FAQ</text>
+          <rect x="836" y="84" width="76" height="32" rx="4" fill="color-mix(in srgb, var(--p9) 20%, var(--paper))" stroke="var(--p9)"/><text x="874" y="101" fill="var(--ink)">9 Edit</text>
+          <rect x="928" y="84" width="76" height="32" rx="4" fill="color-mix(in srgb, var(--p9b) 20%, var(--paper))" stroke="var(--p9b)"/><text x="966" y="101" fill="var(--ink)">9b Bar</text>
+          <rect x="1020" y="84" width="76" height="32" rx="4" fill="color-mix(in srgb, var(--p10) 20%, var(--paper))" stroke="var(--p10)"/><text x="1058" y="101" fill="var(--ink)">10 Plan</text>
+        </g>
+        <g font-size="11" font-family="IBM Plex Mono, ui-monospace, monospace" text-anchor="middle" fill="var(--accent)">
+          <text x="414" y="132">v1</text><text x="506" y="132">v2</text><text x="690" y="132">v3</text><text x="874" y="132">v4</text>
+        </g>
+        <g font-size="11" text-anchor="middle" fill="var(--muted)">
+          <text x="598" y="188">5 and 6 run in parallel</text>
+          <text x="1058" y="132">also reads the ledger + FAQs</text>
+        </g>
+      </svg></div>
+      <p class="caption">Seat 7 now also receives the internal FAQ, which the original intended and never wired. Seat 10 reads the evidence ledger and both FAQs alongside the PRFAQ; it could run parallel to seat 9 but ships sequential behind a flag so the "editor waits for everything" beat survives. Critical path: nine stages instead of ten, every one streaming from its first second.</p>
+
+      <div class="cols-2">
+        <div>
+          <h3>Structured outputs end the regex era</h3>
+          <p class="small">Every seat returns JSON validated against a Pydantic model. The press release is eight typed slots (headline, subheading, summary, problem, solution, benefits, internal quote, call to action), each with its claims tagged as evidence or assumption. Refinement seats return a list of edits (slot, new text, one-sentence rationale, evidence finding ids, change kind) plus the full new version. FAQs, the concept test, hypotheses with numeric ICE fields, and the per-step insight are all fields.</p>
+          <p class="small">Validation failures retry once with the validator message appended; a seat can no longer silently corrupt the version timeline. Streaming JSON is rendered progressively with a tolerant partial-JSON parser, so the user still watches the PM write paragraph by paragraph.</p>
+        </div>
+        <div>
+          <h3>Research with real evidence</h3>
+          <p class="small">Seat 1 replaces Perplexity with Claude's server-side web search and web fetch in one agentic request (up to fifteen searches), writing research with citations that carry the URL, title and cited passage. Between tool calls, thinking display "updates" returns the model's own progress notes for the UI.</p>
+          <p class="small">Structured outputs cannot be combined with citations, so seat 1b (Sonnet 5, low effort) turns the cited research into an evidence ledger of findings and sources. From then on every persona cites finding ids for any number or market claim, and the editor flags unsupported quantitative claims as assumptions, which the validation plan picks up. "Do not make up any data" becomes mechanical.</p>
+        </div>
+      </div>
+
+      <h3>Runtime: persist first, stream second</h3>
+      <div class="measure">
+        <p>FastAPI with the async Anthropic client, one task per run, <code>asyncio.gather</code> for the fan-out. Every event the runner emits is appended to an events table before it is pushed; the stream endpoint replays from <code>Last-Event-ID</code> and then tails. A dropped connection, a refresh, a second tab or a shared link all show the same run. Resume re-runs the graph from the last completed seat over the same dossier prefix, with a warm cache. One typed event union, generated into TypeScript, replaces the ad-hoc keys the frontend switches on today.</p>
+      </div>
+      <div class="table-wrap tight"><table>
+        <thead><tr><th>Event</th><th>Carries</th></tr></thead>
+        <tbody>
+          <tr><td class="mono">step.started</td><td>seat, persona, model, effort</td></tr>
+          <tr><td class="mono">step.progress</td><td>a progress note from the model between tool calls, or a thinking summary</td></tr>
+          <tr><td class="mono">step.tool</td><td>search query or fetched URL (seat 1)</td></tr>
+          <tr><td class="mono">step.delta</td><td>streamed text</td></tr>
+          <tr><td class="mono">step.completed</td><td>artifact id, key insight, usage (input, cached, output, searches), served-by-fallback flag</td></tr>
+          <tr><td class="mono">document.version</td><td>version number, artifact id, the list of edits</td></tr>
+          <tr><td class="mono">run.completed</td><td>PRFAQ id, plan id, total cost, Bar Raiser scores</td></tr>
+        </tbody>
+      </table></div>
+
+      <h3>Speed and cost, stated plainly</h3>
+      <div class="table-wrap"><table>
+        <thead><tr><th></th><th>Today</th><th>Refresh, recommended mix</th><th>Refresh, all Opus 5</th></tr></thead>
+        <tbody>
+          <tr><td>First visible output per seat</td><td>40–90 s, nothing until the step finishes</td><td>under 3 s</td><td>under 3 s</td></tr>
+          <tr><td>Wall clock, full run</td><td>5–10 min</td><td>4–6 min at high effort; the research seat is the long pole</td><td>3–5 min</td></tr>
+          <tr><td>Input tokens per run, estimate</td><td class="num">~250K</td><td class="num">~450K, about 70% from cache</td><td class="num">same</td></tr>
+          <tr><td>Output plus thinking tokens, estimate</td><td class="num">~50K</td><td class="num">~120–150K</td><td class="num">~100–120K</td></tr>
+          <tr><td>Cost per run, estimate</td><td class="num">$1.5–2</td><td class="num">$6–9</td><td class="num">$3.5–4.5</td></tr>
+        </tbody>
+      </table></div>
+      <p class="caption">Estimates to be baselined with real runs. The old run was cheap because it was shallow and truncated; the new one is priced like a document ten colleagues actually read. Effort sweeps on seats 2, 6 and 10 will pull the number down if the eval says quality holds.</p>
+    </section>
+
+    <section id="design">
+      <div class="section-head"><span class="num">04</span><h2>Design direction</h2></div>
+      <div class="measure">
+        <p class="lede">Executive-grade and calm: a document tool that happens to show people working, not a dashboard that happens to contain a document. Two ideas are sacred and every screen serves them: a visible progression of colleagues reviewing and handing off, and the press release as a living document whose edits are inspectable, each tied to who made it and what research drove it.</p>
+      </div>
+
+      <h3>The council progression</h3>
+      <div class="measure"><p>A sticky rail lists the roster in fixed order, grouped into four phases (Frame and research; Draft and review; Pressure-test; Refine and finalise). The main column is a timeline of step cards separated by handoff connectors whose labels are generated from the dependency graph, not by a model: every card announces what it read before it wrote. Order is spatial and never changes; when seats 5 and 6 run together, both monograms breathe in their own slots and the top bar reads "2 colleagues working".</p></div>
+      <div class="cards">
+        <div class="card">
+          <span class="mono-badge" style="--hue: var(--p3)">PM</span>
+          <div><span class="elapsed">1:42</span><div class="title">Principal PM drafted the press release</div>
+            <div class="insight"><span class="lab">Headline:</span>Independent restaurants get a bookkeeper that closes the books by Monday morning</div>
+            <div class="line">Produced PR v1 · 7 claims cite findings, 1 assumption</div></div>
+        </div>
+        <div class="handoff">VP Product receives PR v1, market research, problem validation <span class="v">v1</span></div>
+        <div class="card working">
+          <span class="mono-badge" style="--hue: var(--p4)">VP</span>
+          <div><span class="elapsed">0:37</span><div class="title">VP Product is refining the press release</div>
+            <div class="line">Checking the problem paragraph against finding F-07 (panel: 7 of 10 acute sufferers run 1–3 locations)</div>
+            <div class="peek">…the summary paragraph now names the segment the research supports rather than "small business owners", and the anecdote borrows Maria's phrasing from the</div></div>
+        </div>
+        <div class="handoff">VP Business + Principal Engineer and User Researcher both receive PR v2 <span class="v">v2</span></div>
+        <div class="card">
+          <span class="mono-badge" style="--hue: var(--p5); opacity: 0.45">BE</span>
+          <div><div class="title muted">Internal FAQ</div><div class="line">Starts when the VP finishes v2</div></div>
+        </div>
+      </div>
+      <p class="caption">Illustrative content. A working card shows the persona's real progress note and a peek of the streaming text; a finished card collapses to its insight and what it produced; a queued card says what it is waiting for.</p>
+
+      <h3>The document evolution</h3>
+      <div class="measure"><p>A four-stop version control replaces the range slider; each stop carries its author's monogram and the comparative insight as a caption. Three modes: Read, Compare (a redline from one version to another) and Walkthrough (one edit at a time). The unit of change is the slot; inside a changed slot a word-level diff is rendered for reading only. A provenance gutter puts each rationale next to the paragraph it changed, with chips that open the finding and its sources. Any paragraph opens its history across v1 to v4.</p></div>
+      <div class="stops">
+        <div class="stop"><div class="v">v1</div><div class="n"><span class="mono-badge" style="--hue: var(--p3)">PM</span>Initial draft</div></div>
+        <div class="stop active"><div class="v">v2</div><div class="n"><span class="mono-badge" style="--hue: var(--p4)">VP</span>VP refined</div></div>
+        <div class="stop"><div class="v">v3</div><div class="n"><span class="mono-badge" style="--hue: var(--p7)">PM</span>Customer validated</div></div>
+        <div class="stop"><div class="v">v4</div><div class="n"><span class="mono-badge" style="--hue: var(--p9)">ED</span>Final</div></div>
+      </div>
+      <div class="doc-sample">
+        <div class="prose">
+          <h5>Ledgerly Closes the Books for Independent Restaurants Every Monday Morning</h5>
+          <p class="sub">A bookkeeping service that turns receipts, POS exports and supplier invoices into a finished monthly close, without a bookkeeper on staff.</p>
+          <p><del>Small business owners</del><ins>Owners of independent restaurants running one to three locations</ins> spend <del>hours every week</del><ins>six to nine hours a week, usually after close,</ins> reconciling receipts against bank statements, and most still hand their accountant a shoebox at year end. <ins>Seven of the ten operators we interviewed had missed a supplier discount because an invoice surfaced after the payment window.</ins></p>
+        </div>
+        <div class="gutter">
+          <div class="g-note">
+            <div class="who"><span class="mono-badge" style="--hue: var(--p4)">VP</span>VP Product · edit 2 of 5</div>
+            <div>Sharpened the target customer from "small businesses" to independent restaurateurs, and replaced the vague time claim with the panel's own numbers.</div>
+            <span class="chip">F-07 · problem panel</span><span class="chip">S-03 · industry survey 2025</span><span class="chip assume">"most" is an assumption</span>
+          </div>
+        </div>
+      </div>
+      <p class="caption">Illustrative redline: insertions in ink blue, deletions struck in muted red, the rationale and evidence beside the paragraph. The same objects drive a tracked-changes Word export whose reviewer names are the personas.</p>
+
+      <div class="cols-2">
+        <div>
+          <h3>Evidence in the executive document</h3>
+          <p class="small">No footnote numbers in the press release by default; Amazon PRs are read as narrative. An Evidence toggle underlines sentences with a linked finding and opens a popover with the claim, the persona who established it, the source and the cited passage. The Research view is the full ledger with backlinks ("used in PR §Problem v2, Internal FAQ Q3"). Simulated panel participants are labelled as simulated wherever they appear.</p>
+        </div>
+        <div>
+          <h3>Visual system</h3>
+          <p class="small">Warm-neutral paper so paper reads as paper, one ink-blue accent for actions and "live", desaturated semantic colours, and a dark theme built from the same tokens. UI in a humanist sans, documents in a text serif at 17px on a 66–72 character measure. Nine recurring colleagues get two-letter monograms in constant-lightness hues that follow them everywhere: rail, card ring, gutter note, Word reviewer colour. No emoji, no shimmer bars, no hover-lift; text appears as it arrives with a single caret.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="surgical">
+      <div class="section-head"><span class="num">05</span><h2>Surgical changes worth making regardless</h2></div>
+      <div class="measure"><p class="lede">File-level changes that de-risk the branch the refresh is built from. Groups A and C should land on <code>main</code> in the first days; B fixes silent quality defects; D lists frontier patterns that pay off even inside the old architecture.</p></div>
+      <div class="table-wrap tight"><table>
+        <thead><tr><th>Group</th><th>Change</th><th>Where</th></tr></thead>
+        <tbody>
+          <tr><td>A · run at all</td><td>Council model to <code>claude-fable-5-1</code> (or <code>claude-opus-5</code>); insight model to <code>claude-haiku-4-5</code>; remove <code>temperature</code> and <code>top_p</code>; raise <code>max_tokens</code> and stream; upgrade <code>anthropic</code> to 1.x; drop Gemini; handle refusals with <code>fallbacks="default"</code>; fix the stale test that expects seven steps</td><td class="mono">config.py:5 · llm_processor.py:50 · claude_processor.py:272–281 · pyproject.toml · tests/test_api.py</td></tr>
+          <tr><td>B · silent defects</td><td>Stop truncating problem validation to 500 characters in seats 6 and 9; give seat 7 the internal FAQ; give seat 10 the evidence; validate structure before storing a refinement; make run state per request instead of a module singleton; remove the fixed-timer narration and the two-second busy-wait for the step-10 insight</td><td class="mono">llm_processor.py:334, 420–423, 354–360, 436–448, 474–506, 777 · routes.py:58 · claude_processor.py:207–218</td></tr>
+          <tr><td>C · hygiene</td><td>Delete the endpoint that returns the first 20 characters of the API key; put debug and reporting routes behind auth; restrict CORS; fail fast on a missing session secret; delete the two stray pip-output files in the repo root; move reporting off the ephemeral SQLite file</td><td class="mono">routes.py:679–792, 794–1355 · app.py:42, 45 · utils/database_service.py:17</td></tr>
+          <tr><td>D · frontier patterns</td><td>Cache each system prompt for an hour; structured outputs on seats 0, 4, 7, 8, 9, 10 and the insight; web search instead of Perplexity; thinking display for real progress lines; forward stream deltas over the existing SSE channel; run seats 5 and 6 concurrently; fold the insight into each seat's output</td><td class="mono">absorbed by the refresh</td></tr>
+        </tbody>
+      </table></div>
+      <p class="small muted">Do not change: the substance of the persona prompts, the sequence and the four checkpoints, the human gate after framing, or the Word export's typographic decisions.</p>
+    </section>
+
+    <section id="plan">
+      <div class="section-head"><span class="num">06</span><h2>Project outline</h2></div>
+      <div class="measure"><p class="lede">Roughly four working weeks for one experienced full-stack engineer, or the owner working with Claude Code, with acceptance criteria per phase. The full outline includes the repository layout, data model, API contract, test strategy and configuration.</p></div>
+
+      <div class="phase">
+        <h3>Phase 0 · Decide and clear the ground (1–2 days)</h3>
+        <p class="small">Take the decisions below and record them. Confirm the workspace meets Fable 5.1's 30-day retention requirement and check rate limits for Fable 5.x and Opus 5, which are separate buckets. Land groups A and C of the surgical changes on <code>main</code>. Write the twelve seed ideas and freeze the quality rubric. Scaffold the new layout; drop the Gemini, OpenAI, Flask and Gunicorn dependencies.</p>
+        <div class="done">Done when <code>make dev</code> boots FastAPI and Vite with a health endpoint reporting the three model IDs reachable.</div>
+      </div>
+      <div class="phase">
+        <h3>Phase 1 · Council core, backend only (week 1)</h3>
+        <p class="small">Shared schemas and the frozen charter with the roster. The dossier builder with canonical order and cache markers, tested for byte-identical prefixes. The client and stream adapter with fallbacks, refusal handling and usage capture. One seat end-to-end from a command line, then research with web search and the ledger extraction, then every remaining seat ported with the prompt changes. The graph runner with parallel 5 and 6, retries, cancel and resume; the event log and the stream endpoint; Postgres or SQLite through SQLAlchemy.</p>
+        <div class="done">Done when a full run produces a typed PRFAQ and validation plan with a replayable event log in under six minutes, with cost recorded per seat and an integration test asserting cache reads on seat 3.</div>
+      </div>
+      <div class="phase">
+        <h3>Phase 2 · Frontend (week 2)</h3>
+        <p class="small">Design tokens for both themes, the persona identity system and typography. A single reducer over the event union with replay and progressive JSON rendering. The framing review, the council timeline with handoff connectors, working notes and insights, the document views with version stops, redline, provenance gutter, walkthrough and paragraph history, the research ledger, exports (clean and tracked-changes Word, Markdown, PDF), history and share links.</p>
+        <div class="done">Done when a user can watch a run live, refresh mid-run without losing anything, open it on a phone, step through every edit with its rationale, and export a Word file that matches the old typographic spec.</div>
+      </div>
+      <div class="phase">
+        <h3>Phase 3 · Quality, cost, hardening (week 3)</h3>
+        <p class="small">The Bar Raiser seat with rubric scores in the UI. The eval harness with an LLM judge and a hallucination check against the ledger. Effort sweeps per seat and a Fable 5.1 versus Opus 5 comparison on seats 2, 6 and 10. A prompt de-prescription A/B. An ops view for cost, cache hit rate, fallback rate and score trend. Auth, restricted CORS, rate limiting, a Docker image, managed Postgres, a cache pre-warm on boot, and a runbook.</p>
+        <div class="done">Done when the eval baseline is recorded, the chosen configuration is documented, and production serves a run end-to-end from a fresh deploy.</div>
+      </div>
+      <div class="phase">
+        <h3>Phase 4 · Launch and backlog</h3>
+        <p class="small">An optional human gate after v2. "Ask the council" follow-ups over a finished run. Persona memory across a user's runs. Multi-idea comparison, workspaces and comments on sections.</p>
+      </div>
+
+      <h3>Repository layout</h3>
+<pre><code>backend/app/
+  council/charter.py        the frozen system prompt: methodology + roster
+  council/seats/s00 … s10   task template, output schema, model, effort per seat
+  council/dossier.py        append-only dossier, canonical order, cache markers
+  council/graph.py          dependency graph
+  council/runner.py         asyncio runner: fan-out, retries, resume, cancel, cost
+  llm/client.py, stream.py  AsyncAnthropic, fallbacks, refusal handling, event adapter
+  llm/research.py           web search + fetch, citation capture
+  schemas/                  PressRelease, Edit, FAQItem, Finding, Source, Hypothesis, RunEvent
+  api/                      runs, events (SSE with replay), framing, export, history
+  export/                   docx (clean and tracked changes), markdown, pdf
+  evals/                    seed ideas, rubric, judge, regression runner
+frontend/src/
+  api/                      generated types, SSE client with Last-Event-ID
+  state/runStore.ts         one reducer over the event union
+  components/council/       CouncilRail, StepCard, HandoffConnector, WorkingNotes
+  components/document/      VersionStops, RedlineDocument, ProvenanceGutter, SlotHistory
+  components/research/      FindingsList, SourcesTable, EvidencePopover
+  design/                   tokens, persona identity, typography</code></pre>
+    </section>
+
+    <section id="decisions">
+      <div class="section-head"><span class="num">07</span><h2>Decisions before building</h2></div>
+      <div class="table-wrap decisions"><table>
+        <thead><tr><th>Decision</th><th>Recommendation</th></tr></thead>
+        <tbody>
+          <tr><td>Model mix</td><td>Fable 5.1 on judgment seats, Sonnet 5 on seats 0, 1b and 8, Opus 5 as reviewer and fallback; per-seat config</td></tr>
+          <tr><td>Structured per-slot edits</td><td>Yes. It enables provenance, walkthrough, paragraph history and tracked-changes export, and deletes three diff engines</td></tr>
+          <tr><td>Diff granularity</td><td>Slot as the unit of change; word-level rendering inside a slot; no character diffs anywhere</td></tr>
+          <tr><td>Bar Raiser seat</td><td>Add it, config-flagged, on by default</td></tr>
+          <tr><td>Parallelism</td><td>Seats 5 and 6 only; strict visual order; seats 8 to 10 sequential (10 parallel behind a flag)</td></tr>
+          <tr><td>Reasoning summaries</td><td>Show as working notes during a run, collapsed; exclude from exports and shares</td></tr>
+          <tr><td>Evidence in the document</td><td>Toggle, off by default; the Internal FAQ may show markers when on</td></tr>
+          <tr><td>Persona continuity</td><td>One User Researcher who returns at seat 6; one Principal PM at seats 3 and 7</td></tr>
+          <tr><td>Hosting</td><td>Docker image plus managed Postgres; end the ephemeral-disk history</td></tr>
+          <tr><td>Auth and sharing</td><td>Owner token now; unlisted read-only links with the document view by default</td></tr>
+          <tr><td>Cost ceiling per run</td><td>Set one, enforced by the runner, with an alert at 80%</td></tr>
+          <tr><td>Landing copy</td><td>Remove the unverifiable customer claim; one company name; "under ten minutes"</td></tr>
+        </tbody>
+      </table></div>
+      <div class="note"><p><strong>Where to read more.</strong> The repository branch carries the full set: <code>docs/refresh/01-current-state.md</code>, <code>02-frontier-architecture.md</code>, <code>03-design-brief.md</code>, <code>04-surgical-changes.md</code>, <code>05-project-outline.md</code>, with a <code>README.md</code> index.</p></div>
+    </section>
+
+    <footer>ChatPRFAQ Frontier Refresh · proposal · the redline, step cards and cost figures on this page are illustrative and to be baselined during Phase 1.</footer>
+  </div>
+</div>
+</div>
+</body>
+</html>
