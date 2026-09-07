@@ -1,6 +1,6 @@
 # ChatPRFAQ: AI-Powered Working Backwards Implementation
 
-A web app that automates Amazon's "Working Backwards" methodology using orchestrated AI agents, transforming product ideas into exec-ready PRFAQs in minutes instead of weeks.
+A product-development application that turns an initial idea into researched and iteratively reviewed PRFAQ drafts. It applies Amazon's "Working Backwards" methodology through a ten-step AI workflow, with intermediate reasoning and document revisions visible to the user.
 
 <div>
     <a href="https://www.loom.com/share/7fa90080455846d2a626f6a45d65a4f2">
@@ -12,7 +12,6 @@ A web app that automates Amazon's "Working Backwards" methodology using orchestr
   </div>
 
   
-<a href="chatprfaq.replit.app/">Try It</a>
 
 ## Project Context
 
@@ -22,12 +21,12 @@ After 10 years as an Amazon PM writing countless PRFAQs, I built this as a love 
 
 Traditional AI approaches generate PRFAQs through single-shot prompting, producing generic documents lacking depth and perspective diversity. ChatPRFAQ simulates the actual multi-stakeholder review process through:
 
-- **10 specialized AI agents** with distinct personas (Market Analyst, User Researcher, VP Product, Principal Engineer)
+- **10 orchestrated steps** with specialist personas (Market Analyst, User Researcher, VP Product, Principal Engineer)
 - **Real-time market research integration** using live web data
 - **Iterative refinement cycles** with feedback loops between research, validation, and synthesis
 - **Evidence-based narrative development** grounded in market data and customer insights
 
-Result: PRFAQs that pass the executive readiness test, not just the formatting test.
+The output gives a product team a concrete narrative, assumptions and open questions to review. Simulated customer interviews are a tool for exploring hypotheses; actual customer research and source verification remain part of the product decision.
 
 ## Architecture Overview
 
@@ -96,7 +95,7 @@ Each agent operates with carefully crafted prompts embedding:
 
 - **Role-specific expertise patterns** derived from actual Amazon reviews
 - **Output format specifications** ensuring consistency across the 10-step process
-- **Quality control mechanisms** validating output against expected patterns
+- **Output checks** validating responses against expected patterns
 - **Context-aware templating** adapting based on previous step outputs
 
 ### Modern Frontend Architecture
@@ -131,8 +130,8 @@ Built with React + TypeScript + Tailwind, featuring:
 **Development & Deployment:**
 - Modern Python packaging with pyproject.toml
 - Environment variable configuration for secrets management
-- Cross-platform compatibility (tested on Replit, local development)
-- Comprehensive error handling and user feedback systems
+- Replit and local-development configuration
+- Error handling and user feedback systems
 
 ## Key Technical Challenges Solved
 
@@ -164,17 +163,23 @@ Designed for product managers, entrepreneurs, and innovation teams needing rapid
 Describe your product idea—the system orchestrates the complete Working Backwards process, producing:
 - Comprehensive market research with real-time competitive analysis
 - Customer problem validation with simulated user interviews
-- Executive-ready press release with iterative refinements
+- Draft press release with iterative refinements
 - Internal/external FAQs addressing strategic and tactical concerns
-- Synthesized PRFAQ document ready for leadership review
+- Synthesized PRFAQ document for product and leadership review
 - Minimum Lovable Product plan with prioritized feature roadmap
 
 ## Development Philosophy
 
-This project demonstrates that AI automation doesn't require sacrificing quality or rigor. By encoding Amazon's product development best practices into sophisticated AI orchestration, it maintains the iterative, multi-perspective approach that makes Working Backwards effective while dramatically reducing time investment.
+I built the workflow to make the reasoning behind a PRFAQ inspectable: what the research suggested, which assumptions the simulated reviews challenged, and how the narrative changed between drafts.
 
-The code reflects production-quality practices: comprehensive error handling, structured logging, type safety, responsive design, and clear separation of concerns—because tools enhancing high-stakes decision-making must themselves be built to high standards.
+The implementation includes error handling, structured logging, TypeScript interfaces and separate research and reasoning processors. These choices make the workflow easier to inspect, debug and extend.
 
 ---
 
-*This project serves as both a functional product development tool and a demonstration of sophisticated AI system design, multi-agent orchestration, and modern full-stack development practices.*
+## Project status and local setup
+
+This README describes the Flask/React implementation on `main`, built in May–June 2025. The recorded demo shows that version. The repository also preserves subsequent development branches.
+
+To explore this version, start with [DEVELOPMENT.md](DEVELOPMENT.md), install the Python and frontend dependencies, and provide your own API credentials through environment variables. See [.env.example](.env.example). Review the model IDs in `config.py` and the dependency versions before running against current services. The published source has not been revalidated end to end against today's APIs.
+
+Reporting stores product ideas and model outputs. A shared deployment needs authentication, access controls and a retention policy; see [REPORTING.md](REPORTING.md).

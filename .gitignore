@@ -43,3 +43,9 @@ logs/
 data/
 *.db
 *.sqlite
+
+# Local credentials and captured application output
+.env.*
+!.env.example
+attached_assets/Pasted--INFO-STATE-CHANGE-*.txt
+attached_assets/Pasted-2025-06-09-*.txt

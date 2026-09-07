@@ -18,11 +18,11 @@ This document describes the comprehensive backend reporting system that provides
 ```sql
 -- Core processing sessions
 processing_sessions (
-    id, request_id, original_idea, created_at, completed_at, 
+    id, request_id, original_idea, created_at, completed_at,
     status, total_duration_seconds, error_message
 )
 
--- Individual step outputs and metrics  
+-- Individual step outputs and metrics
 step_outputs (
     id, session_id, step_id, step_name, input_text, output_text,
     raw_llm_output, duration_seconds, model_used, token_count, cost_estimate
@@ -38,7 +38,7 @@ insights (
 
 1. **Session Start**: Processing session created when idea submitted
 2. **Step Tracking**: Each step output automatically captured via dual-write
-3. **Insight Extraction**: AI-generated insights stored asynchronously  
+3. **Insight Extraction**: AI-generated insights stored asynchronously
 4. **Session Completion**: Final status and timing recorded
 
 ## API Endpoints
@@ -185,13 +185,13 @@ Key functions:
 
 ## Testing
 
-The system includes comprehensive testing:
+The original implementation described the following verification areas:
 
 **Database Testing**: Verifies all CRUD operations work correctly
 **API Testing**: Validates all endpoints return proper responses
 **Integration Testing**: Confirms dual-write pattern functions properly
 
-Run tests with: `python final_verification.py`
+The original `final_verification.py` script is not included in this repository. The scripts in `tests/` are development checks, including API calls; review their configuration before running them.
 
 ## Configuration
 
@@ -217,7 +217,7 @@ The system is designed for easy migration to PostgreSQL:
 
 ## Security Considerations
 
-- **No Authentication**: Endpoints inherit app-level security
+- **Authentication**: No authentication is implemented for these reporting endpoints
 - **Data Privacy**: Full LLM outputs stored - consider data retention policies
 - **Access Control**: No endpoint-level restrictions implemented
 - **SQL Injection**: Uses parameterized queries throughout
@@ -244,5 +244,5 @@ The system is designed for easy migration to PostgreSQL:
 ---
 
 **Implementation Date**: 2025-06-06
-**Database**: SQLite (production-ready for moderate scale)
-**Status**: ✅ Production Ready 
+**Database**: SQLite
+**Status**: Historical implementation; shared deployments require authentication, access controls and a data-retention policy.

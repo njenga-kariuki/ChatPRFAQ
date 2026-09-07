@@ -161,8 +161,8 @@ def test_config_values():
         else:
             print(f"✓ Correct Claude model configured: {CLAUDE_MODEL}")
         
-        if len(WORKING_BACKWARDS_STEPS) != 7:
-            print(f"✗ Expected 7 working backwards steps, got: {len(WORKING_BACKWARDS_STEPS)}")
+        if len(WORKING_BACKWARDS_STEPS) != 10:
+            print(f"✗ Expected 10 working backwards steps, got: {len(WORKING_BACKWARDS_STEPS)}")
             return False
         print(f"✓ Working backwards steps configured: {len(WORKING_BACKWARDS_STEPS)} steps")
         
