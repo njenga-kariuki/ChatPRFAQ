@@ -1,0 +1,3067 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "ChatPRFAQ council",
+    "version": "2.0.0"
+  },
+  "paths": {
+    "/api/runs": {
+      "post": {
+        "tags": [
+          "runs"
+        ],
+        "summary": "Create Run",
+        "operationId": "create_run_api_runs_post",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateRunRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateRunResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "runs"
+        ],
+        "summary": "List Runs",
+        "operationId": "list_runs_api_runs_get",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 25,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Cursor"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RunListResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/runs/{run_id}": {
+      "get": {
+        "tags": [
+          "runs"
+        ],
+        "summary": "Get Run",
+        "operationId": "get_run_api_runs__run_id__get",
+        "parameters": [
+          {
+            "name": "run_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Run Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RunSnapshot"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/share/{token}": {
+      "get": {
+        "tags": [
+          "runs"
+        ],
+        "summary": "Get Shared Run",
+        "operationId": "get_shared_run_api_share__token__get",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Token"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RunSnapshot"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/runs/{run_id}/framing/refine": {
+      "post": {
+        "tags": [
+          "runs"
+        ],
+        "summary": "Refine Framing",
+        "operationId": "refine_framing_api_runs__run_id__framing_refine_post",
+        "parameters": [
+          {
+            "name": "run_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Run Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RefineFramingRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/runs/{run_id}/framing/confirm": {
+      "post": {
+        "tags": [
+          "runs"
+        ],
+        "summary": "Confirm Framing",
+        "operationId": "confirm_framing_api_runs__run_id__framing_confirm_post",
+        "parameters": [
+          {
+            "name": "run_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Run Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConfirmFramingRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/runs/{run_id}/cancel": {
+      "post": {
+        "tags": [
+          "runs"
+        ],
+        "summary": "Cancel Run",
+        "operationId": "cancel_run_api_runs__run_id__cancel_post",
+        "parameters": [
+          {
+            "name": "run_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Run Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/runs/{run_id}/resume": {
+      "post": {
+        "tags": [
+          "runs"
+        ],
+        "summary": "Resume Run",
+        "operationId": "resume_run_api_runs__run_id__resume_post",
+        "parameters": [
+          {
+            "name": "run_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Run Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/roster": {
+      "get": {
+        "tags": [
+          "runs"
+        ],
+        "summary": "Roster",
+        "operationId": "roster_api_roster_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/PersonaRecord"
+                  },
+                  "type": "array",
+                  "title": "Response Roster Api Roster Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/seats": {
+      "get": {
+        "tags": [
+          "runs"
+        ],
+        "summary": "Seats",
+        "operationId": "seats_api_seats_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/SeatRecord"
+                  },
+                  "type": "array",
+                  "title": "Response Seats Api Seats Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/schema/event": {
+      "get": {
+        "tags": [
+          "runs"
+        ],
+        "summary": "Event Schema",
+        "description": "Exists so the RunEvent union is part of the OpenAPI document for type generation.",
+        "operationId": "event_schema_api_schema_event_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EventEnvelope"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/runs/{run_id}/events": {
+      "get": {
+        "tags": [
+          "events"
+        ],
+        "summary": "Run Events",
+        "operationId": "run_events_api_runs__run_id__events_get",
+        "parameters": [
+          {
+            "name": "run_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Run Id"
+            }
+          },
+          {
+            "name": "after",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "After"
+            }
+          },
+          {
+            "name": "Last-Event-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Last-Event-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/runs/{run_id}/export": {
+      "get": {
+        "tags": [
+          "export"
+        ],
+        "summary": "Export Run",
+        "operationId": "export_run_api_runs__run_id__export_get",
+        "parameters": [
+          {
+            "name": "run_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Run Id"
+            }
+          },
+          {
+            "name": "format",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^(md|plan|redline|json)$",
+              "default": "md",
+              "title": "Format"
+            }
+          },
+          {
+            "name": "from_version",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 4,
+              "minimum": 1,
+              "default": 1,
+              "title": "From Version"
+            }
+          },
+          {
+            "name": "to_version",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "maximum": 4,
+                  "minimum": 1
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "To Version"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/health": {
+      "get": {
+        "summary": "Health",
+        "operationId": "health_api_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ArtifactRecord": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "brief",
+              "market_research",
+              "ledger",
+              "problem_validation",
+              "pr_v1",
+              "pr_v2",
+              "internal_faq",
+              "concept_validation",
+              "pr_v3",
+              "external_faq",
+              "prfaq",
+              "bar_raiser",
+              "plan"
+            ],
+            "title": "Kind"
+          },
+          "seat": {
+            "type": "string",
+            "enum": [
+              "0",
+              "1",
+              "1b",
+              "2",
+              "3",
+              "4",
+              "5",
+              "6",
+              "7",
+              "8",
+              "9",
+              "9b",
+              "10"
+            ],
+            "title": "Seat"
+          },
+          "persona": {
+            "type": "string",
+            "enum": [
+              "strategist",
+              "analyst",
+              "researcher",
+              "pm",
+              "vp_product",
+              "biz_eng",
+              "customer_success",
+              "editor",
+              "bar_raiser",
+              "validation_lead"
+            ],
+            "title": "Persona"
+          },
+          "created_at": {
+            "type": "string",
+            "title": "Created At"
+          },
+          "key_insight": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Key Insight"
+          },
+          "payload": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Payload"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "kind",
+          "seat",
+          "persona",
+          "created_at",
+          "key_insight",
+          "payload"
+        ],
+        "title": "ArtifactRecord"
+      },
+      "BarRaiserOutput": {
+        "properties": {
+          "scores": {
+            "items": {
+              "$ref": "#/components/schemas/Score"
+            },
+            "type": "array",
+            "title": "Scores"
+          },
+          "overall": {
+            "type": "integer",
+            "title": "Overall"
+          },
+          "verdict": {
+            "type": "string",
+            "enum": [
+              "pass",
+              "revise"
+            ],
+            "title": "Verdict"
+          },
+          "required_fixes": {
+            "items": {
+              "$ref": "#/components/schemas/Fix"
+            },
+            "type": "array",
+            "title": "Required Fixes"
+          },
+          "key_insight": {
+            "type": "string",
+            "title": "Key Insight"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "scores",
+          "overall",
+          "verdict",
+          "required_fixes",
+          "key_insight"
+        ],
+        "title": "BarRaiserOutput"
+      },
+      "Claim": {
+        "properties": {
+          "text": {
+            "type": "string",
+            "title": "Text"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "evidence",
+              "assumption"
+            ],
+            "title": "Kind"
+          },
+          "finding_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Finding Ids"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "text",
+          "kind",
+          "finding_ids"
+        ],
+        "title": "Claim",
+        "description": "A factual or quantitative statement inside a slot and where it comes from."
+      },
+      "ConfirmFramingRequest": {
+        "properties": {
+          "framing": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Framing"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "title": "ConfirmFramingRequest"
+      },
+      "CreateRunRequest": {
+        "properties": {
+          "idea": {
+            "type": "string",
+            "maxLength": 8000,
+            "minLength": 10,
+            "title": "Idea"
+          }
+        },
+        "type": "object",
+        "required": [
+          "idea"
+        ],
+        "title": "CreateRunRequest"
+      },
+      "CreateRunResponse": {
+        "properties": {
+          "run_id": {
+            "type": "string",
+            "title": "Run Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "run_id"
+        ],
+        "title": "CreateRunResponse"
+      },
+      "DocumentVersionEvent": {
+        "properties": {
+          "seq": {
+            "type": "integer",
+            "title": "Seq"
+          },
+          "run_id": {
+            "type": "string",
+            "title": "Run Id"
+          },
+          "ts": {
+            "type": "string",
+            "title": "Ts"
+          },
+          "type": {
+            "type": "string",
+            "const": "document.version",
+            "title": "Type",
+            "default": "document.version"
+          },
+          "version": {
+            "type": "integer",
+            "title": "Version"
+          },
+          "artifact_id": {
+            "type": "string",
+            "title": "Artifact Id"
+          },
+          "produced_by_seat": {
+            "type": "string",
+            "enum": [
+              "0",
+              "1",
+              "1b",
+              "2",
+              "3",
+              "4",
+              "5",
+              "6",
+              "7",
+              "8",
+              "9",
+              "9b",
+              "10"
+            ],
+            "title": "Produced By Seat"
+          },
+          "persona": {
+            "type": "string",
+            "enum": [
+              "strategist",
+              "analyst",
+              "researcher",
+              "pm",
+              "vp_product",
+              "biz_eng",
+              "customer_success",
+              "editor",
+              "bar_raiser",
+              "validation_lead"
+            ],
+            "title": "Persona"
+          },
+          "press_release": {
+            "$ref": "#/components/schemas/PressRelease"
+          },
+          "edits": {
+            "items": {
+              "$ref": "#/components/schemas/Edit"
+            },
+            "type": "array",
+            "title": "Edits"
+          },
+          "caption": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Caption"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "seq",
+          "run_id",
+          "ts",
+          "version",
+          "artifact_id",
+          "produced_by_seat",
+          "persona",
+          "press_release",
+          "edits",
+          "caption"
+        ],
+        "title": "DocumentVersionEvent"
+      },
+      "Edit": {
+        "properties": {
+          "slot_id": {
+            "type": "string",
+            "enum": [
+              "headline",
+              "subheading",
+              "summary",
+              "problem",
+              "solution",
+              "benefits",
+              "internal_quote",
+              "cta"
+            ],
+            "title": "Slot Id"
+          },
+          "new_text": {
+            "type": "string",
+            "title": "New Text"
+          },
+          "rationale": {
+            "type": "string",
+            "title": "Rationale"
+          },
+          "evidence_finding_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Evidence Finding Ids"
+          },
+          "change_kind": {
+            "type": "string",
+            "enum": [
+              "sharpen",
+              "clarify",
+              "reground",
+              "cut",
+              "restructure",
+              "polish"
+            ],
+            "title": "Change Kind"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "slot_id",
+          "new_text",
+          "rationale",
+          "evidence_finding_ids",
+          "change_kind"
+        ],
+        "title": "Edit",
+        "description": "One change to one slot, with the reason and the evidence behind it."
+      },
+      "EventEnvelope": {
+        "properties": {
+          "event": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/RunStarted"
+              },
+              {
+                "$ref": "#/components/schemas/FramingReady"
+              },
+              {
+                "$ref": "#/components/schemas/RunStatusChanged"
+              },
+              {
+                "$ref": "#/components/schemas/StepStarted"
+              },
+              {
+                "$ref": "#/components/schemas/StepProgress"
+              },
+              {
+                "$ref": "#/components/schemas/StepTool"
+              },
+              {
+                "$ref": "#/components/schemas/StepDelta"
+              },
+              {
+                "$ref": "#/components/schemas/StepThinking"
+              },
+              {
+                "$ref": "#/components/schemas/StepCompleted"
+              },
+              {
+                "$ref": "#/components/schemas/StepFailed"
+              },
+              {
+                "$ref": "#/components/schemas/DocumentVersionEvent"
+              },
+              {
+                "$ref": "#/components/schemas/RunBudgetWarning"
+              },
+              {
+                "$ref": "#/components/schemas/RunCompleted"
+              },
+              {
+                "$ref": "#/components/schemas/RunFailed"
+              },
+              {
+                "$ref": "#/components/schemas/RunCancelled"
+              }
+            ],
+            "title": "Event",
+            "discriminator": {
+              "propertyName": "type",
+              "mapping": {
+                "document.version": "#/components/schemas/DocumentVersionEvent",
+                "framing.ready": "#/components/schemas/FramingReady",
+                "run.budget_warning": "#/components/schemas/RunBudgetWarning",
+                "run.cancelled": "#/components/schemas/RunCancelled",
+                "run.completed": "#/components/schemas/RunCompleted",
+                "run.failed": "#/components/schemas/RunFailed",
+                "run.started": "#/components/schemas/RunStarted",
+                "run.status": "#/components/schemas/RunStatusChanged",
+                "step.completed": "#/components/schemas/StepCompleted",
+                "step.delta": "#/components/schemas/StepDelta",
+                "step.failed": "#/components/schemas/StepFailed",
+                "step.progress": "#/components/schemas/StepProgress",
+                "step.started": "#/components/schemas/StepStarted",
+                "step.thinking": "#/components/schemas/StepThinking",
+                "step.tool": "#/components/schemas/StepTool"
+              }
+            }
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "event"
+        ],
+        "title": "EventEnvelope",
+        "description": "Wrapper so the union appears in the OpenAPI components for type generation."
+      },
+      "Finding": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "claim": {
+            "type": "string",
+            "title": "Claim"
+          },
+          "metric": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Metric"
+          },
+          "topic": {
+            "type": "string",
+            "enum": [
+              "market_size",
+              "competition",
+              "customer",
+              "pricing",
+              "trend",
+              "regulation",
+              "barrier",
+              "success_factor",
+              "other"
+            ],
+            "title": "Topic"
+          },
+          "source_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Source Ids"
+          },
+          "confidence": {
+            "type": "string",
+            "enum": [
+              "high",
+              "medium",
+              "low"
+            ],
+            "title": "Confidence"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "claim",
+          "metric",
+          "topic",
+          "source_ids",
+          "confidence"
+        ],
+        "title": "Finding"
+      },
+      "Fix": {
+        "properties": {
+          "target": {
+            "type": "string",
+            "title": "Target"
+          },
+          "instruction": {
+            "type": "string",
+            "title": "Instruction"
+          },
+          "severity": {
+            "type": "string",
+            "enum": [
+              "blocking",
+              "important"
+            ],
+            "title": "Severity"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "target",
+          "instruction",
+          "severity"
+        ],
+        "title": "Fix"
+      },
+      "Framing": {
+        "properties": {
+          "working_name": {
+            "type": "string",
+            "title": "Working Name"
+          },
+          "target_customer": {
+            "type": "string",
+            "title": "Target Customer"
+          },
+          "customer_problem": {
+            "type": "string",
+            "title": "Customer Problem"
+          },
+          "product_scope": {
+            "type": "string",
+            "title": "Product Scope"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "working_name",
+          "target_customer",
+          "customer_problem",
+          "product_scope"
+        ],
+        "title": "Framing"
+      },
+      "FramingReady": {
+        "properties": {
+          "seq": {
+            "type": "integer",
+            "title": "Seq"
+          },
+          "run_id": {
+            "type": "string",
+            "title": "Run Id"
+          },
+          "ts": {
+            "type": "string",
+            "title": "Ts"
+          },
+          "type": {
+            "type": "string",
+            "const": "framing.ready",
+            "title": "Type",
+            "default": "framing.ready"
+          },
+          "framing": {
+            "$ref": "#/components/schemas/Framing"
+          },
+          "attempt": {
+            "type": "integer",
+            "title": "Attempt"
+          },
+          "key_insight": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Key Insight"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "seq",
+          "run_id",
+          "ts",
+          "framing",
+          "attempt",
+          "key_insight"
+        ],
+        "title": "FramingReady"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "HealthResponse": {
+        "properties": {
+          "ok": {
+            "type": "boolean",
+            "title": "Ok"
+          },
+          "provider": {
+            "type": "string",
+            "title": "Provider"
+          },
+          "provider_ready": {
+            "type": "boolean",
+            "title": "Provider Ready"
+          },
+          "models": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object",
+            "title": "Models"
+          },
+          "database": {
+            "type": "string",
+            "title": "Database"
+          },
+          "version": {
+            "type": "string",
+            "title": "Version"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ok",
+          "provider",
+          "provider_ready",
+          "models",
+          "database",
+          "version"
+        ],
+        "title": "HealthResponse"
+      },
+      "PersonaRecord": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "enum": [
+              "strategist",
+              "analyst",
+              "researcher",
+              "pm",
+              "vp_product",
+              "biz_eng",
+              "customer_success",
+              "editor",
+              "bar_raiser",
+              "validation_lead"
+            ],
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "initials": {
+            "type": "string",
+            "title": "Initials"
+          },
+          "hue": {
+            "type": "integer",
+            "title": "Hue"
+          },
+          "seats": {
+            "items": {
+              "type": "string",
+              "enum": [
+                "0",
+                "1",
+                "1b",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "7",
+                "8",
+                "9",
+                "9b",
+                "10"
+              ]
+            },
+            "type": "array",
+            "title": "Seats"
+          },
+          "how_i_review": {
+            "type": "string",
+            "title": "How I Review"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "title",
+          "initials",
+          "hue",
+          "seats",
+          "how_i_review"
+        ],
+        "title": "PersonaRecord"
+      },
+      "PressRelease": {
+        "properties": {
+          "slots": {
+            "items": {
+              "$ref": "#/components/schemas/Slot"
+            },
+            "type": "array",
+            "title": "Slots"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "slots"
+        ],
+        "title": "PressRelease"
+      },
+      "RefineFramingRequest": {
+        "properties": {
+          "target_customer": {
+            "type": "string",
+            "title": "Target Customer",
+            "default": ""
+          },
+          "customer_problem": {
+            "type": "string",
+            "title": "Customer Problem",
+            "default": ""
+          },
+          "product_scope": {
+            "type": "string",
+            "title": "Product Scope",
+            "default": ""
+          }
+        },
+        "type": "object",
+        "title": "RefineFramingRequest"
+      },
+      "RunBudgetWarning": {
+        "properties": {
+          "seq": {
+            "type": "integer",
+            "title": "Seq"
+          },
+          "run_id": {
+            "type": "string",
+            "title": "Run Id"
+          },
+          "ts": {
+            "type": "string",
+            "title": "Ts"
+          },
+          "type": {
+            "type": "string",
+            "const": "run.budget_warning",
+            "title": "Type",
+            "default": "run.budget_warning"
+          },
+          "spent_usd": {
+            "type": "number",
+            "title": "Spent Usd"
+          },
+          "ceiling_usd": {
+            "type": "number",
+            "title": "Ceiling Usd"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "seq",
+          "run_id",
+          "ts",
+          "spent_usd",
+          "ceiling_usd"
+        ],
+        "title": "RunBudgetWarning"
+      },
+      "RunCancelled": {
+        "properties": {
+          "seq": {
+            "type": "integer",
+            "title": "Seq"
+          },
+          "run_id": {
+            "type": "string",
+            "title": "Run Id"
+          },
+          "ts": {
+            "type": "string",
+            "title": "Ts"
+          },
+          "type": {
+            "type": "string",
+            "const": "run.cancelled",
+            "title": "Type",
+            "default": "run.cancelled"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "seq",
+          "run_id",
+          "ts"
+        ],
+        "title": "RunCancelled"
+      },
+      "RunCompleted": {
+        "properties": {
+          "seq": {
+            "type": "integer",
+            "title": "Seq"
+          },
+          "run_id": {
+            "type": "string",
+            "title": "Run Id"
+          },
+          "ts": {
+            "type": "string",
+            "title": "Ts"
+          },
+          "type": {
+            "type": "string",
+            "const": "run.completed",
+            "title": "Type",
+            "default": "run.completed"
+          },
+          "prfaq_artifact_id": {
+            "type": "string",
+            "title": "Prfaq Artifact Id"
+          },
+          "plan_artifact_id": {
+            "type": "string",
+            "title": "Plan Artifact Id"
+          },
+          "total_cost_usd": {
+            "type": "number",
+            "title": "Total Cost Usd"
+          },
+          "duration_s": {
+            "type": "number",
+            "title": "Duration S"
+          },
+          "bar_raiser": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/BarRaiserOutput"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "seq",
+          "run_id",
+          "ts",
+          "prfaq_artifact_id",
+          "plan_artifact_id",
+          "total_cost_usd",
+          "duration_s",
+          "bar_raiser"
+        ],
+        "title": "RunCompleted"
+      },
+      "RunFailed": {
+        "properties": {
+          "seq": {
+            "type": "integer",
+            "title": "Seq"
+          },
+          "run_id": {
+            "type": "string",
+            "title": "Run Id"
+          },
+          "ts": {
+            "type": "string",
+            "title": "Ts"
+          },
+          "type": {
+            "type": "string",
+            "const": "run.failed",
+            "title": "Type",
+            "default": "run.failed"
+          },
+          "error": {
+            "type": "string",
+            "title": "Error"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "seq",
+          "run_id",
+          "ts",
+          "error"
+        ],
+        "title": "RunFailed"
+      },
+      "RunListItem": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "idea": {
+            "type": "string",
+            "title": "Idea"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "framing",
+              "awaiting_confirmation",
+              "running",
+              "completed",
+              "failed",
+              "cancelled"
+            ],
+            "title": "Status"
+          },
+          "headline": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Headline"
+          },
+          "working_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Working Name"
+          },
+          "created_at": {
+            "type": "string",
+            "title": "Created At"
+          },
+          "completed_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Completed At"
+          },
+          "total_cost_usd": {
+            "type": "number",
+            "title": "Total Cost Usd"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "idea",
+          "status",
+          "headline",
+          "working_name",
+          "created_at",
+          "completed_at",
+          "total_cost_usd"
+        ],
+        "title": "RunListItem"
+      },
+      "RunListResponse": {
+        "properties": {
+          "runs": {
+            "items": {
+              "$ref": "#/components/schemas/RunListItem"
+            },
+            "type": "array",
+            "title": "Runs"
+          },
+          "next_cursor": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Cursor"
+          }
+        },
+        "type": "object",
+        "required": [
+          "runs",
+          "next_cursor"
+        ],
+        "title": "RunListResponse"
+      },
+      "RunRecord": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "idea": {
+            "type": "string",
+            "title": "Idea"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "framing",
+              "awaiting_confirmation",
+              "running",
+              "completed",
+              "failed",
+              "cancelled"
+            ],
+            "title": "Status"
+          },
+          "framing": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Framing"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "created_at": {
+            "type": "string",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "type": "string",
+            "title": "Updated At"
+          },
+          "completed_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Completed At"
+          },
+          "total_cost_usd": {
+            "type": "number",
+            "title": "Total Cost Usd"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          },
+          "config": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Config"
+          },
+          "share_token": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Share Token"
+          },
+          "headline": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Headline"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "idea",
+          "status",
+          "framing",
+          "created_at",
+          "updated_at",
+          "completed_at",
+          "total_cost_usd",
+          "error",
+          "config",
+          "share_token",
+          "headline"
+        ],
+        "title": "RunRecord"
+      },
+      "RunSnapshot": {
+        "properties": {
+          "run": {
+            "$ref": "#/components/schemas/RunRecord"
+          },
+          "steps": {
+            "items": {
+              "$ref": "#/components/schemas/StepRecord"
+            },
+            "type": "array",
+            "title": "Steps"
+          },
+          "artifacts": {
+            "items": {
+              "$ref": "#/components/schemas/ArtifactRecord"
+            },
+            "type": "array",
+            "title": "Artifacts"
+          },
+          "versions": {
+            "items": {
+              "$ref": "#/components/schemas/VersionRecord"
+            },
+            "type": "array",
+            "title": "Versions"
+          },
+          "findings": {
+            "items": {
+              "$ref": "#/components/schemas/Finding"
+            },
+            "type": "array",
+            "title": "Findings"
+          },
+          "sources": {
+            "items": {
+              "$ref": "#/components/schemas/Source"
+            },
+            "type": "array",
+            "title": "Sources"
+          },
+          "bar_raiser": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/BarRaiserOutput"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "last_seq": {
+            "type": "integer",
+            "title": "Last Seq"
+          },
+          "roster": {
+            "items": {
+              "$ref": "#/components/schemas/PersonaRecord"
+            },
+            "type": "array",
+            "title": "Roster"
+          },
+          "seats": {
+            "items": {
+              "$ref": "#/components/schemas/SeatRecord"
+            },
+            "type": "array",
+            "title": "Seats"
+          }
+        },
+        "type": "object",
+        "required": [
+          "run",
+          "steps",
+          "artifacts",
+          "versions",
+          "findings",
+          "sources",
+          "bar_raiser",
+          "last_seq",
+          "roster",
+          "seats"
+        ],
+        "title": "RunSnapshot"
+      },
+      "RunStarted": {
+        "properties": {
+          "seq": {
+            "type": "integer",
+            "title": "Seq"
+          },
+          "run_id": {
+            "type": "string",
+            "title": "Run Id"
+          },
+          "ts": {
+            "type": "string",
+            "title": "Ts"
+          },
+          "type": {
+            "type": "string",
+            "const": "run.started",
+            "title": "Type",
+            "default": "run.started"
+          },
+          "idea": {
+            "type": "string",
+            "title": "Idea"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "seq",
+          "run_id",
+          "ts",
+          "idea"
+        ],
+        "title": "RunStarted"
+      },
+      "RunStatusChanged": {
+        "properties": {
+          "seq": {
+            "type": "integer",
+            "title": "Seq"
+          },
+          "run_id": {
+            "type": "string",
+            "title": "Run Id"
+          },
+          "ts": {
+            "type": "string",
+            "title": "Ts"
+          },
+          "type": {
+            "type": "string",
+            "const": "run.status",
+            "title": "Type",
+            "default": "run.status"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "framing",
+              "awaiting_confirmation",
+              "running",
+              "completed",
+              "failed",
+              "cancelled"
+            ],
+            "title": "Status"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "seq",
+          "run_id",
+          "ts",
+          "status"
+        ],
+        "title": "RunStatusChanged"
+      },
+      "Score": {
+        "properties": {
+          "criterion": {
+            "type": "string",
+            "enum": [
+              "customer_clarity",
+              "problem_specificity",
+              "anecdote_believability",
+              "v1_feasibility",
+              "differentiation",
+              "evidence_coverage",
+              "executive_readability"
+            ],
+            "title": "Criterion"
+          },
+          "score": {
+            "type": "integer",
+            "title": "Score"
+          },
+          "note": {
+            "type": "string",
+            "title": "Note"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "criterion",
+          "score",
+          "note"
+        ],
+        "title": "Score"
+      },
+      "SeatRecord": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "enum": [
+              "0",
+              "1",
+              "1b",
+              "2",
+              "3",
+              "4",
+              "5",
+              "6",
+              "7",
+              "8",
+              "9",
+              "9b",
+              "10"
+            ],
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "persona": {
+            "type": "string",
+            "enum": [
+              "strategist",
+              "analyst",
+              "researcher",
+              "pm",
+              "vp_product",
+              "biz_eng",
+              "customer_success",
+              "editor",
+              "bar_raiser",
+              "validation_lead"
+            ],
+            "title": "Persona"
+          },
+          "produces": {
+            "type": "string",
+            "enum": [
+              "brief",
+              "market_research",
+              "ledger",
+              "problem_validation",
+              "pr_v1",
+              "pr_v2",
+              "internal_faq",
+              "concept_validation",
+              "pr_v3",
+              "external_faq",
+              "prfaq",
+              "bar_raiser",
+              "plan"
+            ],
+            "title": "Produces"
+          },
+          "depends_on": {
+            "items": {
+              "type": "string",
+              "enum": [
+                "brief",
+                "market_research",
+                "ledger",
+                "problem_validation",
+                "pr_v1",
+                "pr_v2",
+                "internal_faq",
+                "concept_validation",
+                "pr_v3",
+                "external_faq",
+                "prfaq",
+                "bar_raiser",
+                "plan"
+              ]
+            },
+            "type": "array",
+            "title": "Depends On"
+          },
+          "phase": {
+            "type": "string",
+            "title": "Phase"
+          },
+          "tier": {
+            "type": "string",
+            "title": "Tier"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "persona",
+          "produces",
+          "depends_on",
+          "phase",
+          "tier"
+        ],
+        "title": "SeatRecord"
+      },
+      "Slot": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "enum": [
+              "headline",
+              "subheading",
+              "summary",
+              "problem",
+              "solution",
+              "benefits",
+              "internal_quote",
+              "cta"
+            ],
+            "title": "Id"
+          },
+          "text": {
+            "type": "string",
+            "title": "Text"
+          },
+          "claims": {
+            "items": {
+              "$ref": "#/components/schemas/Claim"
+            },
+            "type": "array",
+            "title": "Claims"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "text",
+          "claims"
+        ],
+        "title": "Slot"
+      },
+      "Source": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "url": {
+            "type": "string",
+            "title": "Url"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "cited_text": {
+            "type": "string",
+            "title": "Cited Text"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "url",
+          "title",
+          "cited_text"
+        ],
+        "title": "Source"
+      },
+      "StepCompleted": {
+        "properties": {
+          "seq": {
+            "type": "integer",
+            "title": "Seq"
+          },
+          "run_id": {
+            "type": "string",
+            "title": "Run Id"
+          },
+          "ts": {
+            "type": "string",
+            "title": "Ts"
+          },
+          "type": {
+            "type": "string",
+            "const": "step.completed",
+            "title": "Type",
+            "default": "step.completed"
+          },
+          "seat": {
+            "type": "string",
+            "enum": [
+              "0",
+              "1",
+              "1b",
+              "2",
+              "3",
+              "4",
+              "5",
+              "6",
+              "7",
+              "8",
+              "9",
+              "9b",
+              "10"
+            ],
+            "title": "Seat"
+          },
+          "artifact_id": {
+            "type": "string",
+            "title": "Artifact Id"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "brief",
+              "market_research",
+              "ledger",
+              "problem_validation",
+              "pr_v1",
+              "pr_v2",
+              "internal_faq",
+              "concept_validation",
+              "pr_v3",
+              "external_faq",
+              "prfaq",
+              "bar_raiser",
+              "plan"
+            ],
+            "title": "Kind"
+          },
+          "key_insight": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Key Insight"
+          },
+          "usage": {
+            "$ref": "#/components/schemas/Usage"
+          },
+          "duration_s": {
+            "type": "number",
+            "title": "Duration S"
+          },
+          "cost_usd": {
+            "type": "number",
+            "title": "Cost Usd"
+          },
+          "model": {
+            "type": "string",
+            "title": "Model"
+          },
+          "fallback_used": {
+            "type": "boolean",
+            "title": "Fallback Used"
+          },
+          "attempt": {
+            "type": "integer",
+            "title": "Attempt"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "seq",
+          "run_id",
+          "ts",
+          "seat",
+          "artifact_id",
+          "kind",
+          "key_insight",
+          "usage",
+          "duration_s",
+          "cost_usd",
+          "model",
+          "fallback_used",
+          "attempt"
+        ],
+        "title": "StepCompleted"
+      },
+      "StepDelta": {
+        "properties": {
+          "seq": {
+            "type": "integer",
+            "title": "Seq"
+          },
+          "run_id": {
+            "type": "string",
+            "title": "Run Id"
+          },
+          "ts": {
+            "type": "string",
+            "title": "Ts"
+          },
+          "type": {
+            "type": "string",
+            "const": "step.delta",
+            "title": "Type",
+            "default": "step.delta"
+          },
+          "seat": {
+            "type": "string",
+            "enum": [
+              "0",
+              "1",
+              "1b",
+              "2",
+              "3",
+              "4",
+              "5",
+              "6",
+              "7",
+              "8",
+              "9",
+              "9b",
+              "10"
+            ],
+            "title": "Seat"
+          },
+          "text": {
+            "type": "string",
+            "title": "Text"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "seq",
+          "run_id",
+          "ts",
+          "seat",
+          "text"
+        ],
+        "title": "StepDelta"
+      },
+      "StepFailed": {
+        "properties": {
+          "seq": {
+            "type": "integer",
+            "title": "Seq"
+          },
+          "run_id": {
+            "type": "string",
+            "title": "Run Id"
+          },
+          "ts": {
+            "type": "string",
+            "title": "Ts"
+          },
+          "type": {
+            "type": "string",
+            "const": "step.failed",
+            "title": "Type",
+            "default": "step.failed"
+          },
+          "seat": {
+            "type": "string",
+            "enum": [
+              "0",
+              "1",
+              "1b",
+              "2",
+              "3",
+              "4",
+              "5",
+              "6",
+              "7",
+              "8",
+              "9",
+              "9b",
+              "10"
+            ],
+            "title": "Seat"
+          },
+          "error": {
+            "type": "string",
+            "title": "Error"
+          },
+          "retryable": {
+            "type": "boolean",
+            "title": "Retryable"
+          },
+          "attempt": {
+            "type": "integer",
+            "title": "Attempt"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "seq",
+          "run_id",
+          "ts",
+          "seat",
+          "error",
+          "retryable",
+          "attempt"
+        ],
+        "title": "StepFailed"
+      },
+      "StepProgress": {
+        "properties": {
+          "seq": {
+            "type": "integer",
+            "title": "Seq"
+          },
+          "run_id": {
+            "type": "string",
+            "title": "Run Id"
+          },
+          "ts": {
+            "type": "string",
+            "title": "Ts"
+          },
+          "type": {
+            "type": "string",
+            "const": "step.progress",
+            "title": "Type",
+            "default": "step.progress"
+          },
+          "seat": {
+            "type": "string",
+            "enum": [
+              "0",
+              "1",
+              "1b",
+              "2",
+              "3",
+              "4",
+              "5",
+              "6",
+              "7",
+              "8",
+              "9",
+              "9b",
+              "10"
+            ],
+            "title": "Seat"
+          },
+          "note": {
+            "type": "string",
+            "title": "Note"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "seq",
+          "run_id",
+          "ts",
+          "seat",
+          "note"
+        ],
+        "title": "StepProgress"
+      },
+      "StepRecord": {
+        "properties": {
+          "seat": {
+            "type": "string",
+            "enum": [
+              "0",
+              "1",
+              "1b",
+              "2",
+              "3",
+              "4",
+              "5",
+              "6",
+              "7",
+              "8",
+              "9",
+              "9b",
+              "10"
+            ],
+            "title": "Seat"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "persona": {
+            "type": "string",
+            "enum": [
+              "strategist",
+              "analyst",
+              "researcher",
+              "pm",
+              "vp_product",
+              "biz_eng",
+              "customer_success",
+              "editor",
+              "bar_raiser",
+              "validation_lead"
+            ],
+            "title": "Persona"
+          },
+          "attempt": {
+            "type": "integer",
+            "title": "Attempt"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "model": {
+            "type": "string",
+            "title": "Model"
+          },
+          "effort": {
+            "type": "string",
+            "title": "Effort"
+          },
+          "started_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Started At"
+          },
+          "ended_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ended At"
+          },
+          "duration_s": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Duration S"
+          },
+          "usage": {
+            "$ref": "#/components/schemas/Usage"
+          },
+          "cost_usd": {
+            "type": "number",
+            "title": "Cost Usd"
+          },
+          "fallback_used": {
+            "type": "boolean",
+            "title": "Fallback Used"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          },
+          "key_insight": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Key Insight"
+          }
+        },
+        "type": "object",
+        "required": [
+          "seat",
+          "name",
+          "persona",
+          "attempt",
+          "status",
+          "model",
+          "effort",
+          "started_at",
+          "ended_at",
+          "duration_s",
+          "usage",
+          "cost_usd",
+          "fallback_used",
+          "error",
+          "key_insight"
+        ],
+        "title": "StepRecord"
+      },
+      "StepStarted": {
+        "properties": {
+          "seq": {
+            "type": "integer",
+            "title": "Seq"
+          },
+          "run_id": {
+            "type": "string",
+            "title": "Run Id"
+          },
+          "ts": {
+            "type": "string",
+            "title": "Ts"
+          },
+          "type": {
+            "type": "string",
+            "const": "step.started",
+            "title": "Type",
+            "default": "step.started"
+          },
+          "seat": {
+            "type": "string",
+            "enum": [
+              "0",
+              "1",
+              "1b",
+              "2",
+              "3",
+              "4",
+              "5",
+              "6",
+              "7",
+              "8",
+              "9",
+              "9b",
+              "10"
+            ],
+            "title": "Seat"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "persona": {
+            "type": "string",
+            "enum": [
+              "strategist",
+              "analyst",
+              "researcher",
+              "pm",
+              "vp_product",
+              "biz_eng",
+              "customer_success",
+              "editor",
+              "bar_raiser",
+              "validation_lead"
+            ],
+            "title": "Persona"
+          },
+          "model": {
+            "type": "string",
+            "title": "Model"
+          },
+          "effort": {
+            "type": "string",
+            "title": "Effort"
+          },
+          "attempt": {
+            "type": "integer",
+            "title": "Attempt"
+          },
+          "activity": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Activity"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "seq",
+          "run_id",
+          "ts",
+          "seat",
+          "name",
+          "persona",
+          "model",
+          "effort",
+          "attempt",
+          "activity"
+        ],
+        "title": "StepStarted"
+      },
+      "StepThinking": {
+        "properties": {
+          "seq": {
+            "type": "integer",
+            "title": "Seq"
+          },
+          "run_id": {
+            "type": "string",
+            "title": "Run Id"
+          },
+          "ts": {
+            "type": "string",
+            "title": "Ts"
+          },
+          "type": {
+            "type": "string",
+            "const": "step.thinking",
+            "title": "Type",
+            "default": "step.thinking"
+          },
+          "seat": {
+            "type": "string",
+            "enum": [
+              "0",
+              "1",
+              "1b",
+              "2",
+              "3",
+              "4",
+              "5",
+              "6",
+              "7",
+              "8",
+              "9",
+              "9b",
+              "10"
+            ],
+            "title": "Seat"
+          },
+          "text": {
+            "type": "string",
+            "title": "Text"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "seq",
+          "run_id",
+          "ts",
+          "seat",
+          "text"
+        ],
+        "title": "StepThinking"
+      },
+      "StepTool": {
+        "properties": {
+          "seq": {
+            "type": "integer",
+            "title": "Seq"
+          },
+          "run_id": {
+            "type": "string",
+            "title": "Run Id"
+          },
+          "ts": {
+            "type": "string",
+            "title": "Ts"
+          },
+          "type": {
+            "type": "string",
+            "const": "step.tool",
+            "title": "Type",
+            "default": "step.tool"
+          },
+          "seat": {
+            "type": "string",
+            "enum": [
+              "0",
+              "1",
+              "1b",
+              "2",
+              "3",
+              "4",
+              "5",
+              "6",
+              "7",
+              "8",
+              "9",
+              "9b",
+              "10"
+            ],
+            "title": "Seat"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "search",
+              "fetch"
+            ],
+            "title": "Kind"
+          },
+          "query": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Query"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Url"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "seq",
+          "run_id",
+          "ts",
+          "seat",
+          "kind",
+          "query",
+          "url"
+        ],
+        "title": "StepTool"
+      },
+      "Usage": {
+        "properties": {
+          "input_tokens": {
+            "type": "integer",
+            "title": "Input Tokens",
+            "default": 0
+          },
+          "cache_creation_input_tokens": {
+            "type": "integer",
+            "title": "Cache Creation Input Tokens",
+            "default": 0
+          },
+          "cache_read_input_tokens": {
+            "type": "integer",
+            "title": "Cache Read Input Tokens",
+            "default": 0
+          },
+          "output_tokens": {
+            "type": "integer",
+            "title": "Output Tokens",
+            "default": 0
+          },
+          "web_searches": {
+            "type": "integer",
+            "title": "Web Searches",
+            "default": 0
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "Usage"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      },
+      "VersionRecord": {
+        "properties": {
+          "version": {
+            "type": "integer",
+            "title": "Version"
+          },
+          "artifact_id": {
+            "type": "string",
+            "title": "Artifact Id"
+          },
+          "produced_by_seat": {
+            "type": "string",
+            "enum": [
+              "0",
+              "1",
+              "1b",
+              "2",
+              "3",
+              "4",
+              "5",
+              "6",
+              "7",
+              "8",
+              "9",
+              "9b",
+              "10"
+            ],
+            "title": "Produced By Seat"
+          },
+          "persona": {
+            "type": "string",
+            "enum": [
+              "strategist",
+              "analyst",
+              "researcher",
+              "pm",
+              "vp_product",
+              "biz_eng",
+              "customer_success",
+              "editor",
+              "bar_raiser",
+              "validation_lead"
+            ],
+            "title": "Persona"
+          },
+          "press_release": {
+            "$ref": "#/components/schemas/PressRelease"
+          },
+          "edits": {
+            "items": {
+              "$ref": "#/components/schemas/Edit"
+            },
+            "type": "array",
+            "title": "Edits"
+          },
+          "caption": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Caption"
+          }
+        },
+        "type": "object",
+        "required": [
+          "version",
+          "artifact_id",
+          "produced_by_seat",
+          "persona",
+          "press_release",
+          "edits",
+          "caption"
+        ],
+        "title": "VersionRecord"
+      }
+    }
+  }
+}

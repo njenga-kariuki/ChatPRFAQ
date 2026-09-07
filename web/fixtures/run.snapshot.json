@@ -1,0 +1,3435 @@
+{
+  "run": {
+    "id": "run_7ae3a1b0bd974aeb",
+    "idea": "A bookkeeping service that closes the books for independent restaurants every month, with a reviewed close and a short exception list the owner clears from a phone.",
+    "status": "completed",
+    "framing": {
+      "working_name": "BookkeepingService",
+      "target_customer": "Operators of small independent businesses with one to three locations who run their own back office in the evenings, are comfortable with a phone and a spreadsheet, and have no dedicated finance staff.",
+      "customer_problem": "Reconciling receipts, invoices and payment records takes six to nine hours a week, usually after close, and errors surface months later as missed discounts, late fees and a year-end scramble for the accountant.",
+      "product_scope": "BookkeepingService ingests receipts, POS exports and supplier invoices, matches them to bank transactions, and produces a reviewed monthly close with exceptions flagged for a ten-minute owner review. Version one does not do payroll, tax filing or forecasting."
+    },
+    "created_at": "2026-09-07T04:54:49.598Z",
+    "updated_at": "2026-09-07T04:54:51.501Z",
+    "completed_at": "2026-09-07T04:54:51.501Z",
+    "total_cost_usd": 1.2626,
+    "error": null,
+    "config": {
+      "bar_raiser_enabled": true,
+      "bar_raiser_resolved": true,
+      "cost_ceiling_usd": 12.0,
+      "efforts": {
+        "0": "medium",
+        "1": "high",
+        "10": "high",
+        "1b": "low",
+        "2": "high",
+        "3": "high",
+        "4": "high",
+        "5": "high",
+        "6": "high",
+        "7": "high",
+        "8": "medium",
+        "9": "high",
+        "9b": "high"
+      },
+      "models": {
+        "0": "claude-sonnet-5",
+        "1": "claude-fable-5-1",
+        "10": "claude-fable-5-1",
+        "1b": "claude-sonnet-5",
+        "2": "claude-fable-5-1",
+        "3": "claude-fable-5-1",
+        "4": "claude-fable-5-1",
+        "5": "claude-fable-5-1",
+        "6": "claude-fable-5-1",
+        "7": "claude-fable-5-1",
+        "8": "claude-sonnet-5",
+        "9": "claude-fable-5-1",
+        "9b": "claude-opus-5"
+      },
+      "parallel_validation_plan": false,
+      "provider": "fake"
+    },
+    "share_token": "-EkPBGhvoYXvZ7Kq",
+    "headline": "BookkeepingService Closes the Books for Independent Operators by the Third Business Day"
+  },
+  "steps": [
+    {
+      "seat": "0",
+      "name": "Analyze Product Concept",
+      "persona": "strategist",
+      "attempt": 1,
+      "status": "completed",
+      "model": "claude-sonnet-5",
+      "effort": "medium",
+      "started_at": "2026-09-07T04:54:49.626Z",
+      "ended_at": "2026-09-07T04:54:49.676Z",
+      "duration_s": 0.05,
+      "usage": {
+        "input_tokens": 600,
+        "cache_creation_input_tokens": 800,
+        "cache_read_input_tokens": 1500,
+        "output_tokens": 300,
+        "web_searches": 0
+      },
+      "cost_usd": 0.0065,
+      "fallback_used": false,
+      "error": null,
+      "key_insight": "BookkeepingService sells time back to owners who do the books after close; attempt 1."
+    },
+    {
+      "seat": "1",
+      "name": "Market Research & Analysis",
+      "persona": "analyst",
+      "attempt": 1,
+      "status": "completed",
+      "model": "claude-fable-5-1",
+      "effort": "high",
+      "started_at": "2026-09-07T04:54:49.726Z",
+      "ended_at": "2026-09-07T04:54:49.789Z",
+      "duration_s": 0.06,
+      "usage": {
+        "input_tokens": 4200,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 1900,
+        "output_tokens": 1400,
+        "web_searches": 4
+      },
+      "cost_usd": 0.1525,
+      "fallback_used": false,
+      "error": null,
+      "key_insight": null
+    },
+    {
+      "seat": "1b",
+      "name": "Evidence Ledger",
+      "persona": "analyst",
+      "attempt": 1,
+      "status": "completed",
+      "model": "claude-sonnet-5",
+      "effort": "low",
+      "started_at": "2026-09-07T04:54:49.806Z",
+      "ended_at": "2026-09-07T04:54:49.888Z",
+      "duration_s": 0.08,
+      "usage": {
+        "input_tokens": 600,
+        "cache_creation_input_tokens": 800,
+        "cache_read_input_tokens": 3300,
+        "output_tokens": 652,
+        "web_searches": 0
+      },
+      "cost_usd": 0.0104,
+      "fallback_used": false,
+      "error": null,
+      "key_insight": "The gap for BookkeepingService is a reviewed monthly close under $150 that no competitor offers."
+    },
+    {
+      "seat": "2",
+      "name": "Problem Validation Research",
+      "persona": "researcher",
+      "attempt": 1,
+      "status": "completed",
+      "model": "claude-fable-5-1",
+      "effort": "high",
+      "started_at": "2026-09-07T04:54:49.903Z",
+      "ended_at": "2026-09-07T04:54:50.014Z",
+      "duration_s": 0.11,
+      "usage": {
+        "input_tokens": 600,
+        "cache_creation_input_tokens": 800,
+        "cache_read_input_tokens": 4200,
+        "output_tokens": 1447,
+        "web_searches": 0
+      },
+      "cost_usd": 0.0894,
+      "fallback_used": false,
+      "error": null,
+      "key_insight": "Owners lose an evening a week matching receipts and only notice errors when the accountant asks."
+    },
+    {
+      "seat": "3",
+      "name": "Drafting Press Release",
+      "persona": "pm",
+      "attempt": 1,
+      "status": "completed",
+      "model": "claude-fable-5-1",
+      "effort": "high",
+      "started_at": "2026-09-07T04:54:50.028Z",
+      "ended_at": "2026-09-07T04:54:50.087Z",
+      "duration_s": 0.06,
+      "usage": {
+        "input_tokens": 600,
+        "cache_creation_input_tokens": 800,
+        "cache_read_input_tokens": 5100,
+        "output_tokens": 701,
+        "web_searches": 0
+      },
+      "cost_usd": 0.0523,
+      "fallback_used": false,
+      "error": null,
+      "key_insight": "BookkeepingService Closes the Books for Small Business Owners Every Month"
+    },
+    {
+      "seat": "4",
+      "name": "Refining Press Release",
+      "persona": "vp_product",
+      "attempt": 1,
+      "status": "completed",
+      "model": "claude-fable-5-1",
+      "effort": "high",
+      "started_at": "2026-09-07T04:54:50.117Z",
+      "ended_at": "2026-09-07T04:54:50.252Z",
+      "duration_s": 0.14,
+      "usage": {
+        "input_tokens": 600,
+        "cache_creation_input_tokens": 800,
+        "cache_read_input_tokens": 6000,
+        "output_tokens": 1926,
+        "web_searches": 0
+      },
+      "cost_usd": 0.1138,
+      "fallback_used": false,
+      "error": null,
+      "key_insight": "Named the segment and the reviewed close; every number now cites the panel or the ledger."
+    },
+    {
+      "seat": "5",
+      "name": "Drafting Internal FAQ",
+      "persona": "biz_eng",
+      "attempt": 1,
+      "status": "completed",
+      "model": "claude-fable-5-1",
+      "effort": "high",
+      "started_at": "2026-09-07T04:54:50.279Z",
+      "ended_at": "2026-09-07T04:54:50.486Z",
+      "duration_s": 0.21,
+      "usage": {
+        "input_tokens": 600,
+        "cache_creation_input_tokens": 800,
+        "cache_read_input_tokens": 6900,
+        "output_tokens": 1434,
+        "web_searches": 0
+      },
+      "cost_usd": 0.0894,
+      "fallback_used": false,
+      "error": null,
+      "key_insight": "Reviewer cost at scale is the risk that shows up in most answers."
+    },
+    {
+      "seat": "6",
+      "name": "Concept Validation Research",
+      "persona": "researcher",
+      "attempt": 1,
+      "status": "completed",
+      "model": "claude-fable-5-1",
+      "effort": "high",
+      "started_at": "2026-09-07T04:54:50.291Z",
+      "ended_at": "2026-09-07T04:54:50.515Z",
+      "duration_s": 0.22,
+      "usage": {
+        "input_tokens": 600,
+        "cache_creation_input_tokens": 800,
+        "cache_read_input_tokens": 6900,
+        "output_tokens": 1381,
+        "web_searches": 0
+      },
+      "cost_usd": 0.0868,
+      "fallback_used": false,
+      "error": null,
+      "key_insight": "Six of ten would pay for the reviewed close; four worry about the work left for the owner."
+    },
+    {
+      "seat": "7",
+      "name": "Solution Refinement",
+      "persona": "pm",
+      "attempt": 1,
+      "status": "completed",
+      "model": "claude-fable-5-1",
+      "effort": "high",
+      "started_at": "2026-09-07T04:54:50.532Z",
+      "ended_at": "2026-09-07T04:54:50.655Z",
+      "duration_s": 0.12,
+      "usage": {
+        "input_tokens": 600,
+        "cache_creation_input_tokens": 800,
+        "cache_read_input_tokens": 8700,
+        "output_tokens": 1682,
+        "web_searches": 0
+      },
+      "cost_usd": 0.1023,
+      "fallback_used": false,
+      "error": null,
+      "key_insight": "Clarified how little the owner still does and added explanations to exceptions."
+    },
+    {
+      "seat": "8",
+      "name": "Drafting External FAQ",
+      "persona": "customer_success",
+      "attempt": 1,
+      "status": "completed",
+      "model": "claude-sonnet-5",
+      "effort": "medium",
+      "started_at": "2026-09-07T04:54:50.678Z",
+      "ended_at": "2026-09-07T04:54:50.727Z",
+      "duration_s": 0.05,
+      "usage": {
+        "input_tokens": 600,
+        "cache_creation_input_tokens": 800,
+        "cache_read_input_tokens": 9600,
+        "output_tokens": 438,
+        "web_searches": 0
+      },
+      "cost_usd": 0.0095,
+      "fallback_used": false,
+      "error": null,
+      "key_insight": "How much do I still have to do each month?"
+    },
+    {
+      "seat": "9",
+      "name": "Synthesizing PRFAQ Document",
+      "persona": "editor",
+      "attempt": 1,
+      "status": "completed",
+      "model": "claude-fable-5-1",
+      "effort": "high",
+      "started_at": "2026-09-07T04:54:50.745Z",
+      "ended_at": "2026-09-07T04:54:50.975Z",
+      "duration_s": 0.23,
+      "usage": {
+        "input_tokens": 600,
+        "cache_creation_input_tokens": 800,
+        "cache_read_input_tokens": 10500,
+        "output_tokens": 3781,
+        "web_searches": 0
+      },
+      "cost_usd": 0.2077,
+      "fallback_used": false,
+      "error": null,
+      "key_insight": "BookkeepingService gives owners a reviewed monthly close for the price of one lost evening."
+    },
+    {
+      "seat": "9b",
+      "name": "Bar Raiser Review",
+      "persona": "bar_raiser",
+      "attempt": 1,
+      "status": "completed",
+      "model": "claude-opus-5",
+      "effort": "high",
+      "started_at": "2026-09-07T04:54:50.998Z",
+      "ended_at": "2026-09-07T04:54:51.050Z",
+      "duration_s": 0.05,
+      "usage": {
+        "input_tokens": 600,
+        "cache_creation_input_tokens": 800,
+        "cache_read_input_tokens": 11400,
+        "output_tokens": 365,
+        "web_searches": 0
+      },
+      "cost_usd": 0.0228,
+      "fallback_used": false,
+      "error": null,
+      "key_insight": "One assumption in the summary reads like evidence; fix it before leadership sees it."
+    },
+    {
+      "seat": "9",
+      "name": "Synthesizing PRFAQ Document",
+      "persona": "editor",
+      "attempt": 2,
+      "status": "completed",
+      "model": "claude-fable-5-1",
+      "effort": "high",
+      "started_at": "2026-09-07T04:54:51.065Z",
+      "ended_at": "2026-09-07T04:54:51.331Z",
+      "duration_s": 0.27,
+      "usage": {
+        "input_tokens": 600,
+        "cache_creation_input_tokens": 800,
+        "cache_read_input_tokens": 12300,
+        "output_tokens": 3927,
+        "web_searches": 0
+      },
+      "cost_usd": 0.2154,
+      "fallback_used": false,
+      "error": null,
+      "key_insight": "BookkeepingService gives owners a reviewed monthly close for the price of one lost evening."
+    },
+    {
+      "seat": "10",
+      "name": "Hypothesis-Driven Validation Plan",
+      "persona": "validation_lead",
+      "attempt": 1,
+      "status": "completed",
+      "model": "claude-fable-5-1",
+      "effort": "high",
+      "started_at": "2026-09-07T04:54:51.361Z",
+      "ended_at": "2026-09-07T04:54:51.480Z",
+      "duration_s": 0.12,
+      "usage": {
+        "input_tokens": 600,
+        "cache_creation_input_tokens": 800,
+        "cache_read_input_tokens": 12300,
+        "output_tokens": 1694,
+        "web_searches": 0
+      },
+      "cost_usd": 0.1038,
+      "fallback_used": false,
+      "error": null,
+      "key_insight": "Owners must stop re-checking the reviewed close, or no time is saved."
+    }
+  ],
+  "artifacts": [
+    {
+      "id": "art_dc047b9ffea54d84",
+      "kind": "brief",
+      "seat": "0",
+      "persona": "strategist",
+      "created_at": "2026-09-07T04:54:49.663Z",
+      "key_insight": "BookkeepingService sells time back to owners who do the books after close; attempt 1.",
+      "payload": {
+        "framing": {
+          "customer_problem": "Reconciling receipts, invoices and payment records takes six to nine hours a week, usually after close, and errors surface months later as missed discounts, late fees and a year-end scramble for the accountant.",
+          "product_scope": "BookkeepingService ingests receipts, POS exports and supplier invoices, matches them to bank transactions, and produces a reviewed monthly close with exceptions flagged for a ten-minute owner review. Version one does not do payroll, tax filing or forecasting.",
+          "target_customer": "Operators of small independent businesses with one to three locations who run their own back office in the evenings, are comfortable with a phone and a spreadsheet, and have no dedicated finance staff.",
+          "working_name": "BookkeepingService"
+        },
+        "idea": "A bookkeeping service that closes the books for independent restaurants every month, with a reviewed close and a short exception list the owner clears from a phone.",
+        "key_insight": "BookkeepingService sells time back to owners who do the books after close; attempt 1."
+      }
+    },
+    {
+      "id": "art_c555d3b867ce43ab",
+      "kind": "market_research",
+      "seat": "1",
+      "persona": "analyst",
+      "created_at": "2026-09-07T04:54:49.783Z",
+      "key_insight": null,
+      "payload": {
+        "citations": [
+          {
+            "cited_text": "Roughly six in ten owners handle bookkeeping themselves.",
+            "title": "Small Business Bookkeeping Survey 2025",
+            "url": "https://example.com/smb-bookkeeping-survey-2025"
+          },
+          {
+            "cited_text": "Willingness to pay clusters between $80 and $150 per month for a reviewed close.",
+            "title": "Small Business Bookkeeping Survey 2025",
+            "url": "https://example.com/smb-bookkeeping-survey-2025"
+          },
+          {
+            "cited_text": "Cloud bookkeeping penetration among owner-operated businesses is close to 45 percent.",
+            "title": "Cloud Accounting Market Report",
+            "url": "https://example.com/cloud-accounting-market-report"
+          },
+          {
+            "cited_text": "Bank data access via API is standard for US small-business accounts.",
+            "title": "Open Banking for Small Business, 2025",
+            "url": "https://example.com/open-banking-smb-2025"
+          },
+          {
+            "cited_text": "Field accuracy exceeds 95 percent on clean images.",
+            "title": "Receipt OCR Benchmark",
+            "url": "https://example.com/receipt-ocr-benchmark"
+          }
+        ],
+        "fetches": 0,
+        "markdown": "## Market Opportunity Analysis\n\nSmall businesses in the United States spend an estimated $37 billion a year on bookkeeping labour, and the share handled by owners themselves rather than staff or a firm is close to 60 percent. The segment relevant to BookkeepingService, owner-operated businesses with one to three locations, grew 4 percent in 2025 as service and hospitality reopened at scale. Cloud bookkeeping penetration among these businesses sits near 45 percent, leaving a majority still on spreadsheets, shoeboxes, or a monthly hand-off to an accountant.\n\n## Competitive Intelligence\n\n| Competitor | Offer | Price | Weakness |\n|---|---|---|---|\n| Full-service bookkeeping firms | Human bookkeeper, monthly close | $300–$800 per month | Slow turnaround, owner still gathers documents |\n| Cloud accounting suites | Ledger, invoicing, bank feeds | $30–$90 per month | Owner still does the categorisation and reconciliation |\n| Receipt-capture apps | Photo capture and OCR | $10–$25 per month | Stops at capture; no close, no exceptions |\n\nNo competitor combines automated matching with a reviewed close at a price under $150 per month for a single-location operator.\n\n## Customer Research\n\nOwners describe the work as \"the books\" and do it in one or two late sessions a week. The most common trigger for change is a missed supplier discount or a surprise from the accountant at tax time. Willingness to pay clusters between $80 and $150 per month when the close is reviewed by a person; below $50 per month when it is software only.\n\n## Industry & Trend Analysis\n\nBank data access through open-banking APIs is now standard for US small-business accounts. Optical character recognition on receipts has reached over 95 percent field accuracy on clean images. Regulators require records to be retained for seven years for tax purposes, and several states have moved to require digital receipts for sales-tax audits.\n\n## Strategic Recommendations\n\nPosition BookkeepingService as \"the books, done by Monday\", price between $99 and $129 per month for one location, and lead with the exception review rather than the automation. The main risks are trust in an automated close and the cost of the human review step at scale.\n",
+        "searches": 4
+      }
+    },
+    {
+      "id": "art_d126a6963a9d4fa6",
+      "kind": "ledger",
+      "seat": "1b",
+      "persona": "analyst",
+      "created_at": "2026-09-07T04:54:49.883Z",
+      "key_insight": "The gap for BookkeepingService is a reviewed monthly close under $150 that no competitor offers.",
+      "payload": {
+        "findings": [
+          {
+            "claim": "Small businesses in the US spend about $37 billion a year on bookkeeping labour.",
+            "confidence": "medium",
+            "id": "F-01",
+            "metric": "$37B/yr (2025)",
+            "source_ids": [
+              "S-01"
+            ],
+            "topic": "market_size"
+          },
+          {
+            "claim": "About 60 percent of owners of small businesses do the bookkeeping themselves.",
+            "confidence": "high",
+            "id": "F-02",
+            "metric": "~60% (2025)",
+            "source_ids": [
+              "S-01"
+            ],
+            "topic": "customer"
+          },
+          {
+            "claim": "Owner-operated businesses with one to three locations grew 4 percent in 2025.",
+            "confidence": "low",
+            "id": "F-03",
+            "metric": "+4% (2025)",
+            "source_ids": [
+              "S-02"
+            ],
+            "topic": "market_size"
+          },
+          {
+            "claim": "Cloud bookkeeping penetration among owner-operated businesses is close to 45 percent.",
+            "confidence": "medium",
+            "id": "F-04",
+            "metric": "~45%",
+            "source_ids": [
+              "S-02"
+            ],
+            "topic": "trend"
+          },
+          {
+            "claim": "Full-service bookkeeping firms charge $300 to $800 per month and still require the owner to gather documents.",
+            "confidence": "medium",
+            "id": "F-05",
+            "metric": "$300–$800/mo",
+            "source_ids": [],
+            "topic": "competition"
+          },
+          {
+            "claim": "Cloud accounting suites cost $30 to $90 per month but leave categorisation and reconciliation to the owner.",
+            "confidence": "medium",
+            "id": "F-06",
+            "metric": "$30–$90/mo",
+            "source_ids": [],
+            "topic": "competition"
+          },
+          {
+            "claim": "Owners' willingness to pay clusters between $80 and $150 per month when a person reviews the close.",
+            "confidence": "medium",
+            "id": "F-07",
+            "metric": "$80–$150/mo",
+            "source_ids": [
+              "S-01"
+            ],
+            "topic": "pricing"
+          },
+          {
+            "claim": "Open-banking API access to small-business bank data is now standard in the US.",
+            "confidence": "high",
+            "id": "F-08",
+            "metric": null,
+            "source_ids": [
+              "S-03"
+            ],
+            "topic": "trend"
+          },
+          {
+            "claim": "Receipt OCR reaches over 95 percent field accuracy on clean images.",
+            "confidence": "high",
+            "id": "F-09",
+            "metric": ">95% field accuracy",
+            "source_ids": [
+              "S-04"
+            ],
+            "topic": "trend"
+          },
+          {
+            "claim": "Tax rules require business records to be retained for seven years.",
+            "confidence": "high",
+            "id": "F-10",
+            "metric": "7 years",
+            "source_ids": [],
+            "topic": "regulation"
+          },
+          {
+            "claim": "A missed supplier discount or a tax-time surprise is the most common trigger for changing bookkeeping habits.",
+            "confidence": "medium",
+            "id": "F-11",
+            "metric": null,
+            "source_ids": [
+              "S-01"
+            ],
+            "topic": "customer"
+          },
+          {
+            "claim": "No competitor combines automated matching with a reviewed close under $150 per month for one location.",
+            "confidence": "low",
+            "id": "F-12",
+            "metric": "<$150/mo",
+            "source_ids": [],
+            "topic": "competition"
+          }
+        ],
+        "sources": [
+          {
+            "cited_text": "Willingness to pay clusters between $80 and $150 per month for a reviewed close.",
+            "id": "S-01",
+            "title": "Small Business Bookkeeping Survey 2025",
+            "url": "https://example.com/smb-bookkeeping-survey-2025"
+          },
+          {
+            "cited_text": "Cloud bookkeeping penetration among owner-operated businesses is close to 45 percent.",
+            "id": "S-02",
+            "title": "Cloud Accounting Market Report",
+            "url": "https://example.com/cloud-accounting-market-report"
+          },
+          {
+            "cited_text": "Bank data access via API is standard for US small-business accounts.",
+            "id": "S-03",
+            "title": "Open Banking for Small Business, 2025",
+            "url": "https://example.com/open-banking-smb-2025"
+          },
+          {
+            "cited_text": "Field accuracy exceeds 95 percent on clean images.",
+            "id": "S-04",
+            "title": "Receipt OCR Benchmark",
+            "url": "https://example.com/receipt-ocr-benchmark"
+          }
+        ]
+      }
+    },
+    {
+      "id": "art_94fa20a1a9174b3d",
+      "kind": "problem_validation",
+      "seat": "2",
+      "persona": "researcher",
+      "created_at": "2026-09-07T04:54:50.009Z",
+      "key_insight": "Owners lose an evening a week matching receipts and only notice errors when the accountant asks.",
+      "payload": {
+        "appetite": {
+          "must_haves": [
+            "Bank and POS connections that work on day one",
+            "A short exception list, not a dashboard",
+            "A person who has checked the close"
+          ],
+          "price_sensitivity": "Acute and moderate sufferers named $80 to $150 a month without prompting when a reviewed close was described; skeptics anchored on the cost of doing nothing.",
+          "quotes": [
+            {
+              "participant_id": "P-01",
+              "text": "If someone closed my books by Monday morning I would pay for that before I paid for new tables."
+            },
+            {
+              "participant_id": "P-02",
+              "text": "I do not want to learn accounting. I want to know what is wrong and fix it in ten minutes."
+            },
+            {
+              "participant_id": "P-10",
+              "text": "My wife does it Friday afternoons. Unless it is free and perfect I am not switching."
+            }
+          ]
+        },
+        "current_solutions": {
+          "what_they_use": [
+            "Cloud accounting suites, partially configured",
+            "Receipt-capture apps that stop at capture",
+            "A part-time bookkeeper or a spouse"
+          ],
+          "where_it_fails": [
+            "The owner still has to categorise and reconcile",
+            "Nothing flags the missing invoice until the accountant asks",
+            "Firms are slow and still need the owner to gather documents"
+          ],
+          "workaround_costs": [
+            "A weekly evening lost",
+            "Missed early-payment discounts worth $200 to $600 a quarter",
+            "A year-end scramble that costs a weekend"
+          ]
+        },
+        "implications": {
+          "acceptable_tradeoffs": [
+            "No payroll or tax filing in version one",
+            "A monthly rather than daily close",
+            "Manual upload for suppliers who send paper"
+          ],
+          "approaches_to_avoid": [
+            "Another dashboard the owner must interpret",
+            "Capture-only tools with no close",
+            "Pricing that scales with transaction volume in confusing ways"
+          ],
+          "core_capabilities": [
+            "Automatic matching of receipts, invoices and bank transactions",
+            "A monthly close reviewed by a person",
+            "An exception queue the owner clears in minutes"
+          ],
+          "performance_thresholds": [
+            "Close delivered within three business days of month end",
+            "Fewer than ten exceptions a month for a single location",
+            "Matching accuracy the owner stops double-checking after two months"
+          ]
+        },
+        "key_insight": "Owners lose an evening a week matching receipts and only notice errors when the accountant asks.",
+        "participants": [
+          {
+            "archetype": "acute",
+            "context": "Does the books after close on Sundays",
+            "current_solution": "Spreadsheet plus a shoebox",
+            "id": "P-01",
+            "name": "Maria Delgado",
+            "problem_frequency": "Weekly, three to four hours",
+            "role": "Owner, two taquerias"
+          },
+          {
+            "archetype": "acute",
+            "context": "Missed an early-payment discount twice last quarter",
+            "current_solution": "Cloud accounting suite, half set up",
+            "id": "P-02",
+            "name": "Devon Okafor",
+            "problem_frequency": "Weekly",
+            "role": "Owner, independent bike shop"
+          },
+          {
+            "archetype": "acute",
+            "context": "Accountant sends a list of questions every quarter",
+            "current_solution": "Receipt app plus accountant",
+            "id": "P-03",
+            "name": "Priya Natarajan",
+            "problem_frequency": "Weekly",
+            "role": "Owner, boutique fitness studio"
+          },
+          {
+            "archetype": "moderate",
+            "context": "Has a part-time bookkeeper eight hours a month",
+            "current_solution": "Part-time bookkeeper",
+            "id": "P-04",
+            "name": "Tom Brennan",
+            "problem_frequency": "Monthly",
+            "role": "Owner, hardware store"
+          },
+          {
+            "archetype": "moderate",
+            "context": "Wholesale invoices are the pain, retail is fine",
+            "current_solution": "Cloud suite plus spreadsheets",
+            "id": "P-05",
+            "name": "Lena Fischer",
+            "problem_frequency": "Weekly",
+            "role": "Owner, bakery with a wholesale line"
+          },
+          {
+            "archetype": "moderate",
+            "context": "Cash-heavy; reconciles from memory",
+            "current_solution": "Notebook and bank app",
+            "id": "P-06",
+            "name": "Marcus Hill",
+            "problem_frequency": "Monthly",
+            "role": "Owner, barbershop with three chairs"
+          },
+          {
+            "archetype": "moderate",
+            "context": "Regulated inventory makes records strict",
+            "current_solution": "Full-service firm at $650 a month",
+            "id": "P-07",
+            "name": "Aisha Rahman",
+            "problem_frequency": "Weekly",
+            "role": "Owner, pharmacy"
+          },
+          {
+            "archetype": "edge",
+            "context": "Seasonal; six months of chaos, six months of nothing",
+            "current_solution": "Whatever works that week",
+            "id": "P-08",
+            "name": "Jonas Lindqvist",
+            "problem_frequency": "Seasonal",
+            "role": "Owner, food truck and catering"
+          },
+          {
+            "archetype": "edge",
+            "context": "Insurance remittances dominate; receipts are minor",
+            "current_solution": "Practice management software",
+            "id": "P-09",
+            "name": "Grace Kim",
+            "problem_frequency": "Monthly",
+            "role": "Owner, dental practice"
+          },
+          {
+            "archetype": "skeptic",
+            "context": "Spouse does the books every Friday and it works",
+            "current_solution": "Spouse plus a cloud suite",
+            "id": "P-10",
+            "name": "Ray Castellano",
+            "problem_frequency": "Weekly",
+            "role": "Owner, auto repair shop"
+          }
+        ],
+        "research_questions": [
+          "Walk me through the last time you did the books. What did you do first?",
+          "When did you last discover a bookkeeping mistake, and what did it cost you?",
+          "What have you tried to make this faster, and why did you stop?",
+          "Who else touches your financial records, and when?",
+          "What would have to be true for you to hand this to software?",
+          "What did your accountant ask you for last year that you could not find?"
+        ],
+        "risks": {
+          "competing_priorities": [
+            "Hiring",
+            "Rent renegotiation",
+            "Menu or inventory changes"
+          ],
+          "segments_unlikely_to_adopt": [
+            "Owners whose spouse or family member already does the books",
+            "Regulated businesses that need audit-grade inventory records"
+          ]
+        },
+        "severity": {
+          "edge_cases": [
+            "Seasonal businesses with months of no activity",
+            "Practices where insurance remittances, not receipts, dominate"
+          ],
+          "high_priority": [
+            "Six to nine hours a week spent after close on matching receipts to transactions (seven of ten)",
+            "Errors surface months later as missed discounts, late fees or accountant questions (six of ten)"
+          ],
+          "moderate": [
+            "Supplier invoices arriving by email, paper and text in the same week",
+            "Cash sales that never make it into the ledger"
+          ]
+        }
+      }
+    },
+    {
+      "id": "art_d9bc3ab6046343e9",
+      "kind": "pr_v1",
+      "seat": "3",
+      "persona": "pm",
+      "created_at": "2026-09-07T04:54:50.082Z",
+      "key_insight": "BookkeepingService Closes the Books for Small Business Owners Every Month",
+      "payload": {
+        "key_insight": "BookkeepingService Closes the Books for Small Business Owners Every Month",
+        "press_release": {
+          "slots": [
+            {
+              "claims": [],
+              "id": "headline",
+              "text": "BookkeepingService Closes the Books for Small Business Owners Every Month"
+            },
+            {
+              "claims": [],
+              "id": "subheading",
+              "text": "BookkeepingService turns receipts, invoices and bank data into a finished monthly close, without a bookkeeper on staff."
+            },
+            {
+              "claims": [
+                {
+                  "finding_ids": [
+                    "F-02"
+                  ],
+                  "kind": "evidence",
+                  "text": "About 60 percent of small business owners do their own bookkeeping"
+                }
+              ],
+              "id": "summary",
+              "text": "AUSTIN, Texas — March 15, 2027 — BookkeepingService today announced a bookkeeping service for small business owners who do their own books. Owners connect their bank and point-of-sale accounts, forward receipts and invoices, and receive a completed monthly close with the handful of items that need their attention. About 60 percent of small business owners do their own bookkeeping, and most spend hours every week on it."
+            },
+            {
+              "claims": [],
+              "id": "problem",
+              "text": "Small business owners spend hours every week reconciling receipts against bank statements, and most still hand their accountant a shoebox at year end. Mistakes are found late, when a supplier discount has expired or the accountant sends a list of questions."
+            },
+            {
+              "claims": [],
+              "id": "solution",
+              "text": "BookkeepingService connects to the owner's bank and point-of-sale system, accepts receipts and invoices by photo, email or upload, and matches every document to a transaction automatically. At month end the owner receives a close and a short list of exceptions. Maria Delgado, who runs two taquerias, used to spend Sunday nights with a spreadsheet; in her first month with BookkeepingService she reviewed eleven exceptions in fourteen minutes and approved the close from her phone."
+            },
+            {
+              "claims": [
+                {
+                  "finding_ids": [
+                    "F-10"
+                  ],
+                  "kind": "evidence",
+                  "text": "keeps every document for seven years"
+                }
+              ],
+              "id": "benefits",
+              "text": "BookkeepingService also flags supplier invoices with early-payment discounts before they expire and keeps every document for seven years. Devon Okafor, who owns a bike shop, caught two discounts worth $340 in his second month and stopped keeping paper copies."
+            },
+            {
+              "claims": [],
+              "id": "internal_quote",
+              "text": "\"Owners told us they did not want to learn accounting; they wanted to know what was wrong and fix it in ten minutes,\" said Elena Park, head of product at BookkeepingService. \"We built the close around that ten minutes.\""
+            },
+            {
+              "claims": [
+                {
+                  "finding_ids": [
+                    "F-07"
+                  ],
+                  "kind": "evidence",
+                  "text": "$99 a month per location"
+                }
+              ],
+              "id": "cta",
+              "text": "BookkeepingService is available today for $99 a month per location. Owners can connect their accounts in fifteen minutes at bookkeepingservice.com."
+            }
+          ]
+        },
+        "product_name": "BookkeepingService"
+      }
+    },
+    {
+      "id": "art_e665bac85fa24a40",
+      "kind": "pr_v2",
+      "seat": "4",
+      "persona": "vp_product",
+      "created_at": "2026-09-07T04:54:50.247Z",
+      "key_insight": "Named the segment and the reviewed close; every number now cites the panel or the ledger.",
+      "payload": {
+        "edits": [
+          {
+            "change_kind": "sharpen",
+            "evidence_finding_ids": [
+              "F-02",
+              "F-11"
+            ],
+            "new_text": "BookkeepingService Closes the Books for Independent Operators by the Third Business Day",
+            "rationale": "Named the segment the research supports and the concrete promise of a third-business-day close instead of a generic monthly claim.",
+            "slot_id": "headline"
+          },
+          {
+            "change_kind": "sharpen",
+            "evidence_finding_ids": [
+              "F-07"
+            ],
+            "new_text": "BookkeepingService turns receipts, invoices and bank data into a reviewed monthly close, without a bookkeeper on staff.",
+            "rationale": "Added that the close is reviewed, which the panel named as the reason they would pay.",
+            "slot_id": "subheading"
+          },
+          {
+            "change_kind": "reground",
+            "evidence_finding_ids": [
+              "F-02"
+            ],
+            "new_text": "AUSTIN, Texas — March 15, 2027 — BookkeepingService today announced a bookkeeping service for owners of independent businesses with one to three locations who do their own books. Owners connect their bank and point-of-sale accounts, forward receipts and invoices, and receive a reviewed monthly close by the third business day with the handful of items that need their attention. About 60 percent of small business owners do their own bookkeeping, spending six to nine hours a week on it.",
+            "rationale": "Sharpened the target customer to one-to-three-location operators and replaced the vague time claim with the panel's six to nine hours.",
+            "slot_id": "summary"
+          },
+          {
+            "change_kind": "reground",
+            "evidence_finding_ids": [
+              "F-11"
+            ],
+            "new_text": "Owners of independent businesses running one to three locations spend six to nine hours a week, usually after close, reconciling receipts against bank statements, and most still hand their accountant a shoebox at year end. Seven of the ten operators in our panel had missed a supplier discount because an invoice surfaced after the payment window.",
+            "rationale": "Replaced the generic pain with the panel's own numbers and the missed-discount trigger the research identified.",
+            "slot_id": "problem"
+          },
+          {
+            "change_kind": "clarify",
+            "evidence_finding_ids": [],
+            "new_text": "BookkeepingService connects to the owner's bank and point-of-sale system, accepts receipts and invoices by photo, email or upload, and matches every document to a transaction automatically. By the third business day of the month the owner receives a close a BookkeepingService reviewer has checked and a short list of exceptions. Maria Delgado, who runs two taquerias in San Antonio, used to spend Sunday nights with a spreadsheet; in her first month with BookkeepingService she cleared eleven exceptions in fourteen minutes and approved the close from her phone.",
+            "rationale": "Made the review step and the third-business-day promise explicit, and placed Maria in a city so the anecdote reads as real.",
+            "slot_id": "solution"
+          },
+          {
+            "change_kind": "reground",
+            "evidence_finding_ids": [
+              "F-10"
+            ],
+            "new_text": "BookkeepingService also flags supplier invoices with early-payment discounts before they expire and keeps every document for the seven years tax rules require. Devon Okafor, who owns a bike shop in Portland, caught two discounts worth $340 in his second month and stopped keeping paper copies.",
+            "rationale": "Tied the seven-year retention to the tax rule that requires it.",
+            "slot_id": "benefits"
+          },
+          {
+            "change_kind": "sharpen",
+            "evidence_finding_ids": [],
+            "new_text": "\"Owners told us they did not want to learn accounting; they wanted to know what was wrong and fix it in ten minutes,\" said Elena Park, head of product at BookkeepingService. \"We built the close around that ten minutes, and we put a person behind it.\"",
+            "rationale": "Added the human review to the quote so the differentiator appears in the product's own voice.",
+            "slot_id": "internal_quote"
+          },
+          {
+            "change_kind": "reground",
+            "evidence_finding_ids": [
+              "F-07"
+            ],
+            "new_text": "BookkeepingService is available today for $119 a month per location. Owners can connect their accounts in fifteen minutes at bookkeepingservice.com and receive their first reviewed close the following month.",
+            "rationale": "Moved the price inside the panel's willingness-to-pay range and set the expectation for the first close.",
+            "slot_id": "cta"
+          }
+        ],
+        "key_insight": "Named the segment and the reviewed close; every number now cites the panel or the ledger.",
+        "press_release": {
+          "slots": [
+            {
+              "claims": [],
+              "id": "headline",
+              "text": "BookkeepingService Closes the Books for Independent Operators by the Third Business Day"
+            },
+            {
+              "claims": [],
+              "id": "subheading",
+              "text": "BookkeepingService turns receipts, invoices and bank data into a reviewed monthly close, without a bookkeeper on staff."
+            },
+            {
+              "claims": [
+                {
+                  "finding_ids": [
+                    "F-02"
+                  ],
+                  "kind": "evidence",
+                  "text": "About 60 percent of small business owners do their own bookkeeping"
+                },
+                {
+                  "finding_ids": [],
+                  "kind": "assumption",
+                  "text": "spending six to nine hours a week on it"
+                }
+              ],
+              "id": "summary",
+              "text": "AUSTIN, Texas — March 15, 2027 — BookkeepingService today announced a bookkeeping service for owners of independent businesses with one to three locations who do their own books. Owners connect their bank and point-of-sale accounts, forward receipts and invoices, and receive a reviewed monthly close by the third business day with the handful of items that need their attention. About 60 percent of small business owners do their own bookkeeping, spending six to nine hours a week on it."
+            },
+            {
+              "claims": [
+                {
+                  "finding_ids": [
+                    "F-11"
+                  ],
+                  "kind": "evidence",
+                  "text": "Seven of the ten operators in our panel had missed a supplier discount"
+                }
+              ],
+              "id": "problem",
+              "text": "Owners of independent businesses running one to three locations spend six to nine hours a week, usually after close, reconciling receipts against bank statements, and most still hand their accountant a shoebox at year end. Seven of the ten operators in our panel had missed a supplier discount because an invoice surfaced after the payment window."
+            },
+            {
+              "claims": [],
+              "id": "solution",
+              "text": "BookkeepingService connects to the owner's bank and point-of-sale system, accepts receipts and invoices by photo, email or upload, and matches every document to a transaction automatically. By the third business day of the month the owner receives a close a BookkeepingService reviewer has checked and a short list of exceptions. Maria Delgado, who runs two taquerias in San Antonio, used to spend Sunday nights with a spreadsheet; in her first month with BookkeepingService she cleared eleven exceptions in fourteen minutes and approved the close from her phone."
+            },
+            {
+              "claims": [
+                {
+                  "finding_ids": [
+                    "F-10"
+                  ],
+                  "kind": "evidence",
+                  "text": "keeps every document for seven years"
+                }
+              ],
+              "id": "benefits",
+              "text": "BookkeepingService also flags supplier invoices with early-payment discounts before they expire and keeps every document for the seven years tax rules require. Devon Okafor, who owns a bike shop in Portland, caught two discounts worth $340 in his second month and stopped keeping paper copies."
+            },
+            {
+              "claims": [],
+              "id": "internal_quote",
+              "text": "\"Owners told us they did not want to learn accounting; they wanted to know what was wrong and fix it in ten minutes,\" said Elena Park, head of product at BookkeepingService. \"We built the close around that ten minutes, and we put a person behind it.\""
+            },
+            {
+              "claims": [
+                {
+                  "finding_ids": [
+                    "F-07"
+                  ],
+                  "kind": "evidence",
+                  "text": "$119 a month per location"
+                }
+              ],
+              "id": "cta",
+              "text": "BookkeepingService is available today for $119 a month per location. Owners can connect their accounts in fifteen minutes at bookkeepingservice.com and receive their first reviewed close the following month."
+            }
+          ]
+        },
+        "summary_of_changes": "The refined release names the exact operator segment, puts a person behind the close, and grounds every number in the panel and the ledger."
+      }
+    },
+    {
+      "id": "art_1efb02893c784cab",
+      "kind": "internal_faq",
+      "seat": "5",
+      "persona": "biz_eng",
+      "created_at": "2026-09-07T04:54:50.478Z",
+      "key_insight": "Reviewer cost at scale is the risk that shows up in most answers.",
+      "payload": {
+        "key_insight": "Reviewer cost at scale is the risk that shows up in most answers.",
+        "sections": [
+          {
+            "items": [
+              {
+                "answer": "Owners of independent businesses lose six to nine hours a week matching receipts, invoices and bank transactions, and discover errors months later as missed discounts and accountant questions. The panel put the missed-discount cost at $200 to $600 a quarter.",
+                "evidence_finding_ids": [
+                  "F-02",
+                  "F-11"
+                ],
+                "question": "What is the core customer problem we are trying to solve?"
+              },
+              {
+                "answer": "Owner-operators with one to three locations and no finance staff, roughly 60 percent of small businesses. They do the books after close because nobody else will, and the time comes out of evenings and weekends.",
+                "evidence_finding_ids": [
+                  "F-02"
+                ],
+                "question": "Who is the target customer segment and why is this problem space important to them?"
+              },
+              {
+                "answer": "BookkeepingService matches every document to a transaction automatically and delivers a monthly close a reviewer has checked, with a short exception list. No competitor combines automated matching with a reviewed close under $150 a month.",
+                "evidence_finding_ids": [
+                  "F-12"
+                ],
+                "question": "What is the product and how does it uniquely solve this problem?"
+              }
+            ],
+            "title": "Product Overview"
+          },
+          {
+            "items": [
+              {
+                "answer": "Firms charge $300 to $800 and still make the owner gather documents; suites cost $30 to $90 but leave the reconciliation to the owner; capture apps stop at capture. Each solves one third of the job.",
+                "evidence_finding_ids": [
+                  "F-05",
+                  "F-06"
+                ],
+                "question": "What is the competitive landscape and why haven't existing solutions met the customer need?"
+              },
+              {
+                "answer": "Open-banking access to small-business bank data is now standard and receipt OCR exceeds 95 percent field accuracy, so the matching that used to need a bookkeeper can be automated reliably for the first time.",
+                "evidence_finding_ids": [
+                  "F-08",
+                  "F-09"
+                ],
+                "question": "Why does this problem need to be solved now?"
+              },
+              {
+                "answer": "Assuming 4 million owner-operated businesses in the target segment, 45 percent already on cloud tools and reachable, and $119 a month, the serviceable market is about $2.6 billion a year. The 4 million figure is an assumption to validate.",
+                "evidence_finding_ids": [
+                  "F-04",
+                  "F-07"
+                ],
+                "question": "What is the TAM, and what are the key assumptions driving the calculation?"
+              }
+            ],
+            "title": "Market Opportunity"
+          },
+          {
+            "items": [
+              {
+                "answer": "Connect bank and POS, capture receipts and invoices, automatic matching, a reviewed monthly close, an exception queue, and a year-end package for the accountant.",
+                "evidence_finding_ids": [],
+                "question": "What are the MLP use cases?"
+              },
+              {
+                "answer": "Accounts connected in fifteen minutes, close delivered by the third business day, fewer than ten exceptions a month for one location, and every exception explained in one sentence.",
+                "evidence_finding_ids": [],
+                "question": "What are the MLP customer experience requirements?"
+              },
+              {
+                "answer": "No payroll, tax filing, forecasting or inventory in version one. Not for regulated businesses needing audit-grade inventory records, nor for businesses with more than three locations.",
+                "evidence_finding_ids": [],
+                "question": "What are the guardrails for what this product is not: customers it does not serve, functionality outside MLP scope?"
+              }
+            ],
+            "title": "Minimum Lovable Product"
+          },
+          {
+            "items": [
+              {
+                "answer": "Lead with the reviewed close and the exception list, price inside the panel's willingness-to-pay range, and keep the reviewer step lean with automation that handles the routine 90 percent.",
+                "evidence_finding_ids": [
+                  "F-07"
+                ],
+                "question": "What is our approach to building this in a customer-obsessed, differentiated and profitable way?"
+              },
+              {
+                "answer": "Options: (1) software-only subscription at $49; (2) subscription with reviewed close at $119; (3) usage-based pricing per transaction. We recommend option 2: it matches the panel's stated willingness to pay, keeps CAC recoverable within four months at a $400 acquisition cost, and yields 70 percent gross margin once a reviewer handles forty accounts.",
+                "evidence_finding_ids": [
+                  "F-07"
+                ],
+                "question": "What are the business model options and what is the recommended path?"
+              },
+              {
+                "answer": "Phase two adds sales-tax preparation and multi-location roll-ups; phase three adds cash-flow forecasting and accountant collaboration tools.",
+                "evidence_finding_ids": [],
+                "question": "What is the phased product roadmap beyond MLP?"
+              }
+            ],
+            "title": "Business Strategy"
+          },
+          {
+            "items": [
+              {
+                "answer": "That owners trust an automated close once a person has checked it, that matching accuracy reaches a level owners stop double-checking within two months, and that one reviewer can handle forty accounts.",
+                "evidence_finding_ids": [],
+                "question": "What are the critical assumptions that must be validated for this product and business to succeed?"
+              },
+              {
+                "answer": "A concierge pilot with twenty operators for two months, a landing page pricing test at $99 and $129, and a reviewer time study across the pilot accounts.",
+                "evidence_finding_ids": [],
+                "question": "What is the fastest and most frugal path to validate these assumptions with high confidence?"
+              },
+              {
+                "answer": "Reviewer costs erode margin, owners keep double-checking and see no time saved, or a cloud suite bundles a reviewed close first.",
+                "evidence_finding_ids": [
+                  "F-06"
+                ],
+                "question": "What are the top reasons this product won't succeed?"
+              },
+              {
+                "answer": "Seven-year record retention, bank data access under open-banking terms, state digital-receipt rules for sales-tax audits, and clear disclaimers that the service is bookkeeping, not tax advice.",
+                "evidence_finding_ids": [
+                  "F-08",
+                  "F-10"
+                ],
+                "question": "What are the key regulatory, compliance or legal considerations?"
+              }
+            ],
+            "title": "Validation & Risk Assessment"
+          }
+        ]
+      }
+    },
+    {
+      "id": "art_fa1a31a5b5374eec",
+      "kind": "concept_validation",
+      "seat": "6",
+      "persona": "researcher",
+      "created_at": "2026-09-07T04:54:50.505Z",
+      "key_insight": "Six of ten would pay for the reviewed close; four worry about the work left for the owner.",
+      "payload": {
+        "concerns": [
+          {
+            "participant_ids": [
+              "C-03",
+              "C-04",
+              "C-05",
+              "C-06"
+            ],
+            "quotes": [
+              {
+                "participant_id": "C-06",
+                "text": "Forwarding every invoice is still work. Say how much of my week this actually removes."
+              }
+            ],
+            "theme": "How much work is left for the owner"
+          },
+          {
+            "participant_ids": [
+              "C-04",
+              "C-05",
+              "C-08",
+              "C-10"
+            ],
+            "quotes": [
+              {
+                "participant_id": "C-05",
+                "text": "If it matches wrong and I approve it, whose mistake is that?"
+              }
+            ],
+            "theme": "Trusting an automated match"
+          },
+          {
+            "participant_ids": [
+              "C-03",
+              "C-06",
+              "C-09"
+            ],
+            "quotes": [
+              {
+                "participant_id": "C-09",
+                "text": "My accountant will ask for the same folder either way unless you tell me what she gets."
+              }
+            ],
+            "theme": "What the accountant gets at year end"
+          }
+        ],
+        "key_insight": "Six of ten would pay for the reviewed close; four worry about the work left for the owner.",
+        "participants": [
+          {
+            "context": "Maria Delgado runs a two taquerias.",
+            "current_solution": "Sunday-night spreadsheet",
+            "id": "C-01",
+            "name": "Maria Delgado",
+            "sean_ellis": "very_disappointed",
+            "segment": "Early adopter, two taquerias",
+            "verdict": "adopt"
+          },
+          {
+            "context": "Devon Okafor runs a bike shop.",
+            "current_solution": "Half-configured suite",
+            "id": "C-02",
+            "name": "Devon Okafor",
+            "sean_ellis": "very_disappointed",
+            "segment": "Mainstream, bike shop",
+            "verdict": "adopt"
+          },
+          {
+            "context": "Lena Fischer runs a bakery with wholesale.",
+            "current_solution": "Suite plus spreadsheets",
+            "id": "C-03",
+            "name": "Lena Fischer",
+            "sean_ellis": "somewhat_disappointed",
+            "segment": "Premium buyer, bakery with wholesale",
+            "verdict": "maybe"
+          },
+          {
+            "context": "Marcus Hill runs a barbershop.",
+            "current_solution": "Notebook and bank app",
+            "id": "C-04",
+            "name": "Marcus Hill",
+            "sean_ellis": "somewhat_disappointed",
+            "segment": "Budget-conscious, barbershop",
+            "verdict": "maybe"
+          },
+          {
+            "context": "Tom Brennan runs a hardware store.",
+            "current_solution": "Part-time bookkeeper",
+            "id": "C-05",
+            "name": "Tom Brennan",
+            "sean_ellis": "not_disappointed",
+            "segment": "Tech-resistant, hardware store",
+            "verdict": "reject"
+          },
+          {
+            "context": "Sofia Alvarez runs a cafe.",
+            "current_solution": "Cloud suite, fully set up",
+            "id": "C-06",
+            "name": "Sofia Alvarez",
+            "sean_ellis": "somewhat_disappointed",
+            "segment": "Heavy suite user, cafe",
+            "verdict": "maybe"
+          },
+          {
+            "context": "Priya Natarajan runs a fitness studio.",
+            "current_solution": "Receipt app plus accountant",
+            "id": "C-07",
+            "name": "Priya Natarajan",
+            "sean_ellis": "very_disappointed",
+            "segment": "New to the category, fitness studio",
+            "verdict": "adopt"
+          },
+          {
+            "context": "Jonas Lindqvist runs a food truck.",
+            "current_solution": "Whatever works that week",
+            "id": "C-08",
+            "name": "Jonas Lindqvist",
+            "sean_ellis": "somewhat_disappointed",
+            "segment": "Seasonal, food truck",
+            "verdict": "maybe"
+          },
+          {
+            "context": "Hannah Weiss runs a farm stand.",
+            "current_solution": "Paper ledger",
+            "id": "C-09",
+            "name": "Hannah Weiss",
+            "sean_ellis": "very_disappointed",
+            "segment": "Rural, farm stand",
+            "verdict": "adopt"
+          },
+          {
+            "context": "Ray Castellano runs a auto repair.",
+            "current_solution": "Spouse plus a suite",
+            "id": "C-10",
+            "name": "Ray Castellano",
+            "sean_ellis": "not_disappointed",
+            "segment": "Skeptic, auto repair",
+            "verdict": "reject"
+          }
+        ],
+        "polarizing": [
+          {
+            "aspect": "$119 a month",
+            "loved_by": [
+              "C-01",
+              "C-03",
+              "C-07"
+            ],
+            "questioned_by": [
+              "C-04",
+              "C-08"
+            ],
+            "why": "Owners with wholesale or discount exposure see a clear payback; cash-heavy budget operators compare it to doing nothing."
+          }
+        ],
+        "recommended_refinements": [
+          "State how little the owner still does each month.",
+          "Promise a one-sentence explanation with every exception.",
+          "Name what the accountant receives at year end.",
+          "Offer a free first month rather than lowering the price."
+        ],
+        "research_questions": [
+          "After reading this, what do you think you would still have to do every month?",
+          "What would make you stop trusting the close?",
+          "What would you pay, and what would make $119 feel expensive?",
+          "What would make you choose this over your current suite?",
+          "After the first month, what would keep you using it?",
+          "Who else has to agree before you sign up?"
+        ],
+        "resonated": [
+          {
+            "participant_ids": [
+              "C-01",
+              "C-02",
+              "C-03",
+              "C-06",
+              "C-07",
+              "C-09"
+            ],
+            "quotes": [
+              {
+                "participant_id": "C-07",
+                "text": "The reviewer is the whole product for me. Software alone I already have."
+              }
+            ],
+            "theme": "A person has checked the close"
+          },
+          {
+            "participant_ids": [
+              "C-01",
+              "C-02",
+              "C-04",
+              "C-07",
+              "C-08",
+              "C-09"
+            ],
+            "quotes": [
+              {
+                "participant_id": "C-02",
+                "text": "Eleven things to look at is fine. Eleven charts is not."
+              }
+            ],
+            "theme": "Exceptions instead of a dashboard"
+          },
+          {
+            "participant_ids": [
+              "C-02",
+              "C-03",
+              "C-06"
+            ],
+            "quotes": [
+              {
+                "participant_id": "C-03",
+                "text": "The discounts alone would pay for it in my wholesale months."
+              }
+            ],
+            "theme": "Early-payment discounts caught"
+          }
+        ],
+        "surprising_insights": [
+          "Participants valued the explanation attached to an exception more than the matching accuracy itself.",
+          "Three participants would let the reviewer message their accountant directly."
+        ],
+        "synthesized_faq": {
+          "answer": "Six of ten participants said the reviewed close was the reason they would pay, and six preferred a short exception list to any dashboard. Four asked how much work remains for the owner, which led to the approval-in-minutes promise and a one-sentence explanation on every exception. Three asked what the accountant receives, so the year-end package became explicit. Two budget-conscious owners wanted to try before committing, which produced the free first month.",
+          "evidence_finding_ids": [
+            "F-07"
+          ],
+          "question": "What key insights from customer concept testing shaped this product?"
+        }
+      }
+    },
+    {
+      "id": "art_22cb6b6074db4498",
+      "kind": "pr_v3",
+      "seat": "7",
+      "persona": "pm",
+      "created_at": "2026-09-07T04:54:50.650Z",
+      "key_insight": "Clarified how little the owner still does and added explanations to exceptions.",
+      "payload": {
+        "edits": [
+          {
+            "change_kind": "clarify",
+            "evidence_finding_ids": [],
+            "new_text": "BookkeepingService turns receipts, invoices and bank data into a reviewed monthly close that owners approve in minutes, without a bookkeeper on staff.",
+            "rationale": "Four of ten concept participants asked how much work the owner still does; the sub-heading now says approval takes minutes.",
+            "slot_id": "subheading"
+          },
+          {
+            "change_kind": "clarify",
+            "evidence_finding_ids": [],
+            "new_text": "Owners of independent businesses running one to three locations spend six to nine hours a week, usually after close, reconciling receipts against bank statements, and most still hand their accountant a shoebox at year end. Seven of the ten operators in our panel had missed a supplier discount because an invoice surfaced after the payment window, and none of them wanted another dashboard to interpret.",
+            "rationale": "Added the panel's rejection of dashboards to pre-empt the concern that this is another tool to interpret.",
+            "slot_id": "problem"
+          },
+          {
+            "change_kind": "clarify",
+            "evidence_finding_ids": [],
+            "new_text": "BookkeepingService connects to the owner's bank and point-of-sale system, accepts receipts and invoices by photo, email or upload, and matches every document to a transaction automatically. By the third business day of the month the owner receives a close a BookkeepingService reviewer has checked, a short list of exceptions, and a plain explanation of anything that looks unusual. Maria Delgado, who runs two taquerias in San Antonio, used to spend Sunday nights with a spreadsheet; in her first month with BookkeepingService she cleared eleven exceptions in fourteen minutes and approved the close from her phone.",
+            "rationale": "Participants who trusted the automation least wanted an explanation with each exception; the solution paragraph now promises one.",
+            "slot_id": "solution"
+          },
+          {
+            "change_kind": "clarify",
+            "evidence_finding_ids": [],
+            "new_text": "BookkeepingService also flags supplier invoices with early-payment discounts before they expire, keeps every document for the seven years tax rules require, and hands the accountant a clean year-end package. Devon Okafor, who owns a bike shop in Portland, caught two discounts worth $340 in his second month and stopped keeping paper copies.",
+            "rationale": "Three participants asked what the accountant receives at year end; the benefits now name the year-end package.",
+            "slot_id": "benefits"
+          },
+          {
+            "change_kind": "sharpen",
+            "evidence_finding_ids": [
+              "F-07"
+            ],
+            "new_text": "BookkeepingService is available today for $119 a month per location, with the first month free. Owners can connect their accounts in fifteen minutes at bookkeepingservice.com and receive their first reviewed close the following month.",
+            "rationale": "Budget-conscious participants wanted to try before committing; a free first month addresses it without changing the price.",
+            "slot_id": "cta"
+          },
+          {
+            "change_kind": "polish",
+            "evidence_finding_ids": [],
+            "new_text": "AUSTIN, Texas — March 15, 2027 — BookkeepingService today announced a bookkeeping service for owners of independent businesses with one to three locations who do their own books. Owners connect their bank and point-of-sale accounts, forward receipts and invoices, and by the third business day receive a monthly close that a BookkeepingService reviewer has checked, with the handful of items that need the owner's attention. About 60 percent of small business owners do their own bookkeeping, spending six to nine hours a week on it.",
+            "rationale": "Changed by the Principal PM without a stated reason.",
+            "slot_id": "summary"
+          }
+        ],
+        "key_insight": "Clarified how little the owner still does and added explanations to exceptions.",
+        "press_release": {
+          "slots": [
+            {
+              "claims": [],
+              "id": "headline",
+              "text": "BookkeepingService Closes the Books for Independent Operators by the Third Business Day"
+            },
+            {
+              "claims": [],
+              "id": "subheading",
+              "text": "BookkeepingService turns receipts, invoices and bank data into a reviewed monthly close that owners approve in minutes, without a bookkeeper on staff."
+            },
+            {
+              "claims": [
+                {
+                  "finding_ids": [
+                    "F-02"
+                  ],
+                  "kind": "evidence",
+                  "text": "About 60 percent of small business owners do their own bookkeeping"
+                },
+                {
+                  "finding_ids": [],
+                  "kind": "assumption",
+                  "text": "spending six to nine hours a week on it"
+                }
+              ],
+              "id": "summary",
+              "text": "AUSTIN, Texas — March 15, 2027 — BookkeepingService today announced a bookkeeping service for owners of independent businesses with one to three locations who do their own books. Owners connect their bank and point-of-sale accounts, forward receipts and invoices, and by the third business day receive a monthly close that a BookkeepingService reviewer has checked, with the handful of items that need the owner's attention. About 60 percent of small business owners do their own bookkeeping, spending six to nine hours a week on it."
+            },
+            {
+              "claims": [
+                {
+                  "finding_ids": [
+                    "F-11"
+                  ],
+                  "kind": "evidence",
+                  "text": "Seven of the ten operators in our panel had missed a supplier discount"
+                }
+              ],
+              "id": "problem",
+              "text": "Owners of independent businesses running one to three locations spend six to nine hours a week, usually after close, reconciling receipts against bank statements, and most still hand their accountant a shoebox at year end. Seven of the ten operators in our panel had missed a supplier discount because an invoice surfaced after the payment window, and none of them wanted another dashboard to interpret."
+            },
+            {
+              "claims": [],
+              "id": "solution",
+              "text": "BookkeepingService connects to the owner's bank and point-of-sale system, accepts receipts and invoices by photo, email or upload, and matches every document to a transaction automatically. By the third business day of the month the owner receives a close a BookkeepingService reviewer has checked, a short list of exceptions, and a plain explanation of anything that looks unusual. Maria Delgado, who runs two taquerias in San Antonio, used to spend Sunday nights with a spreadsheet; in her first month with BookkeepingService she cleared eleven exceptions in fourteen minutes and approved the close from her phone."
+            },
+            {
+              "claims": [
+                {
+                  "finding_ids": [
+                    "F-10"
+                  ],
+                  "kind": "evidence",
+                  "text": "keeps every document for seven years"
+                }
+              ],
+              "id": "benefits",
+              "text": "BookkeepingService also flags supplier invoices with early-payment discounts before they expire, keeps every document for the seven years tax rules require, and hands the accountant a clean year-end package. Devon Okafor, who owns a bike shop in Portland, caught two discounts worth $340 in his second month and stopped keeping paper copies."
+            },
+            {
+              "claims": [],
+              "id": "internal_quote",
+              "text": "\"Owners told us they did not want to learn accounting; they wanted to know what was wrong and fix it in ten minutes,\" said Elena Park, head of product at BookkeepingService. \"We built the close around that ten minutes, and we put a person behind it.\""
+            },
+            {
+              "claims": [
+                {
+                  "finding_ids": [
+                    "F-07"
+                  ],
+                  "kind": "evidence",
+                  "text": "$119 a month per location"
+                }
+              ],
+              "id": "cta",
+              "text": "BookkeepingService is available today for $119 a month per location, with the first month free. Owners can connect their accounts in fifteen minutes at bookkeepingservice.com and receive their first reviewed close the following month."
+            }
+          ]
+        },
+        "summary_of_changes": "The customer-validated release explains the owner's remaining work, adds an explanation to each exception, names the year-end package and offers a free first month."
+      }
+    },
+    {
+      "id": "art_5c6b7483cd914342",
+      "kind": "external_faq",
+      "seat": "8",
+      "persona": "customer_success",
+      "created_at": "2026-09-07T04:54:50.722Z",
+      "key_insight": "How much do I still have to do each month?",
+      "payload": {
+        "items": [
+          {
+            "answer": "Connect your bank and point-of-sale once, then forward receipts and supplier invoices as they arrive by photo, email or upload. BookkeepingService matches them for you. On the third business day you get a close a reviewer has checked and a short list of exceptions, usually under ten, that takes most owners about fifteen minutes to clear.",
+            "evidence_finding_ids": [],
+            "question": "How much do I still have to do each month?"
+          },
+          {
+            "answer": "Every exception comes with a one-sentence explanation so you can see why it was matched. If a mistake gets through, tell us and we correct the close and the following month at no charge. You always keep the final approval, and nothing is filed anywhere on your behalf.",
+            "evidence_finding_ids": [],
+            "question": "What happens if a transaction is matched wrong and I approve it?"
+          },
+          {
+            "answer": "A year-end package with the twelve monthly closes, every document attached to its transaction, and a summary of anything we flagged during the year. Accountants can be given read access so they stop asking you for the folder.",
+            "evidence_finding_ids": [
+              "F-10"
+            ],
+            "question": "What does my accountant get at year end?"
+          },
+          {
+            "answer": "$119 a month per location, and the first month is free. There are no per-transaction fees. Cancel any time and export everything.",
+            "evidence_finding_ids": [
+              "F-07"
+            ],
+            "question": "What does it cost and can I try it first?"
+          },
+          {
+            "answer": "Not in this version. BookkeepingService does the monthly books and the year-end package; payroll, tax filing and forecasting are on the roadmap and your accountant continues to handle filings.",
+            "evidence_finding_ids": [],
+            "question": "Does it do payroll or my taxes?"
+          }
+        ],
+        "key_insight": "How much do I still have to do each month?"
+      }
+    },
+    {
+      "id": "art_252390abf4ee43a7",
+      "kind": "prfaq",
+      "seat": "9",
+      "persona": "editor",
+      "created_at": "2026-09-07T04:54:50.969Z",
+      "key_insight": "BookkeepingService gives owners a reviewed monthly close for the price of one lost evening.",
+      "payload": {
+        "customer_faq": [
+          {
+            "answer": "Connect your bank and point-of-sale once, then forward receipts and supplier invoices as they arrive by photo, email or upload. BookkeepingService matches them for you. On the third business day you get a close a reviewer has checked and a short list of exceptions, usually under ten, that takes most owners about fifteen minutes to clear.",
+            "evidence_finding_ids": [],
+            "question": "How much do I still have to do each month?"
+          },
+          {
+            "answer": "Every exception comes with a one-sentence explanation so you can see why it was matched. If a mistake gets through, tell us and we correct the close and the following month at no charge. You always keep the final approval, and nothing is filed anywhere on your behalf.",
+            "evidence_finding_ids": [],
+            "question": "What happens if a transaction is matched wrong and I approve it?"
+          },
+          {
+            "answer": "A year-end package with the twelve monthly closes, every document attached to its transaction, and a summary of anything we flagged during the year. Accountants can be given read access so they stop asking you for the folder.",
+            "evidence_finding_ids": [
+              "F-10"
+            ],
+            "question": "What does my accountant get at year end?"
+          },
+          {
+            "answer": "$119 a month per location, and the first month is free. There are no per-transaction fees. Cancel any time and export everything.",
+            "evidence_finding_ids": [
+              "F-07"
+            ],
+            "question": "What does it cost and can I try it first?"
+          },
+          {
+            "answer": "Not in this version. BookkeepingService does the monthly books and the year-end package; payroll, tax filing and forecasting are on the roadmap and your accountant continues to handle filings.",
+            "evidence_finding_ids": [],
+            "question": "Does it do payroll or my taxes?"
+          }
+        ],
+        "edits": [
+          {
+            "change_kind": "polish",
+            "evidence_finding_ids": [],
+            "new_text": "AUSTIN, Texas — March 15, 2027 — BookkeepingService today announced a bookkeeping service for owners of independent businesses with one to three locations who do their own books. Owners connect their bank and point-of-sale accounts, forward receipts and invoices, and by the third business day receive a monthly close a BookkeepingService reviewer has checked, with the few items that need the owner's attention. About 60 percent of small business owners do their own bookkeeping and spend six to nine hours a week on it.",
+            "rationale": "Tightened the summary and removed a hedging clause.",
+            "slot_id": "summary"
+          },
+          {
+            "change_kind": "polish",
+            "evidence_finding_ids": [],
+            "new_text": "Owners of independent businesses with one to three locations spend six to nine hours a week, usually after close, reconciling receipts against bank statements, and most still hand their accountant a shoebox at year end. Seven of the ten operators in our panel had missed a supplier discount because an invoice surfaced after the payment window, and none wanted another dashboard to interpret.",
+            "rationale": "Cut a repeated phrase and kept the panel numbers.",
+            "slot_id": "problem"
+          },
+          {
+            "change_kind": "polish",
+            "evidence_finding_ids": [],
+            "new_text": "BookkeepingService connects to the owner's bank and point-of-sale system, accepts receipts and invoices by photo, email or upload, and matches every document to a transaction automatically. By the third business day of the month the owner receives a close a BookkeepingService reviewer has checked, a short list of exceptions, and a plain explanation of anything unusual. Maria Delgado, who runs two taquerias in San Antonio, used to spend Sunday nights with a spreadsheet. In her first month with BookkeepingService she cleared eleven exceptions in fourteen minutes and approved the close from her phone.",
+            "rationale": "Split a long sentence so the anecdote reads as speech.",
+            "slot_id": "solution"
+          },
+          {
+            "change_kind": "polish",
+            "evidence_finding_ids": [],
+            "new_text": "\"Owners told us they did not want to learn accounting. They wanted to know what was wrong and fix it in ten minutes,\" said Elena Park, head of product at BookkeepingService. \"We built the close around those ten minutes, and we put a person behind it.\"",
+            "rationale": "Made the quote read as spoken rather than written.",
+            "slot_id": "internal_quote"
+          },
+          {
+            "change_kind": "polish",
+            "evidence_finding_ids": [],
+            "new_text": "BookkeepingService is available today for $119 a month per location, with the first month free. Owners connect their accounts in fifteen minutes at bookkeepingservice.com and receive their first reviewed close the following month.",
+            "rationale": "Active voice in the call to action.",
+            "slot_id": "cta"
+          }
+        ],
+        "executive_summary": "Owners of independent businesses lose an evening a week to bookkeeping and discover mistakes months late. BookkeepingService matches receipts, invoices and bank transactions automatically and delivers a monthly close a reviewer has checked, with a short exception list the owner clears in minutes. No competitor offers a reviewed close under $150 a month, and the panel's willingness to pay sits inside our $119 price. The plan is a concierge pilot to prove trust in the close and reviewer economics before scaling.",
+        "internal_faq": [
+          {
+            "items": [
+              {
+                "answer": "Owners of independent businesses lose six to nine hours a week matching receipts, invoices and bank transactions, and discover errors months later as missed discounts and accountant questions. The panel put the missed-discount cost at $200 to $600 a quarter.",
+                "evidence_finding_ids": [
+                  "F-02",
+                  "F-11"
+                ],
+                "question": "What is the core customer problem we are trying to solve?"
+              },
+              {
+                "answer": "Owner-operators with one to three locations and no finance staff, roughly 60 percent of small businesses. They do the books after close because nobody else will, and the time comes out of evenings and weekends.",
+                "evidence_finding_ids": [
+                  "F-02"
+                ],
+                "question": "Who is the target customer segment and why is this problem space important to them?"
+              },
+              {
+                "answer": "BookkeepingService matches every document to a transaction automatically and delivers a monthly close a reviewer has checked, with a short exception list. No competitor combines automated matching with a reviewed close under $150 a month.",
+                "evidence_finding_ids": [
+                  "F-12"
+                ],
+                "question": "What is the product and how does it uniquely solve this problem?"
+              }
+            ],
+            "title": "Product Overview"
+          },
+          {
+            "items": [
+              {
+                "answer": "Firms charge $300 to $800 and still make the owner gather documents; suites cost $30 to $90 but leave the reconciliation to the owner; capture apps stop at capture. Each solves one third of the job.",
+                "evidence_finding_ids": [
+                  "F-05",
+                  "F-06"
+                ],
+                "question": "What is the competitive landscape and why haven't existing solutions met the customer need?"
+              },
+              {
+                "answer": "Open-banking access to small-business bank data is now standard and receipt OCR exceeds 95 percent field accuracy, so the matching that used to need a bookkeeper can be automated reliably for the first time.",
+                "evidence_finding_ids": [
+                  "F-08",
+                  "F-09"
+                ],
+                "question": "Why does this problem need to be solved now?"
+              },
+              {
+                "answer": "Assuming 4 million owner-operated businesses in the target segment, 45 percent already on cloud tools and reachable, and $119 a month, the serviceable market is about $2.6 billion a year. The 4 million figure is an assumption to validate.",
+                "evidence_finding_ids": [
+                  "F-04",
+                  "F-07"
+                ],
+                "question": "What is the TAM, and what are the key assumptions driving the calculation?"
+              }
+            ],
+            "title": "Market Opportunity"
+          },
+          {
+            "items": [
+              {
+                "answer": "Connect bank and POS, capture receipts and invoices, automatic matching, a reviewed monthly close, an exception queue, and a year-end package for the accountant.",
+                "evidence_finding_ids": [],
+                "question": "What are the MLP use cases?"
+              },
+              {
+                "answer": "Accounts connected in fifteen minutes, close delivered by the third business day, fewer than ten exceptions a month for one location, and every exception explained in one sentence.",
+                "evidence_finding_ids": [],
+                "question": "What are the MLP customer experience requirements?"
+              },
+              {
+                "answer": "No payroll, tax filing, forecasting or inventory in version one. Not for regulated businesses needing audit-grade inventory records, nor for businesses with more than three locations.",
+                "evidence_finding_ids": [],
+                "question": "What are the guardrails for what this product is not: customers it does not serve, functionality outside MLP scope?"
+              }
+            ],
+            "title": "Minimum Lovable Product"
+          },
+          {
+            "items": [
+              {
+                "answer": "Lead with the reviewed close and the exception list, price inside the panel's willingness-to-pay range, and keep the reviewer step lean with automation that handles the routine 90 percent.",
+                "evidence_finding_ids": [
+                  "F-07"
+                ],
+                "question": "What is our approach to building this in a customer-obsessed, differentiated and profitable way?"
+              },
+              {
+                "answer": "Options: (1) software-only subscription at $49; (2) subscription with reviewed close at $119; (3) usage-based pricing per transaction. We recommend option 2: it matches the panel's stated willingness to pay, keeps CAC recoverable within four months at a $400 acquisition cost, and yields 70 percent gross margin once a reviewer handles forty accounts.",
+                "evidence_finding_ids": [
+                  "F-07"
+                ],
+                "question": "What are the business model options and what is the recommended path?"
+              },
+              {
+                "answer": "Phase two adds sales-tax preparation and multi-location roll-ups; phase three adds cash-flow forecasting and accountant collaboration tools.",
+                "evidence_finding_ids": [],
+                "question": "What is the phased product roadmap beyond MLP?"
+              }
+            ],
+            "title": "Business Strategy"
+          },
+          {
+            "items": [
+              {
+                "answer": "That owners trust an automated close once a person has checked it, that matching accuracy reaches a level owners stop double-checking within two months, and that one reviewer can handle forty accounts.",
+                "evidence_finding_ids": [],
+                "question": "What are the critical assumptions that must be validated for this product and business to succeed?"
+              },
+              {
+                "answer": "A concierge pilot with twenty operators for two months, a landing page pricing test at $99 and $129, and a reviewer time study across the pilot accounts.",
+                "evidence_finding_ids": [],
+                "question": "What is the fastest and most frugal path to validate these assumptions with high confidence?"
+              },
+              {
+                "answer": "Reviewer costs erode margin, owners keep double-checking and see no time saved, or a cloud suite bundles a reviewed close first.",
+                "evidence_finding_ids": [
+                  "F-06"
+                ],
+                "question": "What are the top reasons this product won't succeed?"
+              },
+              {
+                "answer": "Seven-year record retention, bank data access under open-banking terms, state digital-receipt rules for sales-tax audits, and clear disclaimers that the service is bookkeeping, not tax advice.",
+                "evidence_finding_ids": [
+                  "F-08",
+                  "F-10"
+                ],
+                "question": "What are the key regulatory, compliance or legal considerations?"
+              }
+            ],
+            "title": "Validation & Risk Assessment"
+          }
+        ],
+        "key_insight": "BookkeepingService gives owners a reviewed monthly close for the price of one lost evening.",
+        "press_release": {
+          "slots": [
+            {
+              "claims": [],
+              "id": "headline",
+              "text": "BookkeepingService Closes the Books for Independent Operators by the Third Business Day"
+            },
+            {
+              "claims": [],
+              "id": "subheading",
+              "text": "BookkeepingService turns receipts, invoices and bank data into a reviewed monthly close that owners approve in minutes, without a bookkeeper on staff."
+            },
+            {
+              "claims": [
+                {
+                  "finding_ids": [
+                    "F-02"
+                  ],
+                  "kind": "evidence",
+                  "text": "About 60 percent of small business owners do their own bookkeeping"
+                },
+                {
+                  "finding_ids": [],
+                  "kind": "assumption",
+                  "text": "spending six to nine hours a week on it"
+                }
+              ],
+              "id": "summary",
+              "text": "AUSTIN, Texas — March 15, 2027 — BookkeepingService today announced a bookkeeping service for owners of independent businesses with one to three locations who do their own books. Owners connect their bank and point-of-sale accounts, forward receipts and invoices, and by the third business day receive a monthly close a BookkeepingService reviewer has checked, with the few items that need the owner's attention. About 60 percent of small business owners do their own bookkeeping and spend six to nine hours a week on it."
+            },
+            {
+              "claims": [
+                {
+                  "finding_ids": [
+                    "F-11"
+                  ],
+                  "kind": "evidence",
+                  "text": "Seven of the ten operators in our panel had missed a supplier discount"
+                }
+              ],
+              "id": "problem",
+              "text": "Owners of independent businesses with one to three locations spend six to nine hours a week, usually after close, reconciling receipts against bank statements, and most still hand their accountant a shoebox at year end. Seven of the ten operators in our panel had missed a supplier discount because an invoice surfaced after the payment window, and none wanted another dashboard to interpret."
+            },
+            {
+              "claims": [],
+              "id": "solution",
+              "text": "BookkeepingService connects to the owner's bank and point-of-sale system, accepts receipts and invoices by photo, email or upload, and matches every document to a transaction automatically. By the third business day of the month the owner receives a close a BookkeepingService reviewer has checked, a short list of exceptions, and a plain explanation of anything unusual. Maria Delgado, who runs two taquerias in San Antonio, used to spend Sunday nights with a spreadsheet. In her first month with BookkeepingService she cleared eleven exceptions in fourteen minutes and approved the close from her phone."
+            },
+            {
+              "claims": [
+                {
+                  "finding_ids": [
+                    "F-10"
+                  ],
+                  "kind": "evidence",
+                  "text": "keeps every document for seven years"
+                }
+              ],
+              "id": "benefits",
+              "text": "BookkeepingService also flags supplier invoices with early-payment discounts before they expire, keeps every document for the seven years tax rules require, and hands the accountant a clean year-end package. Devon Okafor, who owns a bike shop in Portland, caught two discounts worth $340 in his second month and stopped keeping paper copies."
+            },
+            {
+              "claims": [],
+              "id": "internal_quote",
+              "text": "\"Owners told us they did not want to learn accounting. They wanted to know what was wrong and fix it in ten minutes,\" said Elena Park, head of product at BookkeepingService. \"We built the close around those ten minutes, and we put a person behind it.\""
+            },
+            {
+              "claims": [
+                {
+                  "finding_ids": [
+                    "F-07"
+                  ],
+                  "kind": "evidence",
+                  "text": "$119 a month per location"
+                }
+              ],
+              "id": "cta",
+              "text": "BookkeepingService is available today for $119 a month per location, with the first month free. Owners connect their accounts in fifteen minutes at bookkeepingservice.com and receive their first reviewed close the following month."
+            }
+          ]
+        },
+        "product_name": "BookkeepingService",
+        "research_faq": {
+          "answer": "Six of ten participants said the reviewed close was the reason they would pay, and six preferred a short exception list to any dashboard. Four asked how much work remains for the owner, which led to the approval-in-minutes promise and a one-sentence explanation on every exception. Three asked what the accountant receives, so the year-end package became explicit. Two budget-conscious owners wanted to try before committing, which produced the free first month.",
+          "evidence_finding_ids": [
+            "F-07"
+          ],
+          "question": "What key insights from customer concept testing shaped this product?"
+        },
+        "summary_of_changes": "Editorial pass for voice and flow; all claims kept, two assumptions left flagged for validation.",
+        "title": "BookkeepingService PRFAQ"
+      }
+    },
+    {
+      "id": "art_c7d7ea074067489b",
+      "kind": "bar_raiser",
+      "seat": "9b",
+      "persona": "bar_raiser",
+      "created_at": "2026-09-07T04:54:51.045Z",
+      "key_insight": "One assumption in the summary reads like evidence; fix it before leadership sees it.",
+      "payload": {
+        "key_insight": "One assumption in the summary reads like evidence; fix it before leadership sees it.",
+        "overall": 4,
+        "required_fixes": [
+          {
+            "instruction": "Keep the year-end package explicit and confirm the seven-year retention claim cites F-10.",
+            "severity": "important",
+            "target": "press_release.benefits"
+          },
+          {
+            "instruction": "State the 4 million businesses figure as an assumption to validate, not as a fact.",
+            "severity": "blocking",
+            "target": "internal_faq.6"
+          }
+        ],
+        "scores": [
+          {
+            "criterion": "customer_clarity",
+            "note": "The summary names one-to-three-location operators without finance staff.",
+            "score": 5
+          },
+          {
+            "criterion": "problem_specificity",
+            "note": "Six to nine hours and the missed-discount trigger are specific; the year-end scramble is asserted.",
+            "score": 4
+          },
+          {
+            "criterion": "anecdote_believability",
+            "note": "Maria and Devon have places and numbers; Maria's fourteen minutes is plausible.",
+            "score": 4
+          },
+          {
+            "criterion": "v1_feasibility",
+            "note": "Matching plus a reviewer is buildable; reviewer capacity is the open question the FAQ admits.",
+            "score": 4
+          },
+          {
+            "criterion": "differentiation",
+            "note": "The reviewed close under $150 is the claim; F-12 is low confidence.",
+            "score": 4
+          },
+          {
+            "criterion": "evidence_coverage",
+            "note": "The six-to-nine-hours figure in the summary is an assumption presented like a finding.",
+            "score": 3
+          },
+          {
+            "criterion": "executive_readability",
+            "note": "Reads in one pass; the FAQ answers are direct.",
+            "score": 5
+          }
+        ],
+        "verdict": "revise"
+      }
+    },
+    {
+      "id": "art_54b9062229f848ab",
+      "kind": "prfaq",
+      "seat": "9",
+      "persona": "editor",
+      "created_at": "2026-09-07T04:54:51.326Z",
+      "key_insight": "BookkeepingService gives owners a reviewed monthly close for the price of one lost evening.",
+      "payload": {
+        "customer_faq": [
+          {
+            "answer": "Connect your bank and point-of-sale once, then forward receipts and supplier invoices as they arrive by photo, email or upload. BookkeepingService matches them for you. On the third business day you get a close a reviewer has checked and a short list of exceptions, usually under ten, that takes most owners about fifteen minutes to clear.",
+            "evidence_finding_ids": [],
+            "question": "How much do I still have to do each month?"
+          },
+          {
+            "answer": "Every exception comes with a one-sentence explanation so you can see why it was matched. If a mistake gets through, tell us and we correct the close and the following month at no charge. You always keep the final approval, and nothing is filed anywhere on your behalf.",
+            "evidence_finding_ids": [],
+            "question": "What happens if a transaction is matched wrong and I approve it?"
+          },
+          {
+            "answer": "A year-end package with the twelve monthly closes, every document attached to its transaction, and a summary of anything we flagged during the year. Accountants can be given read access so they stop asking you for the folder.",
+            "evidence_finding_ids": [
+              "F-10"
+            ],
+            "question": "What does my accountant get at year end?"
+          },
+          {
+            "answer": "$119 a month per location, and the first month is free. There are no per-transaction fees. Cancel any time and export everything.",
+            "evidence_finding_ids": [
+              "F-07"
+            ],
+            "question": "What does it cost and can I try it first?"
+          },
+          {
+            "answer": "Not in this version. BookkeepingService does the monthly books and the year-end package; payroll, tax filing and forecasting are on the roadmap and your accountant continues to handle filings.",
+            "evidence_finding_ids": [],
+            "question": "Does it do payroll or my taxes?"
+          }
+        ],
+        "edits": [
+          {
+            "change_kind": "polish",
+            "evidence_finding_ids": [],
+            "new_text": "AUSTIN, Texas — March 15, 2027 — BookkeepingService today announced a bookkeeping service for owners of independent businesses with one to three locations who do their own books. Owners connect their bank and point-of-sale accounts, forward receipts and invoices, and by the third business day receive a monthly close a BookkeepingService reviewer has checked, with the few items that need the owner's attention. About 60 percent of small business owners do their own bookkeeping and spend six to nine hours a week on it.",
+            "rationale": "Tightened the summary and removed a hedging clause.",
+            "slot_id": "summary"
+          },
+          {
+            "change_kind": "polish",
+            "evidence_finding_ids": [],
+            "new_text": "Owners of independent businesses with one to three locations spend six to nine hours a week, usually after close, reconciling receipts against bank statements, and most still hand their accountant a shoebox at year end. Seven of the ten operators in our panel had missed a supplier discount because an invoice surfaced after the payment window, and none wanted another dashboard to interpret.",
+            "rationale": "Cut a repeated phrase and kept the panel numbers.",
+            "slot_id": "problem"
+          },
+          {
+            "change_kind": "polish",
+            "evidence_finding_ids": [],
+            "new_text": "BookkeepingService connects to the owner's bank and point-of-sale system, accepts receipts and invoices by photo, email or upload, and matches every document to a transaction automatically. By the third business day of the month the owner receives a close a BookkeepingService reviewer has checked, a short list of exceptions, and a plain explanation of anything unusual. Maria Delgado, who runs two taquerias in San Antonio, used to spend Sunday nights with a spreadsheet. In her first month with BookkeepingService she cleared eleven exceptions in fourteen minutes and approved the close from her phone.",
+            "rationale": "Split a long sentence so the anecdote reads as speech.",
+            "slot_id": "solution"
+          },
+          {
+            "change_kind": "polish",
+            "evidence_finding_ids": [],
+            "new_text": "\"Owners told us they did not want to learn accounting. They wanted to know what was wrong and fix it in ten minutes,\" said Elena Park, head of product at BookkeepingService. \"We built the close around those ten minutes, and we put a person behind it.\"",
+            "rationale": "Made the quote read as spoken rather than written.",
+            "slot_id": "internal_quote"
+          },
+          {
+            "change_kind": "polish",
+            "evidence_finding_ids": [],
+            "new_text": "BookkeepingService is available today for $119 a month per location, with the first month free. Owners connect their accounts in fifteen minutes at bookkeepingservice.com and receive their first reviewed close the following month.",
+            "rationale": "Active voice in the call to action.",
+            "slot_id": "cta"
+          }
+        ],
+        "executive_summary": "Owners of independent businesses lose an evening a week to bookkeeping and discover mistakes months late. BookkeepingService matches receipts, invoices and bank transactions automatically and delivers a monthly close a reviewer has checked, with a short exception list the owner clears in minutes. No competitor offers a reviewed close under $150 a month, and the panel's willingness to pay sits inside our $119 price. The plan is a concierge pilot to prove trust in the close and reviewer economics before scaling.",
+        "internal_faq": [
+          {
+            "items": [
+              {
+                "answer": "Owners of independent businesses lose six to nine hours a week matching receipts, invoices and bank transactions, and discover errors months later as missed discounts and accountant questions. The panel put the missed-discount cost at $200 to $600 a quarter.",
+                "evidence_finding_ids": [
+                  "F-02",
+                  "F-11"
+                ],
+                "question": "What is the core customer problem we are trying to solve?"
+              },
+              {
+                "answer": "Owner-operators with one to three locations and no finance staff, roughly 60 percent of small businesses. They do the books after close because nobody else will, and the time comes out of evenings and weekends.",
+                "evidence_finding_ids": [
+                  "F-02"
+                ],
+                "question": "Who is the target customer segment and why is this problem space important to them?"
+              },
+              {
+                "answer": "BookkeepingService matches every document to a transaction automatically and delivers a monthly close a reviewer has checked, with a short exception list. No competitor combines automated matching with a reviewed close under $150 a month.",
+                "evidence_finding_ids": [
+                  "F-12"
+                ],
+                "question": "What is the product and how does it uniquely solve this problem?"
+              }
+            ],
+            "title": "Product Overview"
+          },
+          {
+            "items": [
+              {
+                "answer": "Firms charge $300 to $800 and still make the owner gather documents; suites cost $30 to $90 but leave the reconciliation to the owner; capture apps stop at capture. Each solves one third of the job.",
+                "evidence_finding_ids": [
+                  "F-05",
+                  "F-06"
+                ],
+                "question": "What is the competitive landscape and why haven't existing solutions met the customer need?"
+              },
+              {
+                "answer": "Open-banking access to small-business bank data is now standard and receipt OCR exceeds 95 percent field accuracy, so the matching that used to need a bookkeeper can be automated reliably for the first time.",
+                "evidence_finding_ids": [
+                  "F-08",
+                  "F-09"
+                ],
+                "question": "Why does this problem need to be solved now?"
+              },
+              {
+                "answer": "Assuming 4 million owner-operated businesses in the target segment, 45 percent already on cloud tools and reachable, and $119 a month, the serviceable market is about $2.6 billion a year. The 4 million figure is an assumption to validate.",
+                "evidence_finding_ids": [
+                  "F-04",
+                  "F-07"
+                ],
+                "question": "What is the TAM, and what are the key assumptions driving the calculation?"
+              }
+            ],
+            "title": "Market Opportunity"
+          },
+          {
+            "items": [
+              {
+                "answer": "Connect bank and POS, capture receipts and invoices, automatic matching, a reviewed monthly close, an exception queue, and a year-end package for the accountant.",
+                "evidence_finding_ids": [],
+                "question": "What are the MLP use cases?"
+              },
+              {
+                "answer": "Accounts connected in fifteen minutes, close delivered by the third business day, fewer than ten exceptions a month for one location, and every exception explained in one sentence.",
+                "evidence_finding_ids": [],
+                "question": "What are the MLP customer experience requirements?"
+              },
+              {
+                "answer": "No payroll, tax filing, forecasting or inventory in version one. Not for regulated businesses needing audit-grade inventory records, nor for businesses with more than three locations.",
+                "evidence_finding_ids": [],
+                "question": "What are the guardrails for what this product is not: customers it does not serve, functionality outside MLP scope?"
+              }
+            ],
+            "title": "Minimum Lovable Product"
+          },
+          {
+            "items": [
+              {
+                "answer": "Lead with the reviewed close and the exception list, price inside the panel's willingness-to-pay range, and keep the reviewer step lean with automation that handles the routine 90 percent.",
+                "evidence_finding_ids": [
+                  "F-07"
+                ],
+                "question": "What is our approach to building this in a customer-obsessed, differentiated and profitable way?"
+              },
+              {
+                "answer": "Options: (1) software-only subscription at $49; (2) subscription with reviewed close at $119; (3) usage-based pricing per transaction. We recommend option 2: it matches the panel's stated willingness to pay, keeps CAC recoverable within four months at a $400 acquisition cost, and yields 70 percent gross margin once a reviewer handles forty accounts.",
+                "evidence_finding_ids": [
+                  "F-07"
+                ],
+                "question": "What are the business model options and what is the recommended path?"
+              },
+              {
+                "answer": "Phase two adds sales-tax preparation and multi-location roll-ups; phase three adds cash-flow forecasting and accountant collaboration tools.",
+                "evidence_finding_ids": [],
+                "question": "What is the phased product roadmap beyond MLP?"
+              }
+            ],
+            "title": "Business Strategy"
+          },
+          {
+            "items": [
+              {
+                "answer": "That owners trust an automated close once a person has checked it, that matching accuracy reaches a level owners stop double-checking within two months, and that one reviewer can handle forty accounts.",
+                "evidence_finding_ids": [],
+                "question": "What are the critical assumptions that must be validated for this product and business to succeed?"
+              },
+              {
+                "answer": "A concierge pilot with twenty operators for two months, a landing page pricing test at $99 and $129, and a reviewer time study across the pilot accounts.",
+                "evidence_finding_ids": [],
+                "question": "What is the fastest and most frugal path to validate these assumptions with high confidence?"
+              },
+              {
+                "answer": "Reviewer costs erode margin, owners keep double-checking and see no time saved, or a cloud suite bundles a reviewed close first.",
+                "evidence_finding_ids": [
+                  "F-06"
+                ],
+                "question": "What are the top reasons this product won't succeed?"
+              },
+              {
+                "answer": "Seven-year record retention, bank data access under open-banking terms, state digital-receipt rules for sales-tax audits, and clear disclaimers that the service is bookkeeping, not tax advice.",
+                "evidence_finding_ids": [
+                  "F-08",
+                  "F-10"
+                ],
+                "question": "What are the key regulatory, compliance or legal considerations?"
+              }
+            ],
+            "title": "Validation & Risk Assessment"
+          }
+        ],
+        "key_insight": "BookkeepingService gives owners a reviewed monthly close for the price of one lost evening.",
+        "press_release": {
+          "slots": [
+            {
+              "claims": [],
+              "id": "headline",
+              "text": "BookkeepingService Closes the Books for Independent Operators by the Third Business Day"
+            },
+            {
+              "claims": [],
+              "id": "subheading",
+              "text": "BookkeepingService turns receipts, invoices and bank data into a reviewed monthly close that owners approve in minutes, without a bookkeeper on staff."
+            },
+            {
+              "claims": [
+                {
+                  "finding_ids": [
+                    "F-02"
+                  ],
+                  "kind": "evidence",
+                  "text": "About 60 percent of small business owners do their own bookkeeping"
+                },
+                {
+                  "finding_ids": [],
+                  "kind": "assumption",
+                  "text": "spending six to nine hours a week on it"
+                }
+              ],
+              "id": "summary",
+              "text": "AUSTIN, Texas — March 15, 2027 — BookkeepingService today announced a bookkeeping service for owners of independent businesses with one to three locations who do their own books. Owners connect their bank and point-of-sale accounts, forward receipts and invoices, and by the third business day receive a monthly close a BookkeepingService reviewer has checked, with the few items that need the owner's attention. About 60 percent of small business owners do their own bookkeeping and spend six to nine hours a week on it."
+            },
+            {
+              "claims": [
+                {
+                  "finding_ids": [
+                    "F-11"
+                  ],
+                  "kind": "evidence",
+                  "text": "Seven of the ten operators in our panel had missed a supplier discount"
+                }
+              ],
+              "id": "problem",
+              "text": "Owners of independent businesses with one to three locations spend six to nine hours a week, usually after close, reconciling receipts against bank statements, and most still hand their accountant a shoebox at year end. Seven of the ten operators in our panel had missed a supplier discount because an invoice surfaced after the payment window, and none wanted another dashboard to interpret."
+            },
+            {
+              "claims": [],
+              "id": "solution",
+              "text": "BookkeepingService connects to the owner's bank and point-of-sale system, accepts receipts and invoices by photo, email or upload, and matches every document to a transaction automatically. By the third business day of the month the owner receives a close a BookkeepingService reviewer has checked, a short list of exceptions, and a plain explanation of anything unusual. Maria Delgado, who runs two taquerias in San Antonio, used to spend Sunday nights with a spreadsheet. In her first month with BookkeepingService she cleared eleven exceptions in fourteen minutes and approved the close from her phone."
+            },
+            {
+              "claims": [
+                {
+                  "finding_ids": [
+                    "F-10"
+                  ],
+                  "kind": "evidence",
+                  "text": "keeps every document for seven years"
+                }
+              ],
+              "id": "benefits",
+              "text": "BookkeepingService also flags supplier invoices with early-payment discounts before they expire, keeps every document for the seven years tax rules require, and hands the accountant a clean year-end package. Devon Okafor, who owns a bike shop in Portland, caught two discounts worth $340 in his second month and stopped keeping paper copies."
+            },
+            {
+              "claims": [],
+              "id": "internal_quote",
+              "text": "\"Owners told us they did not want to learn accounting. They wanted to know what was wrong and fix it in ten minutes,\" said Elena Park, head of product at BookkeepingService. \"We built the close around those ten minutes, and we put a person behind it.\""
+            },
+            {
+              "claims": [
+                {
+                  "finding_ids": [
+                    "F-07"
+                  ],
+                  "kind": "evidence",
+                  "text": "$119 a month per location"
+                }
+              ],
+              "id": "cta",
+              "text": "BookkeepingService is available today for $119 a month per location, with the first month free. Owners connect their accounts in fifteen minutes at bookkeepingservice.com and receive their first reviewed close the following month."
+            }
+          ]
+        },
+        "product_name": "BookkeepingService",
+        "research_faq": {
+          "answer": "Six of ten participants said the reviewed close was the reason they would pay, and six preferred a short exception list to any dashboard. Four asked how much work remains for the owner, which led to the approval-in-minutes promise and a one-sentence explanation on every exception. Three asked what the accountant receives, so the year-end package became explicit. Two budget-conscious owners wanted to try before committing, which produced the free first month.",
+          "evidence_finding_ids": [
+            "F-07"
+          ],
+          "question": "What key insights from customer concept testing shaped this product?"
+        },
+        "summary_of_changes": "Editorial pass for voice and flow; all claims kept, two assumptions left flagged for validation. Bar Raiser fixes applied.",
+        "title": "BookkeepingService PRFAQ"
+      }
+    },
+    {
+      "id": "art_2caa10edee524e2f",
+      "kind": "plan",
+      "seat": "10",
+      "persona": "validation_lead",
+      "created_at": "2026-09-07T04:54:51.474Z",
+      "key_insight": "Owners must stop re-checking the reviewed close, or no time is saved.",
+      "payload": {
+        "best_practices": {
+          "biggest_pitfall": "Measuring satisfaction with the close instead of whether owners stop re-checking it.",
+          "first_test": "The concierge pilot, because it tests trust and reviewer economics at once.",
+          "prototype_fidelity": "A real reviewer and a real monthly close; the software can be a spreadsheet.",
+          "recruitment": "Accountants who serve owner-operators, and local business associations; include the skeptics the panel identified."
+        },
+        "executive_summary": "BookkeepingService promises a reviewed monthly close that owners approve in minutes. Two hypotheses decide everything: that owners trust an automated close once a person has checked it, and that one reviewer can handle forty accounts at $119 a month. If either fails, the product is a capture app with a service cost it cannot carry. The plan tests those first, with twenty operators and a time study, before spending on acquisition.",
+        "hypotheses": [
+          {
+            "confidence": 7,
+            "depends_on": [],
+            "ease": 6,
+            "id": "H1",
+            "impact": 10,
+            "phase": "foundation",
+            "statement": "Owners approve a reviewed close without re-checking it after two months of use.",
+            "why_critical": "If owners keep double-checking, no time is saved and the value proposition fails."
+          },
+          {
+            "confidence": 8,
+            "depends_on": [],
+            "ease": 5,
+            "id": "H2",
+            "impact": 9,
+            "phase": "foundation",
+            "statement": "One reviewer can complete forty single-location closes a month at the required quality.",
+            "why_critical": "Reviewer cost determines whether $119 yields a viable gross margin."
+          },
+          {
+            "confidence": 5,
+            "depends_on": [],
+            "ease": 7,
+            "id": "H3",
+            "impact": 8,
+            "phase": "foundation",
+            "statement": "Automatic matching produces fewer than ten exceptions a month for a typical single location.",
+            "why_critical": "More exceptions means more owner work and more reviewer time."
+          },
+          {
+            "confidence": 6,
+            "depends_on": [
+              "H1"
+            ],
+            "ease": 8,
+            "id": "H4",
+            "impact": 9,
+            "phase": "solution_fit",
+            "statement": "Owners will pay $119 a month after a free first month.",
+            "why_critical": "Sets revenue per account and the CAC payback."
+          },
+          {
+            "confidence": 6,
+            "depends_on": [
+              "H1"
+            ],
+            "ease": 8,
+            "id": "H5",
+            "impact": 6,
+            "phase": "solution_fit",
+            "statement": "A one-sentence explanation on each exception removes the trust concern for skeptical owners.",
+            "why_critical": "Converts the maybe segment from the panel."
+          },
+          {
+            "confidence": 5,
+            "depends_on": [
+              "H3"
+            ],
+            "ease": 6,
+            "id": "H6",
+            "impact": 6,
+            "phase": "solution_fit",
+            "statement": "Accountants accept the year-end package without requesting the raw folder.",
+            "why_critical": "Year-end value is a stated reason to stay subscribed."
+          },
+          {
+            "confidence": 8,
+            "depends_on": [
+              "H4"
+            ],
+            "ease": 4,
+            "id": "H7",
+            "impact": 7,
+            "phase": "scale",
+            "statement": "Customer acquisition cost through accountant referrals is under $400.",
+            "why_critical": "Determines payback and the growth model."
+          },
+          {
+            "confidence": 6,
+            "depends_on": [
+              "H3"
+            ],
+            "ease": 5,
+            "id": "H8",
+            "impact": 5,
+            "phase": "scale",
+            "statement": "Owners with two or three locations get the same exception count per location as single-location owners.",
+            "why_critical": "Multi-location pricing depends on it."
+          }
+        ],
+        "key_insight": "Owners must stop re-checking the reviewed close, or no time is saved.",
+        "not_testing": [
+          {
+            "aspect": "Payroll and tax filing",
+            "why": "Out of version one; the close must work first."
+          },
+          {
+            "aspect": "Multi-location roll-ups",
+            "why": "Single-location economics decide the business."
+          },
+          {
+            "aspect": "Forecasting",
+            "why": "Owners asked for fewer things to interpret, not more."
+          }
+        ],
+        "sequence": [
+          {
+            "decision_point": "If H1 or H2 fails, reconsider the concept before any acquisition spend.",
+            "hypothesis_ids": [
+              "H1",
+              "H2",
+              "H3"
+            ],
+            "phase": "foundation",
+            "rationale": "Trust, reviewer economics and exception volume decide whether the product exists."
+          },
+          {
+            "decision_point": "Determines the launch offer and the exception design.",
+            "hypothesis_ids": [
+              "H4",
+              "H5",
+              "H6"
+            ],
+            "phase": "solution_fit",
+            "rationale": "Price, explanations and the accountant package determine conversion and retention."
+          },
+          {
+            "decision_point": "Sets the marketing budget and multi-location pricing.",
+            "hypothesis_ids": [
+              "H7",
+              "H8"
+            ],
+            "phase": "scale",
+            "rationale": "Acquisition cost and multi-location behaviour shape the growth plan."
+          }
+        ],
+        "synthesis": {
+          "iterate": "H1 passes but H3 shows too many exceptions; redesign matching or narrow the launch segment.",
+          "proceed": "H1 and H2 pass and H3 is within range; the price test shows no cliff at $129.",
+          "stop": "H1 fails with skeptics and mainstream owners alike, or reviewer time stays above forty minutes per close."
+        },
+        "test_plans": [
+          {
+            "build": "A shared inbox, a matching spreadsheet and a reviewer; no product code.",
+            "hypothesis_id": "H1",
+            "method": "Concierge pilot with a manual close",
+            "risks": "Pilot owners may be unusually motivated; include five skeptics.",
+            "sample_size": "Twenty operators; at 70 percent versus a 40 percent null, twenty gives directional confidence with a follow-up cohort of forty.",
+            "success_criteria": "By month two, at least 70 percent of owners approve the close within one day without opening the underlying transactions.",
+            "tools": [
+              "Shared email inbox",
+              "Google Sheets",
+              "A weekly call"
+            ]
+          },
+          {
+            "build": "Time tracking per close across the pilot accounts.",
+            "hypothesis_id": "H2",
+            "method": "Reviewer time study",
+            "risks": "Early closes are slower; measure the trend, not the first month.",
+            "sample_size": "All pilot closes for two months, at least forty closes.",
+            "success_criteria": "Median reviewer time per close under twenty minutes by month two.",
+            "tools": [
+              "Toggl",
+              "A simple checklist"
+            ]
+          },
+          {
+            "build": "A rules-plus-OCR prototype run against pilot data.",
+            "hypothesis_id": "H3",
+            "method": "Matching accuracy measurement",
+            "risks": "Cash-heavy businesses will skew the exception count; report by segment.",
+            "sample_size": "Forty account-months.",
+            "success_criteria": "Fewer than ten exceptions per single-location month for 80 percent of accounts.",
+            "tools": [
+              "An OCR API",
+              "A notebook"
+            ]
+          },
+          {
+            "build": "Two landing pages at $99 and $129 with a free-month offer and a sign-up form.",
+            "hypothesis_id": "H4",
+            "method": "Landing page price test",
+            "risks": "Sign-up intent is not payment; follow with card capture.",
+            "sample_size": "Roughly 400 visitors per variant for a detectable difference at typical conversion rates.",
+            "success_criteria": "Sign-up rate at $129 within 20 percent of the $99 rate.",
+            "tools": [
+              "A landing page builder",
+              "Ad spend of about $600"
+            ]
+          },
+          {
+            "build": "Half the pilot receives explanations on exceptions, half receives the bare list.",
+            "hypothesis_id": "H5",
+            "method": "Message test inside the pilot",
+            "risks": "Small groups; treat as directional.",
+            "sample_size": "Ten and ten within the pilot.",
+            "success_criteria": "Approval time and re-check rate improve in the explanation group.",
+            "tools": [
+              "The pilot inbox"
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "versions": [
+    {
+      "version": 1,
+      "artifact_id": "art_d9bc3ab6046343e9",
+      "produced_by_seat": "3",
+      "persona": "pm",
+      "press_release": {
+        "slots": [
+          {
+            "id": "headline",
+            "text": "BookkeepingService Closes the Books for Small Business Owners Every Month",
+            "claims": []
+          },
+          {
+            "id": "subheading",
+            "text": "BookkeepingService turns receipts, invoices and bank data into a finished monthly close, without a bookkeeper on staff.",
+            "claims": []
+          },
+          {
+            "id": "summary",
+            "text": "AUSTIN, Texas — March 15, 2027 — BookkeepingService today announced a bookkeeping service for small business owners who do their own books. Owners connect their bank and point-of-sale accounts, forward receipts and invoices, and receive a completed monthly close with the handful of items that need their attention. About 60 percent of small business owners do their own bookkeeping, and most spend hours every week on it.",
+            "claims": [
+              {
+                "text": "About 60 percent of small business owners do their own bookkeeping",
+                "kind": "evidence",
+                "finding_ids": [
+                  "F-02"
+                ]
+              }
+            ]
+          },
+          {
+            "id": "problem",
+            "text": "Small business owners spend hours every week reconciling receipts against bank statements, and most still hand their accountant a shoebox at year end. Mistakes are found late, when a supplier discount has expired or the accountant sends a list of questions.",
+            "claims": []
+          },
+          {
+            "id": "solution",
+            "text": "BookkeepingService connects to the owner's bank and point-of-sale system, accepts receipts and invoices by photo, email or upload, and matches every document to a transaction automatically. At month end the owner receives a close and a short list of exceptions. Maria Delgado, who runs two taquerias, used to spend Sunday nights with a spreadsheet; in her first month with BookkeepingService she reviewed eleven exceptions in fourteen minutes and approved the close from her phone.",
+            "claims": []
+          },
+          {
+            "id": "benefits",
+            "text": "BookkeepingService also flags supplier invoices with early-payment discounts before they expire and keeps every document for seven years. Devon Okafor, who owns a bike shop, caught two discounts worth $340 in his second month and stopped keeping paper copies.",
+            "claims": [
+              {
+                "text": "keeps every document for seven years",
+                "kind": "evidence",
+                "finding_ids": [
+                  "F-10"
+                ]
+              }
+            ]
+          },
+          {
+            "id": "internal_quote",
+            "text": "\"Owners told us they did not want to learn accounting; they wanted to know what was wrong and fix it in ten minutes,\" said Elena Park, head of product at BookkeepingService. \"We built the close around that ten minutes.\"",
+            "claims": []
+          },
+          {
+            "id": "cta",
+            "text": "BookkeepingService is available today for $99 a month per location. Owners can connect their accounts in fifteen minutes at bookkeepingservice.com.",
+            "claims": [
+              {
+                "text": "$99 a month per location",
+                "kind": "evidence",
+                "finding_ids": [
+                  "F-07"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "edits": [],
+      "caption": null
+    },
+    {
+      "version": 2,
+      "artifact_id": "art_e665bac85fa24a40",
+      "produced_by_seat": "4",
+      "persona": "vp_product",
+      "press_release": {
+        "slots": [
+          {
+            "id": "headline",
+            "text": "BookkeepingService Closes the Books for Independent Operators by the Third Business Day",
+            "claims": []
+          },
+          {
+            "id": "subheading",
+            "text": "BookkeepingService turns receipts, invoices and bank data into a reviewed monthly close, without a bookkeeper on staff.",
+            "claims": []
+          },
+          {
+            "id": "summary",
+            "text": "AUSTIN, Texas — March 15, 2027 — BookkeepingService today announced a bookkeeping service for owners of independent businesses with one to three locations who do their own books. Owners connect their bank and point-of-sale accounts, forward receipts and invoices, and receive a reviewed monthly close by the third business day with the handful of items that need their attention. About 60 percent of small business owners do their own bookkeeping, spending six to nine hours a week on it.",
+            "claims": [
+              {
+                "text": "About 60 percent of small business owners do their own bookkeeping",
+                "kind": "evidence",
+                "finding_ids": [
+                  "F-02"
+                ]
+              },
+              {
+                "text": "spending six to nine hours a week on it",
+                "kind": "assumption",
+                "finding_ids": []
+              }
+            ]
+          },
+          {
+            "id": "problem",
+            "text": "Owners of independent businesses running one to three locations spend six to nine hours a week, usually after close, reconciling receipts against bank statements, and most still hand their accountant a shoebox at year end. Seven of the ten operators in our panel had missed a supplier discount because an invoice surfaced after the payment window.",
+            "claims": [
+              {
+                "text": "Seven of the ten operators in our panel had missed a supplier discount",
+                "kind": "evidence",
+                "finding_ids": [
+                  "F-11"
+                ]
+              }
+            ]
+          },
+          {
+            "id": "solution",
+            "text": "BookkeepingService connects to the owner's bank and point-of-sale system, accepts receipts and invoices by photo, email or upload, and matches every document to a transaction automatically. By the third business day of the month the owner receives a close a BookkeepingService reviewer has checked and a short list of exceptions. Maria Delgado, who runs two taquerias in San Antonio, used to spend Sunday nights with a spreadsheet; in her first month with BookkeepingService she cleared eleven exceptions in fourteen minutes and approved the close from her phone.",
+            "claims": []
+          },
+          {
+            "id": "benefits",
+            "text": "BookkeepingService also flags supplier invoices with early-payment discounts before they expire and keeps every document for the seven years tax rules require. Devon Okafor, who owns a bike shop in Portland, caught two discounts worth $340 in his second month and stopped keeping paper copies.",
+            "claims": [
+              {
+                "text": "keeps every document for seven years",
+                "kind": "evidence",
+                "finding_ids": [
+                  "F-10"
+                ]
+              }
+            ]
+          },
+          {
+            "id": "internal_quote",
+            "text": "\"Owners told us they did not want to learn accounting; they wanted to know what was wrong and fix it in ten minutes,\" said Elena Park, head of product at BookkeepingService. \"We built the close around that ten minutes, and we put a person behind it.\"",
+            "claims": []
+          },
+          {
+            "id": "cta",
+            "text": "BookkeepingService is available today for $119 a month per location. Owners can connect their accounts in fifteen minutes at bookkeepingservice.com and receive their first reviewed close the following month.",
+            "claims": [
+              {
+                "text": "$119 a month per location",
+                "kind": "evidence",
+                "finding_ids": [
+                  "F-07"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "edits": [
+        {
+          "slot_id": "headline",
+          "new_text": "BookkeepingService Closes the Books for Independent Operators by the Third Business Day",
+          "rationale": "Named the segment the research supports and the concrete promise of a third-business-day close instead of a generic monthly claim.",
+          "evidence_finding_ids": [
+            "F-02",
+            "F-11"
+          ],
+          "change_kind": "sharpen"
+        },
+        {
+          "slot_id": "subheading",
+          "new_text": "BookkeepingService turns receipts, invoices and bank data into a reviewed monthly close, without a bookkeeper on staff.",
+          "rationale": "Added that the close is reviewed, which the panel named as the reason they would pay.",
+          "evidence_finding_ids": [
+            "F-07"
+          ],
+          "change_kind": "sharpen"
+        },
+        {
+          "slot_id": "summary",
+          "new_text": "AUSTIN, Texas — March 15, 2027 — BookkeepingService today announced a bookkeeping service for owners of independent businesses with one to three locations who do their own books. Owners connect their bank and point-of-sale accounts, forward receipts and invoices, and receive a reviewed monthly close by the third business day with the handful of items that need their attention. About 60 percent of small business owners do their own bookkeeping, spending six to nine hours a week on it.",
+          "rationale": "Sharpened the target customer to one-to-three-location operators and replaced the vague time claim with the panel's six to nine hours.",
+          "evidence_finding_ids": [
+            "F-02"
+          ],
+          "change_kind": "reground"
+        },
+        {
+          "slot_id": "problem",
+          "new_text": "Owners of independent businesses running one to three locations spend six to nine hours a week, usually after close, reconciling receipts against bank statements, and most still hand their accountant a shoebox at year end. Seven of the ten operators in our panel had missed a supplier discount because an invoice surfaced after the payment window.",
+          "rationale": "Replaced the generic pain with the panel's own numbers and the missed-discount trigger the research identified.",
+          "evidence_finding_ids": [
+            "F-11"
+          ],
+          "change_kind": "reground"
+        },
+        {
+          "slot_id": "solution",
+          "new_text": "BookkeepingService connects to the owner's bank and point-of-sale system, accepts receipts and invoices by photo, email or upload, and matches every document to a transaction automatically. By the third business day of the month the owner receives a close a BookkeepingService reviewer has checked and a short list of exceptions. Maria Delgado, who runs two taquerias in San Antonio, used to spend Sunday nights with a spreadsheet; in her first month with BookkeepingService she cleared eleven exceptions in fourteen minutes and approved the close from her phone.",
+          "rationale": "Made the review step and the third-business-day promise explicit, and placed Maria in a city so the anecdote reads as real.",
+          "evidence_finding_ids": [],
+          "change_kind": "clarify"
+        },
+        {
+          "slot_id": "benefits",
+          "new_text": "BookkeepingService also flags supplier invoices with early-payment discounts before they expire and keeps every document for the seven years tax rules require. Devon Okafor, who owns a bike shop in Portland, caught two discounts worth $340 in his second month and stopped keeping paper copies.",
+          "rationale": "Tied the seven-year retention to the tax rule that requires it.",
+          "evidence_finding_ids": [
+            "F-10"
+          ],
+          "change_kind": "reground"
+        },
+        {
+          "slot_id": "internal_quote",
+          "new_text": "\"Owners told us they did not want to learn accounting; they wanted to know what was wrong and fix it in ten minutes,\" said Elena Park, head of product at BookkeepingService. \"We built the close around that ten minutes, and we put a person behind it.\"",
+          "rationale": "Added the human review to the quote so the differentiator appears in the product's own voice.",
+          "evidence_finding_ids": [],
+          "change_kind": "sharpen"
+        },
+        {
+          "slot_id": "cta",
+          "new_text": "BookkeepingService is available today for $119 a month per location. Owners can connect their accounts in fifteen minutes at bookkeepingservice.com and receive their first reviewed close the following month.",
+          "rationale": "Moved the price inside the panel's willingness-to-pay range and set the expectation for the first close.",
+          "evidence_finding_ids": [
+            "F-07"
+          ],
+          "change_kind": "reground"
+        }
+      ],
+      "caption": "The refined release names the exact operator segment, puts a person behind the close, and grounds every number in the panel and the ledger."
+    },
+    {
+      "version": 3,
+      "artifact_id": "art_22cb6b6074db4498",
+      "produced_by_seat": "7",
+      "persona": "pm",
+      "press_release": {
+        "slots": [
+          {
+            "id": "headline",
+            "text": "BookkeepingService Closes the Books for Independent Operators by the Third Business Day",
+            "claims": []
+          },
+          {
+            "id": "subheading",
+            "text": "BookkeepingService turns receipts, invoices and bank data into a reviewed monthly close that owners approve in minutes, without a bookkeeper on staff.",
+            "claims": []
+          },
+          {
+            "id": "summary",
+            "text": "AUSTIN, Texas — March 15, 2027 — BookkeepingService today announced a bookkeeping service for owners of independent businesses with one to three locations who do their own books. Owners connect their bank and point-of-sale accounts, forward receipts and invoices, and by the third business day receive a monthly close that a BookkeepingService reviewer has checked, with the handful of items that need the owner's attention. About 60 percent of small business owners do their own bookkeeping, spending six to nine hours a week on it.",
+            "claims": [
+              {
+                "text": "About 60 percent of small business owners do their own bookkeeping",
+                "kind": "evidence",
+                "finding_ids": [
+                  "F-02"
+                ]
+              },
+              {
+                "text": "spending six to nine hours a week on it",
+                "kind": "assumption",
+                "finding_ids": []
+              }
+            ]
+          },
+          {
+            "id": "problem",
+            "text": "Owners of independent businesses running one to three locations spend six to nine hours a week, usually after close, reconciling receipts against bank statements, and most still hand their accountant a shoebox at year end. Seven of the ten operators in our panel had missed a supplier discount because an invoice surfaced after the payment window, and none of them wanted another dashboard to interpret.",
+            "claims": [
+              {
+                "text": "Seven of the ten operators in our panel had missed a supplier discount",
+                "kind": "evidence",
+                "finding_ids": [
+                  "F-11"
+                ]
+              }
+            ]
+          },
+          {
+            "id": "solution",
+            "text": "BookkeepingService connects to the owner's bank and point-of-sale system, accepts receipts and invoices by photo, email or upload, and matches every document to a transaction automatically. By the third business day of the month the owner receives a close a BookkeepingService reviewer has checked, a short list of exceptions, and a plain explanation of anything that looks unusual. Maria Delgado, who runs two taquerias in San Antonio, used to spend Sunday nights with a spreadsheet; in her first month with BookkeepingService she cleared eleven exceptions in fourteen minutes and approved the close from her phone.",
+            "claims": []
+          },
+          {
+            "id": "benefits",
+            "text": "BookkeepingService also flags supplier invoices with early-payment discounts before they expire, keeps every document for the seven years tax rules require, and hands the accountant a clean year-end package. Devon Okafor, who owns a bike shop in Portland, caught two discounts worth $340 in his second month and stopped keeping paper copies.",
+            "claims": [
+              {
+                "text": "keeps every document for seven years",
+                "kind": "evidence",
+                "finding_ids": [
+                  "F-10"
+                ]
+              }
+            ]
+          },
+          {
+            "id": "internal_quote",
+            "text": "\"Owners told us they did not want to learn accounting; they wanted to know what was wrong and fix it in ten minutes,\" said Elena Park, head of product at BookkeepingService. \"We built the close around that ten minutes, and we put a person behind it.\"",
+            "claims": []
+          },
+          {
+            "id": "cta",
+            "text": "BookkeepingService is available today for $119 a month per location, with the first month free. Owners can connect their accounts in fifteen minutes at bookkeepingservice.com and receive their first reviewed close the following month.",
+            "claims": [
+              {
+                "text": "$119 a month per location",
+                "kind": "evidence",
+                "finding_ids": [
+                  "F-07"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "edits": [
+        {
+          "slot_id": "subheading",
+          "new_text": "BookkeepingService turns receipts, invoices and bank data into a reviewed monthly close that owners approve in minutes, without a bookkeeper on staff.",
+          "rationale": "Four of ten concept participants asked how much work the owner still does; the sub-heading now says approval takes minutes.",
+          "evidence_finding_ids": [],
+          "change_kind": "clarify"
+        },
+        {
+          "slot_id": "problem",
+          "new_text": "Owners of independent businesses running one to three locations spend six to nine hours a week, usually after close, reconciling receipts against bank statements, and most still hand their accountant a shoebox at year end. Seven of the ten operators in our panel had missed a supplier discount because an invoice surfaced after the payment window, and none of them wanted another dashboard to interpret.",
+          "rationale": "Added the panel's rejection of dashboards to pre-empt the concern that this is another tool to interpret.",
+          "evidence_finding_ids": [],
+          "change_kind": "clarify"
+        },
+        {
+          "slot_id": "solution",
+          "new_text": "BookkeepingService connects to the owner's bank and point-of-sale system, accepts receipts and invoices by photo, email or upload, and matches every document to a transaction automatically. By the third business day of the month the owner receives a close a BookkeepingService reviewer has checked, a short list of exceptions, and a plain explanation of anything that looks unusual. Maria Delgado, who runs two taquerias in San Antonio, used to spend Sunday nights with a spreadsheet; in her first month with BookkeepingService she cleared eleven exceptions in fourteen minutes and approved the close from her phone.",
+          "rationale": "Participants who trusted the automation least wanted an explanation with each exception; the solution paragraph now promises one.",
+          "evidence_finding_ids": [],
+          "change_kind": "clarify"
+        },
+        {
+          "slot_id": "benefits",
+          "new_text": "BookkeepingService also flags supplier invoices with early-payment discounts before they expire, keeps every document for the seven years tax rules require, and hands the accountant a clean year-end package. Devon Okafor, who owns a bike shop in Portland, caught two discounts worth $340 in his second month and stopped keeping paper copies.",
+          "rationale": "Three participants asked what the accountant receives at year end; the benefits now name the year-end package.",
+          "evidence_finding_ids": [],
+          "change_kind": "clarify"
+        },
+        {
+          "slot_id": "cta",
+          "new_text": "BookkeepingService is available today for $119 a month per location, with the first month free. Owners can connect their accounts in fifteen minutes at bookkeepingservice.com and receive their first reviewed close the following month.",
+          "rationale": "Budget-conscious participants wanted to try before committing; a free first month addresses it without changing the price.",
+          "evidence_finding_ids": [
+            "F-07"
+          ],
+          "change_kind": "sharpen"
+        },
+        {
+          "slot_id": "summary",
+          "new_text": "AUSTIN, Texas — March 15, 2027 — BookkeepingService today announced a bookkeeping service for owners of independent businesses with one to three locations who do their own books. Owners connect their bank and point-of-sale accounts, forward receipts and invoices, and by the third business day receive a monthly close that a BookkeepingService reviewer has checked, with the handful of items that need the owner's attention. About 60 percent of small business owners do their own bookkeeping, spending six to nine hours a week on it.",
+          "rationale": "Changed by the Principal PM without a stated reason.",
+          "evidence_finding_ids": [],
+          "change_kind": "polish"
+        }
+      ],
+      "caption": "The customer-validated release explains the owner's remaining work, adds an explanation to each exception, names the year-end package and offers a free first month."
+    },
+    {
+      "version": 4,
+      "artifact_id": "art_54b9062229f848ab",
+      "produced_by_seat": "9",
+      "persona": "editor",
+      "press_release": {
+        "slots": [
+          {
+            "id": "headline",
+            "text": "BookkeepingService Closes the Books for Independent Operators by the Third Business Day",
+            "claims": []
+          },
+          {
+            "id": "subheading",
+            "text": "BookkeepingService turns receipts, invoices and bank data into a reviewed monthly close that owners approve in minutes, without a bookkeeper on staff.",
+            "claims": []
+          },
+          {
+            "id": "summary",
+            "text": "AUSTIN, Texas — March 15, 2027 — BookkeepingService today announced a bookkeeping service for owners of independent businesses with one to three locations who do their own books. Owners connect their bank and point-of-sale accounts, forward receipts and invoices, and by the third business day receive a monthly close a BookkeepingService reviewer has checked, with the few items that need the owner's attention. About 60 percent of small business owners do their own bookkeeping and spend six to nine hours a week on it.",
+            "claims": [
+              {
+                "text": "About 60 percent of small business owners do their own bookkeeping",
+                "kind": "evidence",
+                "finding_ids": [
+                  "F-02"
+                ]
+              },
+              {
+                "text": "spending six to nine hours a week on it",
+                "kind": "assumption",
+                "finding_ids": []
+              }
+            ]
+          },
+          {
+            "id": "problem",
+            "text": "Owners of independent businesses with one to three locations spend six to nine hours a week, usually after close, reconciling receipts against bank statements, and most still hand their accountant a shoebox at year end. Seven of the ten operators in our panel had missed a supplier discount because an invoice surfaced after the payment window, and none wanted another dashboard to interpret.",
+            "claims": [
+              {
+                "text": "Seven of the ten operators in our panel had missed a supplier discount",
+                "kind": "evidence",
+                "finding_ids": [
+                  "F-11"
+                ]
+              }
+            ]
+          },
+          {
+            "id": "solution",
+            "text": "BookkeepingService connects to the owner's bank and point-of-sale system, accepts receipts and invoices by photo, email or upload, and matches every document to a transaction automatically. By the third business day of the month the owner receives a close a BookkeepingService reviewer has checked, a short list of exceptions, and a plain explanation of anything unusual. Maria Delgado, who runs two taquerias in San Antonio, used to spend Sunday nights with a spreadsheet. In her first month with BookkeepingService she cleared eleven exceptions in fourteen minutes and approved the close from her phone.",
+            "claims": []
+          },
+          {
+            "id": "benefits",
+            "text": "BookkeepingService also flags supplier invoices with early-payment discounts before they expire, keeps every document for the seven years tax rules require, and hands the accountant a clean year-end package. Devon Okafor, who owns a bike shop in Portland, caught two discounts worth $340 in his second month and stopped keeping paper copies.",
+            "claims": [
+              {
+                "text": "keeps every document for seven years",
+                "kind": "evidence",
+                "finding_ids": [
+                  "F-10"
+                ]
+              }
+            ]
+          },
+          {
+            "id": "internal_quote",
+            "text": "\"Owners told us they did not want to learn accounting. They wanted to know what was wrong and fix it in ten minutes,\" said Elena Park, head of product at BookkeepingService. \"We built the close around those ten minutes, and we put a person behind it.\"",
+            "claims": []
+          },
+          {
+            "id": "cta",
+            "text": "BookkeepingService is available today for $119 a month per location, with the first month free. Owners connect their accounts in fifteen minutes at bookkeepingservice.com and receive their first reviewed close the following month.",
+            "claims": [
+              {
+                "text": "$119 a month per location",
+                "kind": "evidence",
+                "finding_ids": [
+                  "F-07"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "edits": [
+        {
+          "slot_id": "summary",
+          "new_text": "AUSTIN, Texas — March 15, 2027 — BookkeepingService today announced a bookkeeping service for owners of independent businesses with one to three locations who do their own books. Owners connect their bank and point-of-sale accounts, forward receipts and invoices, and by the third business day receive a monthly close a BookkeepingService reviewer has checked, with the few items that need the owner's attention. About 60 percent of small business owners do their own bookkeeping and spend six to nine hours a week on it.",
+          "rationale": "Tightened the summary and removed a hedging clause.",
+          "evidence_finding_ids": [],
+          "change_kind": "polish"
+        },
+        {
+          "slot_id": "problem",
+          "new_text": "Owners of independent businesses with one to three locations spend six to nine hours a week, usually after close, reconciling receipts against bank statements, and most still hand their accountant a shoebox at year end. Seven of the ten operators in our panel had missed a supplier discount because an invoice surfaced after the payment window, and none wanted another dashboard to interpret.",
+          "rationale": "Cut a repeated phrase and kept the panel numbers.",
+          "evidence_finding_ids": [],
+          "change_kind": "polish"
+        },
+        {
+          "slot_id": "solution",
+          "new_text": "BookkeepingService connects to the owner's bank and point-of-sale system, accepts receipts and invoices by photo, email or upload, and matches every document to a transaction automatically. By the third business day of the month the owner receives a close a BookkeepingService reviewer has checked, a short list of exceptions, and a plain explanation of anything unusual. Maria Delgado, who runs two taquerias in San Antonio, used to spend Sunday nights with a spreadsheet. In her first month with BookkeepingService she cleared eleven exceptions in fourteen minutes and approved the close from her phone.",
+          "rationale": "Split a long sentence so the anecdote reads as speech.",
+          "evidence_finding_ids": [],
+          "change_kind": "polish"
+        },
+        {
+          "slot_id": "internal_quote",
+          "new_text": "\"Owners told us they did not want to learn accounting. They wanted to know what was wrong and fix it in ten minutes,\" said Elena Park, head of product at BookkeepingService. \"We built the close around those ten minutes, and we put a person behind it.\"",
+          "rationale": "Made the quote read as spoken rather than written.",
+          "evidence_finding_ids": [],
+          "change_kind": "polish"
+        },
+        {
+          "slot_id": "cta",
+          "new_text": "BookkeepingService is available today for $119 a month per location, with the first month free. Owners connect their accounts in fifteen minutes at bookkeepingservice.com and receive their first reviewed close the following month.",
+          "rationale": "Active voice in the call to action.",
+          "evidence_finding_ids": [],
+          "change_kind": "polish"
+        }
+      ],
+      "caption": "Editorial pass for voice and flow; all claims kept, two assumptions left flagged for validation. Bar Raiser fixes applied. (Bar Raiser revision)"
+    }
+  ],
+  "findings": [
+    {
+      "id": "F-01",
+      "claim": "Small businesses in the US spend about $37 billion a year on bookkeeping labour.",
+      "metric": "$37B/yr (2025)",
+      "topic": "market_size",
+      "source_ids": [
+        "S-01"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "id": "F-02",
+      "claim": "About 60 percent of owners of small businesses do the bookkeeping themselves.",
+      "metric": "~60% (2025)",
+      "topic": "customer",
+      "source_ids": [
+        "S-01"
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "F-03",
+      "claim": "Owner-operated businesses with one to three locations grew 4 percent in 2025.",
+      "metric": "+4% (2025)",
+      "topic": "market_size",
+      "source_ids": [
+        "S-02"
+      ],
+      "confidence": "low"
+    },
+    {
+      "id": "F-04",
+      "claim": "Cloud bookkeeping penetration among owner-operated businesses is close to 45 percent.",
+      "metric": "~45%",
+      "topic": "trend",
+      "source_ids": [
+        "S-02"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "id": "F-05",
+      "claim": "Full-service bookkeeping firms charge $300 to $800 per month and still require the owner to gather documents.",
+      "metric": "$300–$800/mo",
+      "topic": "competition",
+      "source_ids": [],
+      "confidence": "medium"
+    },
+    {
+      "id": "F-06",
+      "claim": "Cloud accounting suites cost $30 to $90 per month but leave categorisation and reconciliation to the owner.",
+      "metric": "$30–$90/mo",
+      "topic": "competition",
+      "source_ids": [],
+      "confidence": "medium"
+    },
+    {
+      "id": "F-07",
+      "claim": "Owners' willingness to pay clusters between $80 and $150 per month when a person reviews the close.",
+      "metric": "$80–$150/mo",
+      "topic": "pricing",
+      "source_ids": [
+        "S-01"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "id": "F-08",
+      "claim": "Open-banking API access to small-business bank data is now standard in the US.",
+      "metric": null,
+      "topic": "trend",
+      "source_ids": [
+        "S-03"
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "F-09",
+      "claim": "Receipt OCR reaches over 95 percent field accuracy on clean images.",
+      "metric": ">95% field accuracy",
+      "topic": "trend",
+      "source_ids": [
+        "S-04"
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "F-10",
+      "claim": "Tax rules require business records to be retained for seven years.",
+      "metric": "7 years",
+      "topic": "regulation",
+      "source_ids": [],
+      "confidence": "high"
+    },
+    {
+      "id": "F-11",
+      "claim": "A missed supplier discount or a tax-time surprise is the most common trigger for changing bookkeeping habits.",
+      "metric": null,
+      "topic": "customer",
+      "source_ids": [
+        "S-01"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "id": "F-12",
+      "claim": "No competitor combines automated matching with a reviewed close under $150 per month for one location.",
+      "metric": "<$150/mo",
+      "topic": "competition",
+      "source_ids": [],
+      "confidence": "low"
+    }
+  ],
+  "sources": [
+    {
+      "id": "S-01",
+      "url": "https://example.com/smb-bookkeeping-survey-2025",
+      "title": "Small Business Bookkeeping Survey 2025",
+      "cited_text": "Willingness to pay clusters between $80 and $150 per month for a reviewed close."
+    },
+    {
+      "id": "S-02",
+      "url": "https://example.com/cloud-accounting-market-report",
+      "title": "Cloud Accounting Market Report",
+      "cited_text": "Cloud bookkeeping penetration among owner-operated businesses is close to 45 percent."
+    },
+    {
+      "id": "S-03",
+      "url": "https://example.com/open-banking-smb-2025",
+      "title": "Open Banking for Small Business, 2025",
+      "cited_text": "Bank data access via API is standard for US small-business accounts."
+    },
+    {
+      "id": "S-04",
+      "url": "https://example.com/receipt-ocr-benchmark",
+      "title": "Receipt OCR Benchmark",
+      "cited_text": "Field accuracy exceeds 95 percent on clean images."
+    }
+  ],
+  "bar_raiser": {
+    "scores": [
+      {
+        "criterion": "customer_clarity",
+        "score": 5,
+        "note": "The summary names one-to-three-location operators without finance staff."
+      },
+      {
+        "criterion": "problem_specificity",
+        "score": 4,
+        "note": "Six to nine hours and the missed-discount trigger are specific; the year-end scramble is asserted."
+      },
+      {
+        "criterion": "anecdote_believability",
+        "score": 4,
+        "note": "Maria and Devon have places and numbers; Maria's fourteen minutes is plausible."
+      },
+      {
+        "criterion": "v1_feasibility",
+        "score": 4,
+        "note": "Matching plus a reviewer is buildable; reviewer capacity is the open question the FAQ admits."
+      },
+      {
+        "criterion": "differentiation",
+        "score": 4,
+        "note": "The reviewed close under $150 is the claim; F-12 is low confidence."
+      },
+      {
+        "criterion": "evidence_coverage",
+        "score": 3,
+        "note": "The six-to-nine-hours figure in the summary is an assumption presented like a finding."
+      },
+      {
+        "criterion": "executive_readability",
+        "score": 5,
+        "note": "Reads in one pass; the FAQ answers are direct."
+      }
+    ],
+    "overall": 4,
+    "verdict": "revise",
+    "required_fixes": [
+      {
+        "target": "press_release.benefits",
+        "instruction": "Keep the year-end package explicit and confirm the seven-year retention claim cites F-10.",
+        "severity": "important"
+      },
+      {
+        "target": "internal_faq.6",
+        "instruction": "State the 4 million businesses figure as an assumption to validate, not as a fact.",
+        "severity": "blocking"
+      }
+    ],
+    "key_insight": "One assumption in the summary reads like evidence; fix it before leadership sees it."
+  },
+  "last_seq": 360,
+  "roster": [
+    {
+      "id": "strategist",
+      "name": "Product Strategist",
+      "title": "Product Strategy Expert",
+      "initials": "ST",
+      "hue": 0,
+      "seats": [
+        "0"
+      ],
+      "how_i_review": "I turn a raw idea into a precise customer, problem and scope before anyone spends effort on it."
+    },
+    {
+      "id": "analyst",
+      "name": "Market Analyst",
+      "title": "Expert Market Research Analyst",
+      "initials": "MA",
+      "hue": 1,
+      "seats": [
+        "1",
+        "1b"
+      ],
+      "how_i_review": "I bring current numbers and named competitors, with sources, and I say plainly what the evidence does not support."
+    },
+    {
+      "id": "researcher",
+      "name": "User Researcher",
+      "title": "Principal User Researcher",
+      "initials": "UR",
+      "hue": 2,
+      "seats": [
+        "2",
+        "6"
+      ],
+      "how_i_review": "I run simulated panels the way a real researcher would: past behaviour over promises, specifics over generalities, skeptics included."
+    },
+    {
+      "id": "pm",
+      "name": "Principal PM",
+      "title": "Principal Product Manager",
+      "initials": "PM",
+      "hue": 3,
+      "seats": [
+        "3",
+        "7"
+      ],
+      "how_i_review": "I write the press release from the customer backwards and make surgical edits when research tells me to."
+    },
+    {
+      "id": "vp_product",
+      "name": "VP Product",
+      "title": "VP of Product",
+      "initials": "VP",
+      "hue": 4,
+      "seats": [
+        "4"
+      ],
+      "how_i_review": "I sharpen claims, tighten the customer, and refuse manufactured statistics."
+    },
+    {
+      "id": "biz_eng",
+      "name": "VP Business + Principal Engineer",
+      "title": "VP Business Lead and Principal Engineer",
+      "initials": "BE",
+      "hue": 5,
+      "seats": [
+        "5"
+      ],
+      "how_i_review": "We answer the hard internal questions together: unit economics, TAM, feasibility, guardrails, risk."
+    },
+    {
+      "id": "customer_success",
+      "name": "Customer Success Lead",
+      "title": "Customer Success Lead",
+      "initials": "CS",
+      "hue": 6,
+      "seats": [
+        "8"
+      ],
+      "how_i_review": "I turn the concerns real customers raised into the questions they will actually ask, and answer honestly."
+    },
+    {
+      "id": "editor",
+      "name": "Senior Editor",
+      "title": "Senior Editor and Writer",
+      "initials": "ED",
+      "hue": 7,
+      "seats": [
+        "9"
+      ],
+      "how_i_review": "I make the document read like one voice, check every claim against the ledger, and cut hedging."
+    },
+    {
+      "id": "bar_raiser",
+      "name": "Bar Raiser",
+      "title": "Bar Raiser",
+      "initials": "BR",
+      "hue": 8,
+      "seats": [
+        "9b"
+      ],
+      "how_i_review": "I score the document against the bar an S-Team reader would apply and name the fixes that matter."
+    },
+    {
+      "id": "validation_lead",
+      "name": "Head of Validation",
+      "title": "Head of Product Validation and Research",
+      "initials": "HV",
+      "hue": 9,
+      "seats": [
+        "10"
+      ],
+      "how_i_review": "I decompose the concept into testable hypotheses and sequence the cheapest tests that could kill it."
+    }
+  ],
+  "seats": [
+    {
+      "id": "0",
+      "name": "Analyze Product Concept",
+      "persona": "strategist",
+      "produces": "brief",
+      "depends_on": [],
+      "phase": "Frame & research",
+      "tier": "fast"
+    },
+    {
+      "id": "1",
+      "name": "Market Research & Analysis",
+      "persona": "analyst",
+      "produces": "market_research",
+      "depends_on": [
+        "brief"
+      ],
+      "phase": "Frame & research",
+      "tier": "judgment"
+    },
+    {
+      "id": "1b",
+      "name": "Evidence Ledger",
+      "persona": "analyst",
+      "produces": "ledger",
+      "depends_on": [
+        "market_research"
+      ],
+      "phase": "Frame & research",
+      "tier": "fast"
+    },
+    {
+      "id": "2",
+      "name": "Problem Validation Research",
+      "persona": "researcher",
+      "produces": "problem_validation",
+      "depends_on": [
+        "ledger"
+      ],
+      "phase": "Frame & research",
+      "tier": "judgment"
+    },
+    {
+      "id": "3",
+      "name": "Drafting Press Release",
+      "persona": "pm",
+      "produces": "pr_v1",
+      "depends_on": [
+        "problem_validation"
+      ],
+      "phase": "Draft & review",
+      "tier": "judgment"
+    },
+    {
+      "id": "4",
+      "name": "Refining Press Release",
+      "persona": "vp_product",
+      "produces": "pr_v2",
+      "depends_on": [
+        "pr_v1"
+      ],
+      "phase": "Draft & review",
+      "tier": "judgment"
+    },
+    {
+      "id": "5",
+      "name": "Drafting Internal FAQ",
+      "persona": "biz_eng",
+      "produces": "internal_faq",
+      "depends_on": [
+        "pr_v2"
+      ],
+      "phase": "Pressure-test",
+      "tier": "judgment"
+    },
+    {
+      "id": "6",
+      "name": "Concept Validation Research",
+      "persona": "researcher",
+      "produces": "concept_validation",
+      "depends_on": [
+        "pr_v2"
+      ],
+      "phase": "Pressure-test",
+      "tier": "judgment"
+    },
+    {
+      "id": "7",
+      "name": "Solution Refinement",
+      "persona": "pm",
+      "produces": "pr_v3",
+      "depends_on": [
+        "internal_faq",
+        "concept_validation"
+      ],
+      "phase": "Refine & finalise",
+      "tier": "judgment"
+    },
+    {
+      "id": "8",
+      "name": "Drafting External FAQ",
+      "persona": "customer_success",
+      "produces": "external_faq",
+      "depends_on": [
+        "pr_v3"
+      ],
+      "phase": "Refine & finalise",
+      "tier": "fast"
+    },
+    {
+      "id": "9",
+      "name": "Synthesizing PRFAQ Document",
+      "persona": "editor",
+      "produces": "prfaq",
+      "depends_on": [
+        "external_faq"
+      ],
+      "phase": "Refine & finalise",
+      "tier": "judgment"
+    },
+    {
+      "id": "9b",
+      "name": "Bar Raiser Review",
+      "persona": "bar_raiser",
+      "produces": "bar_raiser",
+      "depends_on": [
+        "prfaq"
+      ],
+      "phase": "Refine & finalise",
+      "tier": "reviewer"
+    },
+    {
+      "id": "10",
+      "name": "Hypothesis-Driven Validation Plan",
+      "persona": "validation_lead",
+      "produces": "plan",
+      "depends_on": [
+        "prfaq"
+      ],
+      "phase": "Refine & finalise",
+      "tier": "judgment"
+    }
+  ]
+}

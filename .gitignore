@@ -1,45 +1,27 @@
-# Build directories - never commit static builds
-build/
-static/react/
+# build output
 frontend/dist/
+build/
 
-# Dependencies
+# dependencies
 node_modules/
 __pycache__/
 *.pyc
-*.pyo
-*.pyd
+.venv/
+.pytest_cache/
+.ruff_cache/
 
-# Environment variables
+# environment
 .env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+.env.*
+!.env.example
 
-# IDE files
-.vscode/
-.idea/
-*.swp
-*.swo
-
-# OS generated files
-.DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
-Thumbs.db
-
-# Logs
-*.log
-logs/
-
-# Cache
-.cache/
-
-# Database files
+# data and logs
 data/
 *.db
 *.sqlite
+*.log
+
+# editor / os
+.vscode/
+.idea/
+.DS_Store
