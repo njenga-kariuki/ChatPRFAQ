@@ -9,7 +9,7 @@ import uuid
 from datetime import datetime, timezone
 from typing import Any
 
-from sqlalchemy import delete, func, select, update
+from sqlalchemy import delete, event, func, select, update
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, async_sessionmaker, create_async_engine
 
 from app.db.models import ArtifactRow, Base, EventRow, FindingRow, RunRow, SourceRow, StepRow, VersionRow
@@ -33,7 +33,19 @@ class Store:
             path = database_url.split("///", 1)[-1]
             if path and path != ":memory:":
                 os.makedirs(os.path.dirname(path) or ".", exist_ok=True)
-        self.engine: AsyncEngine = create_async_engine(database_url, future=True)
+        connect_args = {"timeout": 30} if database_url.startswith("sqlite") else {}
+        self.engine: AsyncEngine = create_async_engine(database_url, future=True, connect_args=connect_args)
+        if database_url.startswith("sqlite"):
+            # concurrent seat tasks write while the API reads: WAL lets readers proceed and
+            # the busy timeout makes writers wait instead of failing with "database is locked"
+            @event.listens_for(self.engine.sync_engine, "connect")
+            def _sqlite_pragmas(dbapi_connection, _record):  # pragma: no cover - driver hook
+                cursor = dbapi_connection.cursor()
+                cursor.execute("PRAGMA journal_mode=WAL")
+                cursor.execute("PRAGMA synchronous=NORMAL")
+                cursor.execute("PRAGMA busy_timeout=30000")
+                cursor.close()
+
         self.sessions = async_sessionmaker(self.engine, expire_on_commit=False, class_=AsyncSession)
         self.url = database_url
 
