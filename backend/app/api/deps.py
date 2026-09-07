@@ -16,7 +16,10 @@ def get_store(request: Request) -> Store:
 
 
 def get_runner(request: Request) -> CouncilRunner:
-    return request.app.state.runner
+    runner = request.app.state.runner
+    if runner is None:
+        raise HTTPException(status_code=503, detail="model provider is not configured: set ANTHROPIC_API_KEY or LLM_PROVIDER=fake")
+    return runner
 
 
 def require_owner(settings: Settings = Depends(get_settings), authorization: str | None = Header(default=None)) -> None:

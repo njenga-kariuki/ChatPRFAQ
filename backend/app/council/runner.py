@@ -281,8 +281,46 @@ class CouncilRunner:
                 await self.store.update_run(run_id, config=config)
 
         running: dict[str, asyncio.Task] = {}
-        pending_revision = False
 
+        try:
+            await self._council_loop(run_id, state, graph, artifacts, completed_kinds, finished, running, config, framing)
+        except BaseException:
+            # a failed or cancelled run must not leave sibling seats streaming into the log
+            for t in running.values():
+                if not t.done():
+                    t.cancel()
+            if running:
+                await asyncio.gather(*running.values(), return_exceptions=True)
+            raise
+
+        if state.cancel:
+            return
+        if not run_is_complete(graph, finished):
+            raise RuntimeError("council stopped before every seat finished")
+
+        latest = await self.store.latest_artifacts(run_id)
+        review_row = latest.get("bar_raiser")
+        review_payload = json.loads(review_row.payload_json) if review_row else None
+        run = await self.store.get_run(run_id)
+        assert run is not None
+        await self.store.update_run(run_id, status="completed", completed_at=None)
+        from app.db.store import now_iso
+
+        await self.store.update_run(run_id, completed_at=now_iso())
+        await self.emit(
+            run_id,
+            "run.completed",
+            prfaq_artifact_id=latest["prfaq"].id,
+            plan_artifact_id=latest["plan"].id,
+            total_cost_usd=run.total_cost_usd,
+            duration_s=round(time.monotonic() - started, 1),
+            bar_raiser=review_payload,
+        )
+        await self.emit(run_id, "run.status", status="completed")
+
+
+    async def _council_loop(self, run_id: str, state: RunState, graph, artifacts: dict[str, Any], completed_kinds: set[str], finished: set[str], running: dict[str, asyncio.Task], config: dict[str, Any], framing: Framing) -> None:
+        pending_revision = False
         while True:
             if state.cancel:
                 break
@@ -320,31 +358,6 @@ class CouncilRunner:
                     finished.add("9b")
                 else:
                     finished.add(seat_id)
-
-        if state.cancel:
-            return
-        if not run_is_complete(graph, finished):
-            raise RuntimeError("council stopped before every seat finished")
-
-        latest = await self.store.latest_artifacts(run_id)
-        review_row = latest.get("bar_raiser")
-        review_payload = json.loads(review_row.payload_json) if review_row else None
-        run = await self.store.get_run(run_id)
-        assert run is not None
-        await self.store.update_run(run_id, status="completed", completed_at=None)
-        from app.db.store import now_iso
-
-        await self.store.update_run(run_id, completed_at=now_iso())
-        await self.emit(
-            run_id,
-            "run.completed",
-            prfaq_artifact_id=latest["prfaq"].id,
-            plan_artifact_id=latest["plan"].id,
-            total_cost_usd=run.total_cost_usd,
-            duration_s=round(time.monotonic() - started, 1),
-            bar_raiser=review_payload,
-        )
-        await self.emit(run_id, "run.status", status="completed")
 
     async def _over_budget(self, run_id: str) -> bool:
         run = await self.store.get_run(run_id)
@@ -491,6 +504,10 @@ class CouncilRunner:
                 await buffer.flush()
                 last_error = e
                 break
+            except asyncio.CancelledError:
+                await buffer.flush()
+                await self.store.update_step(step_id, status="cancelled", ended_at=_now(), duration_s=round(time.monotonic() - t0, 2))
+                raise
             except asyncio.TimeoutError:
                 await buffer.flush()
                 last_error = ProviderError(f"seat {seat.id} exceeded {self.settings.run_step_timeout_s}s")

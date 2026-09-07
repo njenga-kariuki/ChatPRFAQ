@@ -96,3 +96,27 @@ async def test_cancel_and_resume_continues_from_completed_seats(settings):
     assert len(seat1_runs) == 1  # research was not repeated
     assert (await store.get_run(run_id)).status == "completed"
     await store.close()
+
+
+@pytest.mark.asyncio
+async def test_cancel_stops_parallel_seats_in_flight(settings):
+    settings.fake_stream_delay_s = 0.02
+    store, bus, runner = await _runner(settings)
+    run_id = await runner.create_run("A repairs marketplace for small landlords that dispatches vetted tradespeople")
+    q = bus.subscribe(run_id)
+    await _wait_for(q, "framing.ready")
+    await runner.confirm(run_id, None)
+    # wait until both parallel seats have started
+    started = set()
+    while not {"5", "6"} <= started:
+        ev = await asyncio.wait_for(q.get(), 60)
+        if ev["type"] == "step.started":
+            started.add(ev["seat"])
+    await runner.cancel(run_id)
+    seq_at_cancel = await store.last_seq(run_id)
+    await asyncio.sleep(0.4)
+    assert await store.last_seq(run_id) == seq_at_cancel  # nothing streams after the cancel
+    steps = await store.list_steps(run_id)
+    assert {s.status for s in steps if s.seat in ("5", "6")} == {"cancelled"}
+    assert (await store.get_run(run_id)).status == "cancelled"
+    await store.close()
