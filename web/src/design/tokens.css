@@ -1,0 +1,185 @@
+/* ChatPRFAQ design tokens. Three-state theme: bare :root is light, system dark via
+   prefers-color-scheme (unless the user chose light), and an explicit data-theme="dark". */
+
+:root {
+  color-scheme: light;
+
+  /* Paper and ink (warm neutral) */
+  --paper: #fafaf7;
+  --paper-2: #f3f2ee;
+  --paper-3: #ebeae5;
+  --ink: #1a1a18;
+  --ink-2: #3b3b37;
+  --muted: #6b6b66;
+  --muted-2: #8f8f89;
+  --rule: #e6e5e0;
+  --rule-2: #d6d5cf;
+
+  /* One accent: ink blue, also the "live" colour */
+  --accent: #3556c8;
+  --accent-ink: #ffffff;
+  --accent-soft: rgba(53, 86, 200, 0.1);
+  --accent-soft-2: rgba(53, 86, 200, 0.2);
+
+  /* Desaturated semantics */
+  --success: #3e7c59;
+  --success-soft: rgba(62, 124, 89, 0.12);
+  --warning: #9a6b1e;
+  --warning-soft: rgba(154, 107, 30, 0.12);
+  --danger: #a5453c;
+  --danger-soft: rgba(165, 69, 60, 0.1);
+
+  /* Diff tokens */
+  --ins: var(--accent);
+  --ins-bg: transparent;
+  --del: #a5453c;
+  --del-bg: transparent;
+
+  --shadow-sheet: 0 12px 32px rgba(26, 26, 24, 0.16), 0 1px 2px rgba(26, 26, 24, 0.08);
+  --shadow-pop: 0 6px 20px rgba(26, 26, 24, 0.14), 0 1px 2px rgba(26, 26, 24, 0.08);
+  --focus-ring: 0 0 0 2px var(--paper), 0 0 0 4px var(--accent);
+
+  /* Persona hue ring: ten hues, constant lightness, low chroma. Index = roster hue. */
+  --persona-l: 44%;
+  --persona-c: 0.105;
+  --persona-bg-l: 92.5%;
+  --persona-bg-c: 0.04;
+  --persona-0-h: 25;
+  --persona-1-h: 277;
+  --persona-2-h: 169;
+  --persona-3-h: 61;
+  --persona-4-h: 313;
+  --persona-5-h: 205;
+  --persona-6-h: 97;
+  --persona-7-h: 349;
+  --persona-8-h: 241;
+  --persona-9-h: 133;
+  --persona-0: oklch(var(--persona-l) var(--persona-c) var(--persona-0-h));
+  --persona-1: oklch(var(--persona-l) var(--persona-c) var(--persona-1-h));
+  --persona-2: oklch(var(--persona-l) var(--persona-c) var(--persona-2-h));
+  --persona-3: oklch(var(--persona-l) var(--persona-c) var(--persona-3-h));
+  --persona-4: oklch(var(--persona-l) var(--persona-c) var(--persona-4-h));
+  --persona-5: oklch(var(--persona-l) var(--persona-c) var(--persona-5-h));
+  --persona-6: oklch(var(--persona-l) var(--persona-c) var(--persona-6-h));
+  --persona-7: oklch(var(--persona-l) var(--persona-c) var(--persona-7-h));
+  --persona-8: oklch(var(--persona-l) var(--persona-c) var(--persona-8-h));
+  --persona-9: oklch(var(--persona-l) var(--persona-c) var(--persona-9-h));
+  --persona-0-bg: oklch(var(--persona-bg-l) var(--persona-bg-c) var(--persona-0-h));
+  --persona-1-bg: oklch(var(--persona-bg-l) var(--persona-bg-c) var(--persona-1-h));
+  --persona-2-bg: oklch(var(--persona-bg-l) var(--persona-bg-c) var(--persona-2-h));
+  --persona-3-bg: oklch(var(--persona-bg-l) var(--persona-bg-c) var(--persona-3-h));
+  --persona-4-bg: oklch(var(--persona-bg-l) var(--persona-bg-c) var(--persona-4-h));
+  --persona-5-bg: oklch(var(--persona-bg-l) var(--persona-bg-c) var(--persona-5-h));
+  --persona-6-bg: oklch(var(--persona-bg-l) var(--persona-bg-c) var(--persona-6-h));
+  --persona-7-bg: oklch(var(--persona-bg-l) var(--persona-bg-c) var(--persona-7-h));
+  --persona-8-bg: oklch(var(--persona-bg-l) var(--persona-bg-c) var(--persona-8-h));
+  --persona-9-bg: oklch(var(--persona-bg-l) var(--persona-bg-c) var(--persona-9-h));
+
+  /* Typography */
+  --font-ui: 'IBM Plex Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+  --font-doc: 'Source Serif 4', Charter, Georgia, 'Times New Roman', serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --fs-12: 12px;
+  --fs-13: 13px;
+  --fs-14: 14px;
+  --fs-15: 15px;
+  --fs-17: 17px;
+  --fs-20: 20px;
+  --fs-24: 24px;
+  --fs-30: 30px;
+  --lh-ui: 1.5;
+  --lh-doc: 1.65;
+
+  /* Spacing, radii, measures */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 24px;
+  --sp-6: 32px;
+  --sp-7: 48px;
+  --sp-8: 64px;
+  --r-1: 4px;
+  --r-2: 8px;
+  --r-pill: 999px;
+  --measure-doc: 680px;
+  --measure-timeline: 760px;
+  --rail-w: 288px;
+  --gutter-w: 280px;
+  --topbar-h: 52px;
+
+  /* Motion */
+  --t-fast: 150ms;
+  --t-fade: 200ms;
+  --t-collapse: 250ms;
+  --t-draw: 300ms;
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    color-scheme: dark;
+    --paper: #121211;
+    --paper-2: #1a1a18;
+    --paper-3: #232320;
+    --ink: #ecebe6;
+    --ink-2: #cfceC8;
+    --muted: #9a9a94;
+    --muted-2: #7a7a74;
+    --rule: #2a2a27;
+    --rule-2: #3a3a36;
+    --accent: #7a93f0;
+    --accent-ink: #0f1424;
+    --accent-soft: rgba(122, 147, 240, 0.16);
+    --accent-soft-2: rgba(122, 147, 240, 0.28);
+    --success: #7fb896;
+    --success-soft: rgba(127, 184, 150, 0.16);
+    --warning: #d1a35a;
+    --warning-soft: rgba(209, 163, 90, 0.16);
+    --danger: #d98a80;
+    --danger-soft: rgba(217, 138, 128, 0.14);
+    --ins: var(--accent);
+    --ins-bg: rgba(122, 147, 240, 0.14);
+    --del: #d98a80;
+    --del-bg: rgba(217, 138, 128, 0.14);
+    --shadow-sheet: 0 12px 32px rgba(0, 0, 0, 0.5), 0 1px 2px rgba(0, 0, 0, 0.4);
+    --shadow-pop: 0 6px 20px rgba(0, 0, 0, 0.5), 0 1px 2px rgba(0, 0, 0, 0.4);
+    --persona-l: 80%;
+    --persona-c: 0.09;
+    --persona-bg-l: 29%;
+    --persona-bg-c: 0.05;
+  }
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --paper: #121211;
+  --paper-2: #1a1a18;
+  --paper-3: #232320;
+  --ink: #ecebe6;
+  --ink-2: #cfcec8;
+  --muted: #9a9a94;
+  --muted-2: #7a7a74;
+  --rule: #2a2a27;
+  --rule-2: #3a3a36;
+  --accent: #7a93f0;
+  --accent-ink: #0f1424;
+  --accent-soft: rgba(122, 147, 240, 0.16);
+  --accent-soft-2: rgba(122, 147, 240, 0.28);
+  --success: #7fb896;
+  --success-soft: rgba(127, 184, 150, 0.16);
+  --warning: #d1a35a;
+  --warning-soft: rgba(209, 163, 90, 0.16);
+  --danger: #d98a80;
+  --danger-soft: rgba(217, 138, 128, 0.14);
+  --ins: var(--accent);
+  --ins-bg: rgba(122, 147, 240, 0.14);
+  --del: #d98a80;
+  --del-bg: rgba(217, 138, 128, 0.14);
+  --shadow-sheet: 0 12px 32px rgba(0, 0, 0, 0.5), 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-pop: 0 6px 20px rgba(0, 0, 0, 0.5), 0 1px 2px rgba(0, 0, 0, 0.4);
+  --persona-l: 80%;
+  --persona-c: 0.09;
+  --persona-bg-l: 29%;
+  --persona-bg-c: 0.05;
+}

@@ -1,0 +1,211 @@
+/* Landing */
+.landing {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: var(--sp-7) var(--sp-4) var(--sp-8);
+}
+.hero {
+  max-width: 760px;
+}
+.hero__title {
+  font-size: var(--fs-30);
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  max-width: 22ch;
+}
+.hero__lede {
+  margin-top: var(--sp-4);
+  font-size: var(--fs-15);
+  color: var(--muted);
+  max-width: 64ch;
+  line-height: 1.6;
+}
+.hero__links {
+  margin-top: var(--sp-3);
+}
+.composer {
+  margin-top: var(--sp-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+}
+.composer__input {
+  width: 100%;
+  min-height: 120px;
+  padding: 14px 16px;
+  border: 1px solid var(--rule-2);
+  border-radius: var(--r-2);
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-doc);
+  font-size: var(--fs-17);
+  line-height: 1.55;
+  resize: vertical;
+}
+.composer__input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+.composer__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  flex-wrap: wrap;
+}
+.composer__examples {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+.example {
+  border: 1px solid var(--rule);
+  background: var(--paper-2);
+  color: var(--ink-2);
+  border-radius: var(--r-pill);
+  padding: 4px 10px;
+  font-size: var(--fs-12);
+  cursor: pointer;
+}
+.example:hover {
+  border-color: var(--rule-2);
+  background: var(--paper-3);
+}
+.roster__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: var(--sp-3);
+}
+.persona__head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.persona__name {
+  font-weight: 600;
+  font-size: var(--fs-15);
+}
+.persona__how {
+  margin-top: 10px;
+  font-size: var(--fs-14);
+  color: var(--ink-2);
+  line-height: 1.5;
+}
+.persona__seats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 10px;
+}
+.checkpoints__row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: var(--sp-3);
+}
+.checkpoint {
+  border: 1px solid var(--rule);
+  border-radius: var(--r-2);
+  padding: var(--sp-3) var(--sp-4);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.checkpoint__name {
+  font-weight: 600;
+}
+.checkpoint__by {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* How it works */
+.how .page__title {
+  font-size: var(--fs-30);
+  max-width: 24ch;
+  line-height: 1.2;
+}
+.how__phases {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: var(--sp-3);
+}
+.how__phase-title {
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+.how__seats {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.how__seat {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+.how__seat-name {
+  font-size: var(--fs-14);
+  font-weight: 500;
+}
+.how__checkpoints {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--sp-3);
+}
+.how__checkpoint {
+  border: 1px solid var(--rule);
+  border-radius: var(--r-2);
+  padding: var(--sp-3) var(--sp-4);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.how__checkpoint-by {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--fs-13);
+}
+.how__roster {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: var(--sp-3) var(--sp-5);
+}
+.how__person {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+.how__person-name {
+  font-weight: 600;
+}
+.how__list {
+  margin: 0;
+  padding-left: 1.2em;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-width: 70ch;
+}
+
+/* Library */
+.library__title {
+  color: var(--ink);
+  font-weight: 500;
+}
+.library__table td {
+  vertical-align: middle;
+}
+.settings__summary {
+  padding: 12px 16px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: var(--fs-13);
+}
