@@ -31,6 +31,7 @@ from app.llm.citations import sources_from_citations
 from app.llm.cost import estimate_cost_usd
 from app.llm.provider import Provider
 from app.llm.types import OutputTruncated, ProviderError, ProviderEvent, RefusalError, SeatRequest
+from app.schemas.research import research_key_insight
 from app.schemas import (
     ArtifactKind,
     BarRaiserOutput,
@@ -570,7 +571,7 @@ class CouncilRunner:
 
         if kind == "market_research":
             payload = ResearchArtifact(markdown=outcome.text, citations=outcome.citations, searches=outcome.usage.web_searches, fetches=0)
-            return kind, payload, None, None
+            return kind, payload, research_key_insight(outcome.text), None
 
         if kind == "ledger":
             out = LedgerOutput.model_validate(outcome.parsed)

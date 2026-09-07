@@ -1,6 +1,6 @@
 {
   "run": {
-    "id": "run_7ae3a1b0bd974aeb",
+    "id": "run_e923469d171d49d5",
     "idea": "A bookkeeping service that closes the books for independent restaurants every month, with a reviewed close and a short exception list the owner clears from a phone.",
     "status": "completed",
     "framing": {
@@ -9,9 +9,9 @@
       "customer_problem": "Reconciling receipts, invoices and payment records takes six to nine hours a week, usually after close, and errors surface months later as missed discounts, late fees and a year-end scramble for the accountant.",
       "product_scope": "BookkeepingService ingests receipts, POS exports and supplier invoices, matches them to bank transactions, and produces a reviewed monthly close with exceptions flagged for a ten-minute owner review. Version one does not do payroll, tax filing or forecasting."
     },
-    "created_at": "2026-09-07T04:54:49.598Z",
-    "updated_at": "2026-09-07T04:54:51.501Z",
-    "completed_at": "2026-09-07T04:54:51.501Z",
+    "created_at": "2026-09-07T06:02:38.332Z",
+    "updated_at": "2026-09-07T06:02:39.423Z",
+    "completed_at": "2026-09-07T06:02:39.423Z",
     "total_cost_usd": 1.2626,
     "error": null,
     "config": {
@@ -51,7 +51,7 @@
       "parallel_validation_plan": false,
       "provider": "fake"
     },
-    "share_token": "-EkPBGhvoYXvZ7Kq",
+    "share_token": "rCYHtsf2NZHFbUzb",
     "headline": "BookkeepingService Closes the Books for Independent Operators by the Third Business Day"
   },
   "steps": [
@@ -63,9 +63,9 @@
       "status": "completed",
       "model": "claude-sonnet-5",
       "effort": "medium",
-      "started_at": "2026-09-07T04:54:49.626Z",
-      "ended_at": "2026-09-07T04:54:49.676Z",
-      "duration_s": 0.05,
+      "started_at": "2026-09-07T06:02:38.352Z",
+      "ended_at": "2026-09-07T06:02:38.379Z",
+      "duration_s": 0.03,
       "usage": {
         "input_tokens": 600,
         "cache_creation_input_tokens": 800,
@@ -86,9 +86,9 @@
       "status": "completed",
       "model": "claude-fable-5-1",
       "effort": "high",
-      "started_at": "2026-09-07T04:54:49.726Z",
-      "ended_at": "2026-09-07T04:54:49.789Z",
-      "duration_s": 0.06,
+      "started_at": "2026-09-07T06:02:38.410Z",
+      "ended_at": "2026-09-07T06:02:38.445Z",
+      "duration_s": 0.04,
       "usage": {
         "input_tokens": 4200,
         "cache_creation_input_tokens": 0,
@@ -99,7 +99,7 @@
       "cost_usd": 0.1525,
       "fallback_used": false,
       "error": null,
-      "key_insight": null
+      "key_insight": "Position BookkeepingService as \"the books, done by Monday\", price between $99 and $129 per month for one location, and lead with the exception review rather than the automation."
     },
     {
       "seat": "1b",
@@ -109,9 +109,9 @@
       "status": "completed",
       "model": "claude-sonnet-5",
       "effort": "low",
-      "started_at": "2026-09-07T04:54:49.806Z",
-      "ended_at": "2026-09-07T04:54:49.888Z",
-      "duration_s": 0.08,
+      "started_at": "2026-09-07T06:02:38.454Z",
+      "ended_at": "2026-09-07T06:02:38.500Z",
+      "duration_s": 0.05,
       "usage": {
         "input_tokens": 600,
         "cache_creation_input_tokens": 800,
@@ -132,9 +132,9 @@
       "status": "completed",
       "model": "claude-fable-5-1",
       "effort": "high",
-      "started_at": "2026-09-07T04:54:49.903Z",
-      "ended_at": "2026-09-07T04:54:50.014Z",
-      "duration_s": 0.11,
+      "started_at": "2026-09-07T06:02:38.509Z",
+      "ended_at": "2026-09-07T06:02:38.566Z",
+      "duration_s": 0.06,
       "usage": {
         "input_tokens": 600,
         "cache_creation_input_tokens": 800,
@@ -155,9 +155,9 @@
       "status": "completed",
       "model": "claude-fable-5-1",
       "effort": "high",
-      "started_at": "2026-09-07T04:54:50.028Z",
-      "ended_at": "2026-09-07T04:54:50.087Z",
-      "duration_s": 0.06,
+      "started_at": "2026-09-07T06:02:38.575Z",
+      "ended_at": "2026-09-07T06:02:38.609Z",
+      "duration_s": 0.03,
       "usage": {
         "input_tokens": 600,
         "cache_creation_input_tokens": 800,
@@ -178,9 +178,9 @@
       "status": "completed",
       "model": "claude-fable-5-1",
       "effort": "high",
-      "started_at": "2026-09-07T04:54:50.117Z",
-      "ended_at": "2026-09-07T04:54:50.252Z",
-      "duration_s": 0.14,
+      "started_at": "2026-09-07T06:02:38.627Z",
+      "ended_at": "2026-09-07T06:02:38.698Z",
+      "duration_s": 0.07,
       "usage": {
         "input_tokens": 600,
         "cache_creation_input_tokens": 800,
@@ -201,9 +201,9 @@
       "status": "completed",
       "model": "claude-fable-5-1",
       "effort": "high",
-      "started_at": "2026-09-07T04:54:50.279Z",
-      "ended_at": "2026-09-07T04:54:50.486Z",
-      "duration_s": 0.21,
+      "started_at": "2026-09-07T06:02:38.724Z",
+      "ended_at": "2026-09-07T06:02:38.836Z",
+      "duration_s": 0.11,
       "usage": {
         "input_tokens": 600,
         "cache_creation_input_tokens": 800,
@@ -224,9 +224,9 @@
       "status": "completed",
       "model": "claude-fable-5-1",
       "effort": "high",
-      "started_at": "2026-09-07T04:54:50.291Z",
-      "ended_at": "2026-09-07T04:54:50.515Z",
-      "duration_s": 0.22,
+      "started_at": "2026-09-07T06:02:38.732Z",
+      "ended_at": "2026-09-07T06:02:38.849Z",
+      "duration_s": 0.12,
       "usage": {
         "input_tokens": 600,
         "cache_creation_input_tokens": 800,
@@ -247,9 +247,9 @@
       "status": "completed",
       "model": "claude-fable-5-1",
       "effort": "high",
-      "started_at": "2026-09-07T04:54:50.532Z",
-      "ended_at": "2026-09-07T04:54:50.655Z",
-      "duration_s": 0.12,
+      "started_at": "2026-09-07T06:02:38.859Z",
+      "ended_at": "2026-09-07T06:02:38.929Z",
+      "duration_s": 0.07,
       "usage": {
         "input_tokens": 600,
         "cache_creation_input_tokens": 800,
@@ -270,9 +270,9 @@
       "status": "completed",
       "model": "claude-sonnet-5",
       "effort": "medium",
-      "started_at": "2026-09-07T04:54:50.678Z",
-      "ended_at": "2026-09-07T04:54:50.727Z",
-      "duration_s": 0.05,
+      "started_at": "2026-09-07T06:02:38.942Z",
+      "ended_at": "2026-09-07T06:02:38.970Z",
+      "duration_s": 0.03,
       "usage": {
         "input_tokens": 600,
         "cache_creation_input_tokens": 800,
@@ -293,9 +293,9 @@
       "status": "completed",
       "model": "claude-fable-5-1",
       "effort": "high",
-      "started_at": "2026-09-07T04:54:50.745Z",
-      "ended_at": "2026-09-07T04:54:50.975Z",
-      "duration_s": 0.23,
+      "started_at": "2026-09-07T06:02:38.979Z",
+      "ended_at": "2026-09-07T06:02:39.124Z",
+      "duration_s": 0.15,
       "usage": {
         "input_tokens": 600,
         "cache_creation_input_tokens": 800,
@@ -316,9 +316,9 @@
       "status": "completed",
       "model": "claude-opus-5",
       "effort": "high",
-      "started_at": "2026-09-07T04:54:50.998Z",
-      "ended_at": "2026-09-07T04:54:51.050Z",
-      "duration_s": 0.05,
+      "started_at": "2026-09-07T06:02:39.140Z",
+      "ended_at": "2026-09-07T06:02:39.171Z",
+      "duration_s": 0.03,
       "usage": {
         "input_tokens": 600,
         "cache_creation_input_tokens": 800,
@@ -339,9 +339,9 @@
       "status": "completed",
       "model": "claude-fable-5-1",
       "effort": "high",
-      "started_at": "2026-09-07T04:54:51.065Z",
-      "ended_at": "2026-09-07T04:54:51.331Z",
-      "duration_s": 0.27,
+      "started_at": "2026-09-07T06:02:39.181Z",
+      "ended_at": "2026-09-07T06:02:39.322Z",
+      "duration_s": 0.14,
       "usage": {
         "input_tokens": 600,
         "cache_creation_input_tokens": 800,
@@ -362,9 +362,9 @@
       "status": "completed",
       "model": "claude-fable-5-1",
       "effort": "high",
-      "started_at": "2026-09-07T04:54:51.361Z",
-      "ended_at": "2026-09-07T04:54:51.480Z",
-      "duration_s": 0.12,
+      "started_at": "2026-09-07T06:02:39.339Z",
+      "ended_at": "2026-09-07T06:02:39.410Z",
+      "duration_s": 0.07,
       "usage": {
         "input_tokens": 600,
         "cache_creation_input_tokens": 800,
@@ -380,11 +380,11 @@
   ],
   "artifacts": [
     {
-      "id": "art_dc047b9ffea54d84",
+      "id": "art_11f9710bf22341b8",
       "kind": "brief",
       "seat": "0",
       "persona": "strategist",
-      "created_at": "2026-09-07T04:54:49.663Z",
+      "created_at": "2026-09-07T06:02:38.371Z",
       "key_insight": "BookkeepingService sells time back to owners who do the books after close; attempt 1.",
       "payload": {
         "framing": {
@@ -398,12 +398,12 @@
       }
     },
     {
-      "id": "art_c555d3b867ce43ab",
+      "id": "art_f2e541a739df4fe2",
       "kind": "market_research",
       "seat": "1",
       "persona": "analyst",
-      "created_at": "2026-09-07T04:54:49.783Z",
-      "key_insight": null,
+      "created_at": "2026-09-07T06:02:38.442Z",
+      "key_insight": "Position BookkeepingService as \"the books, done by Monday\", price between $99 and $129 per month for one location, and lead with the exception review rather than the automation.",
       "payload": {
         "citations": [
           {
@@ -438,11 +438,11 @@
       }
     },
     {
-      "id": "art_d126a6963a9d4fa6",
+      "id": "art_e47254aa9ead482a",
       "kind": "ledger",
       "seat": "1b",
       "persona": "analyst",
-      "created_at": "2026-09-07T04:54:49.883Z",
+      "created_at": "2026-09-07T06:02:38.497Z",
       "key_insight": "The gap for BookkeepingService is a reviewed monthly close under $150 that no competitor offers.",
       "payload": {
         "findings": [
@@ -588,11 +588,11 @@
       }
     },
     {
-      "id": "art_94fa20a1a9174b3d",
+      "id": "art_f02aec985ff440aa",
       "kind": "problem_validation",
       "seat": "2",
       "persona": "researcher",
-      "created_at": "2026-09-07T04:54:50.009Z",
+      "created_at": "2026-09-07T06:02:38.563Z",
       "key_insight": "Owners lose an evening a week matching receipts and only notice errors when the accountant asks.",
       "payload": {
         "appetite": {
@@ -785,11 +785,11 @@
       }
     },
     {
-      "id": "art_d9bc3ab6046343e9",
+      "id": "art_16c129dc60ef49c9",
       "kind": "pr_v1",
       "seat": "3",
       "persona": "pm",
-      "created_at": "2026-09-07T04:54:50.082Z",
+      "created_at": "2026-09-07T06:02:38.607Z",
       "key_insight": "BookkeepingService Closes the Books for Small Business Owners Every Month",
       "payload": {
         "key_insight": "BookkeepingService Closes the Books for Small Business Owners Every Month",
@@ -865,11 +865,11 @@
       }
     },
     {
-      "id": "art_e665bac85fa24a40",
+      "id": "art_12f9a9f992bd4e67",
       "kind": "pr_v2",
       "seat": "4",
       "persona": "vp_product",
-      "created_at": "2026-09-07T04:54:50.247Z",
+      "created_at": "2026-09-07T06:02:38.695Z",
       "key_insight": "Named the segment and the reviewed close; every number now cites the panel or the ledger.",
       "payload": {
         "edits": [
@@ -1029,11 +1029,11 @@
       }
     },
     {
-      "id": "art_1efb02893c784cab",
+      "id": "art_ff1a507a12434b45",
       "kind": "internal_faq",
       "seat": "5",
       "persona": "biz_eng",
-      "created_at": "2026-09-07T04:54:50.478Z",
+      "created_at": "2026-09-07T06:02:38.829Z",
       "key_insight": "Reviewer cost at scale is the risk that shows up in most answers.",
       "payload": {
         "key_insight": "Reviewer cost at scale is the risk that shows up in most answers.",
@@ -1172,11 +1172,11 @@
       }
     },
     {
-      "id": "art_fa1a31a5b5374eec",
+      "id": "art_250bb1d830774ea8",
       "kind": "concept_validation",
       "seat": "6",
       "persona": "researcher",
-      "created_at": "2026-09-07T04:54:50.505Z",
+      "created_at": "2026-09-07T06:02:38.843Z",
       "key_insight": "Six of ten would pay for the reviewed close; four worry about the work left for the owner.",
       "payload": {
         "concerns": [
@@ -1411,11 +1411,11 @@
       }
     },
     {
-      "id": "art_22cb6b6074db4498",
+      "id": "art_c3485acad79a420e",
       "kind": "pr_v3",
       "seat": "7",
       "persona": "pm",
-      "created_at": "2026-09-07T04:54:50.650Z",
+      "created_at": "2026-09-07T06:02:38.926Z",
       "key_insight": "Clarified how little the owner still does and added explanations to exceptions.",
       "payload": {
         "edits": [
@@ -1550,11 +1550,11 @@
       }
     },
     {
-      "id": "art_5c6b7483cd914342",
+      "id": "art_e7ae369ed8734cfb",
       "kind": "external_faq",
       "seat": "8",
       "persona": "customer_success",
-      "created_at": "2026-09-07T04:54:50.722Z",
+      "created_at": "2026-09-07T06:02:38.967Z",
       "key_insight": "How much do I still have to do each month?",
       "payload": {
         "items": [
@@ -1592,11 +1592,11 @@
       }
     },
     {
-      "id": "art_252390abf4ee43a7",
+      "id": "art_96dbbe5d7e774931",
       "kind": "prfaq",
       "seat": "9",
       "persona": "editor",
-      "created_at": "2026-09-07T04:54:50.969Z",
+      "created_at": "2026-09-07T06:02:39.120Z",
       "key_insight": "BookkeepingService gives owners a reviewed monthly close for the price of one lost evening.",
       "payload": {
         "customer_faq": [
@@ -1895,11 +1895,11 @@
       }
     },
     {
-      "id": "art_c7d7ea074067489b",
+      "id": "art_750341c270d64544",
       "kind": "bar_raiser",
       "seat": "9b",
       "persona": "bar_raiser",
-      "created_at": "2026-09-07T04:54:51.045Z",
+      "created_at": "2026-09-07T06:02:39.167Z",
       "key_insight": "One assumption in the summary reads like evidence; fix it before leadership sees it.",
       "payload": {
         "key_insight": "One assumption in the summary reads like evidence; fix it before leadership sees it.",
@@ -1957,11 +1957,11 @@
       }
     },
     {
-      "id": "art_54b9062229f848ab",
+      "id": "art_bde1596f12b84e68",
       "kind": "prfaq",
       "seat": "9",
       "persona": "editor",
-      "created_at": "2026-09-07T04:54:51.326Z",
+      "created_at": "2026-09-07T06:02:39.319Z",
       "key_insight": "BookkeepingService gives owners a reviewed monthly close for the price of one lost evening.",
       "payload": {
         "customer_faq": [
@@ -2260,11 +2260,11 @@
       }
     },
     {
-      "id": "art_2caa10edee524e2f",
+      "id": "art_2268f3659fe54461",
       "kind": "plan",
       "seat": "10",
       "persona": "validation_lead",
-      "created_at": "2026-09-07T04:54:51.474Z",
+      "created_at": "2026-09-07T06:02:39.405Z",
       "key_insight": "Owners must stop re-checking the reviewed close, or no time is saved.",
       "payload": {
         "best_practices": {
@@ -2485,7 +2485,7 @@
   "versions": [
     {
       "version": 1,
-      "artifact_id": "art_d9bc3ab6046343e9",
+      "artifact_id": "art_16c129dc60ef49c9",
       "produced_by_seat": "3",
       "persona": "pm",
       "press_release": {
@@ -2561,7 +2561,7 @@
     },
     {
       "version": 2,
-      "artifact_id": "art_e665bac85fa24a40",
+      "artifact_id": "art_12f9a9f992bd4e67",
       "produced_by_seat": "4",
       "persona": "vp_product",
       "press_release": {
@@ -2720,7 +2720,7 @@
     },
     {
       "version": 3,
-      "artifact_id": "art_22cb6b6074db4498",
+      "artifact_id": "art_c3485acad79a420e",
       "produced_by_seat": "7",
       "persona": "pm",
       "press_release": {
@@ -2854,7 +2854,7 @@
     },
     {
       "version": 4,
-      "artifact_id": "art_54b9062229f848ab",
+      "artifact_id": "art_bde1596f12b84e68",
       "produced_by_seat": "9",
       "persona": "editor",
       "press_release": {

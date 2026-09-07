@@ -97,3 +97,22 @@ def test_reconcile_edits_synthesizes_missing_and_drops_stale():
     assert "headline" not in slot_ids  # stale edit dropped: the headline did not change
     assert "problem" in slot_ids and all(e.rationale == "Unannotated change." for e in edits)
     assert all(e.new_text == v2_same_headline.text_of(e.slot_id) for e in edits)
+
+
+def test_research_key_insight_takes_the_first_recommendation():
+    from app.schemas.research import research_key_insight
+
+    insight = research_key_insight(fc.research_markdown("Ledgerly"))
+    assert insight is not None
+    assert insight.startswith('Position Ledgerly as "the books, done by Monday"')
+    assert insight.endswith("rather than the automation.")
+
+    without_heading = "## Competitive Intelligence\n\n| a | b |\n|---|---|\n\nShort.\n\n- **A sentence** long enough to be used as the takeaway line [1]. Another one follows."
+    assert research_key_insight(without_heading) == "A sentence long enough to be used as the takeaway line."
+
+    long_sentence = "## Strategic Recommendations\n\n" + " ".join(["word"] * 80) + " end."
+    clipped = research_key_insight(long_sentence)
+    assert clipped is not None and clipped.endswith("…") and len(clipped) <= 221
+
+    assert research_key_insight("") is None
+    assert research_key_insight("## Heading only\n\n| table | only |\n") is None

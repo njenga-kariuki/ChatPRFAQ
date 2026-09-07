@@ -48,7 +48,9 @@ describe('runStore replay', () => {
     expect(sumOfStepCosts(replayed)).toBeCloseTo(expected, 4);
     expect(replayed.totalCostUsd).toBeCloseTo(snapshot.run.total_cost_usd, 4);
     expect(costSoFar(replayed)).toBeCloseTo(1.2626, 4);
-    expect(replayed.completedDurationS).toBe(1.8);
+    const completed = events.find((e) => e.type === 'run.completed');
+    expect(completed?.type).toBe('run.completed');
+    expect(replayed.completedDurationS).toBe(completed?.type === 'run.completed' ? completed.duration_s : null);
   });
 
   it('builds provisional artifacts and the ledger from the stream', () => {
@@ -58,6 +60,8 @@ describe('runStore replay', () => {
     const research = replayed.artifacts.find((a) => a.kind === 'market_research');
     expect((research?.payload as { markdown: string }).markdown).toContain('## Market Opportunity Analysis');
     expect(replayed.barRaiser?.verdict).toBe('revise');
+    // the research seat writes prose, so its insight is derived from the report
+    expect(latestAttempt(replayed, '1')?.keyInsight).toMatch(/^Position BookkeepingService as/);
   });
 
   it('ignores duplicate deliveries', () => {
