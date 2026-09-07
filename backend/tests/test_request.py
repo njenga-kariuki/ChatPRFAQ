@@ -27,9 +27,9 @@ def test_current_model_request_has_no_legacy_parameters():
 def test_fallbacks_only_on_models_that_support_them():
     settings = Settings(llm_provider="fake", _env_file=None)
     fable = build_request_kwargs(_req(model="claude-fable-5-1"), settings)
-    assert fable["betas"] == [FALLBACK_BETA] and fable["extra_body"] == {"fallbacks": "default"}
+    assert fable["betas"] == [FALLBACK_BETA] and fable["fallbacks"] == "default"
     sonnet = build_request_kwargs(_req(model="claude-sonnet-5"), settings)
-    assert "betas" not in sonnet and "extra_body" not in sonnet
+    assert "betas" not in sonnet and "fallbacks" not in sonnet
     off = build_request_kwargs(_req(model="claude-fable-5-1"), Settings(llm_provider="fake", enable_fallbacks=False, _env_file=None))
     assert "betas" not in off
 

@@ -1,46 +1,26 @@
-modules = ["nodejs-20", "python-3.11"]
+modules = ["nodejs-22", "python-3.12"]
 
 [nix]
 channel = "stable-24_05"
-packages = ["openssl", "postgresql"]
+packages = ["postgresql"]
 
 [deployment]
 deploymentTarget = "autoscale"
-run = ["python", "deploy.py"]
+build = ["sh", "-c", "cd web && npm ci && npm run build && cd ../backend && pip install ."]
+run = ["sh", "-c", "cd backend && uvicorn app.main:app --host 0.0.0.0 --port 8000"]
 
 [workflows]
-runButton = "Start application"
+runButton = "Run ChatPRFAQ"
 
 [[workflows.workflow]]
-name = "Project"
-mode = "parallel"
-author = "agent"
-
-[[workflows.workflow.tasks]]
-task = "workflow.run"
-args = "Start application"
-
-[[workflows.workflow]]
-name = "Start application"
+name = "Run ChatPRFAQ"
 author = "agent"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "python run_dev.py & (cd frontend && npm run dev)"
-waitForPort = 3000
+args = "cd web && npm install && npm run build && cd ../backend && pip install -e . && uvicorn app.main:app --host 0.0.0.0 --port 8000"
+waitForPort = 8000
 
 [[ports]]
-localPort = 3000
+localPort = 8000
 externalPort = 80
-
-[[ports]]
-localPort = 3025
-externalPort = 3001
-
-[[ports]]
-localPort = 3026
-externalPort = 3002
-
-[[ports]]
-localPort = 5000
-externalPort = 5000

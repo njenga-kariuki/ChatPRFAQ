@@ -51,15 +51,10 @@ def build_request_kwargs(req: SeatRequest, settings: Settings) -> dict[str, Any]
             {"type": WEB_FETCH_TOOL, "name": "web_fetch", "max_uses": req.web_fetch_max_uses},
         ]
 
-    betas: list[str] = []
-    extra_body: dict[str, Any] = {}
     if settings.enable_fallbacks and req.model in settings.fallback_models_with_support:
-        betas.append(FALLBACK_BETA)
-        extra_body["fallbacks"] = "default"
-    if betas:
-        kwargs["betas"] = betas
-    if extra_body:
-        kwargs["extra_body"] = extra_body
+        # "default" routes a policy decline to Anthropic's recommended substitute by category
+        kwargs["betas"] = [FALLBACK_BETA]
+        kwargs["fallbacks"] = "default"
     return kwargs
 
 

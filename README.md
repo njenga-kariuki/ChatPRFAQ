@@ -1,180 +1,68 @@
-# ChatPRFAQ: AI-Powered Working Backwards Implementation
+# ChatPRFAQ
 
-A web app that automates Amazon's "Working Backwards" methodology using orchestrated AI agents, transforming product ideas into exec-ready PRFAQs in minutes instead of weeks.
+A council of AI colleagues runs Amazon's Working Backwards process on a product idea and produces an executive-ready PRFAQ, with every pass over the press release inspectable and every claim traceable to evidence.
 
-<div>
-    <a href="https://www.loom.com/share/7fa90080455846d2a626f6a45d65a4f2">
-      <p>Demo Video</p>
-    </a>
-    <a href="https://www.loom.com/share/7fa90080455846d2a626f6a45d65a4f2">
-      <img style="max-width:300px;" src="https://cdn.loom.com/sessions/thumbnails/7fa90080455846d2a626f6a45d65a4f2-2dbb1461dee0a8ca-full-play.gif">
-    </a>
-  </div>
+The user enters an idea. A Product Strategist frames it (target customer, problem, scope) and the user confirms or refines. Then the council runs in the order a strong product organisation reviews work: live market research with citations, a simulated problem-discovery panel, a Principal PM's draft, a VP Product refinement, an internal FAQ from a VP Business and a Principal Engineer in parallel with a simulated concept test, a customer-validated refinement, a customer FAQ, an editorial synthesis, a Bar Raiser review, and a hypothesis-driven validation plan. The press release has four checkpoints (v1 draft, v2 VP-refined, v3 customer-validated, v4 final) and every edit between them carries who made it, why, and which finding supports it.
 
-  
-<a href="chatprfaq.replit.app/">Try It</a>
+This is the 2026 rebuild on the current Claude platform. The proposal that led to it, including the analysis of the original 2025 implementation, is in [`docs/refresh/`](docs/refresh/README.md).
 
-## Project Context
-
-After 10 years as an Amazon PM writing countless PRFAQs, I built this as a love letter to the methodology and a fun chance to learn more complex AI orchestration. The challenge: translating Amazon's nuanced, iterative product development culture into a deterministic system that maintains executive-level rigor and quality.
-
-## Core Innovation
-
-Traditional AI approaches generate PRFAQs through single-shot prompting, producing generic documents lacking depth and perspective diversity. ChatPRFAQ simulates the actual multi-stakeholder review process through:
-
-- **10 specialized AI agents** with distinct personas (Market Analyst, User Researcher, VP Product, Principal Engineer)
-- **Real-time market research integration** using live web data
-- **Iterative refinement cycles** with feedback loops between research, validation, and synthesis
-- **Evidence-based narrative development** grounded in market data and customer insights
-
-Result: PRFAQs that pass the executive readiness test, not just the formatting test.
-
-## Architecture Overview
+## How it works
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│                         Frontend Layer                          │
-│  React SPA + TypeScript + Tailwind + Real-time Progress UI     │
-└─────────────────────────┬───────────────────────────────────────┘
-                          │ REST API + Server-Sent Events
-┌─────────────────────────┴───────────────────────────────────────┐
-│                      Orchestration Layer                        │
-│           Flask + Python + Multi-threaded Processing           │
-└─────────────────────────┬───────────────────────────────────────┘
-                          │ Intelligent API Routing
-┌─────────────────────────┴───────────────────────────────────────┐
-│                         AI Agent Layer                          │
-│  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐  │
-│  │  Research Agents │  │ Analysis Agents │  │Synthesis Agents │  │
-│  │                 │  │                 │  │                 │  │
-│  │ Market Research │  │ Problem Validation│ │ PRFAQ Editor   │  │
-│  │ User Research   │  │ Concept Testing  │  │ MLP Planner    │  │
-│  │ Competitive     │  │ Solution Refine  │  │ Risk Assessor  │  │
-│  └─────────────────┘  └─────────────────┘  └─────────────────┘  │
-└─────────────────────────┬───────────────────────────────────────┘
-                          │ Model-Agnostic Interface
-┌─────────────────────────┴───────────────────────────────────────┐
-│                      Foundation Models                          │
-│        Research-Optimized LLM    +    Reasoning-Optimized LLM   │
-│        (Real-time Web Access)         (Deep Analysis)           │
-└─────────────────────────────────────────────────────────────────┘
+idea ─▶ 0 Frame ─▶ user confirms ─▶ 1 Research ─▶ 1b Ledger ─▶ 2 Problem panel ─▶ 3 Draft v1 ─▶ 4 VP v2 ─┬▶ 5 Internal FAQ ─┐
+                                                                                                        │                  ├▶ 7 Refine v3 ─▶ 8 Customer FAQ ─▶ 9 Edit v4 ─▶ 9b Bar Raiser ─▶ 10 Validation plan
+                                                                                                        └▶ 6 Concept panel ─┘
 ```
 
-## Technical Implementation
+- **One frozen council charter** is the system prompt for every seat (methodology, the eight press-release slots, evidence rules, the roster). It is cached for an hour and shared by every run.
+- **An append-only dossier** is the user message: every artifact produced so far, in a fixed order, so each seat reads the whole prior context from the prompt cache and no persona is ever truncated.
+- **Structured outputs on every seat** except live research. The press release is eight typed slots with per-claim evidence; refinement seats return per-slot edits with a rationale, evidence ids and a change kind; FAQs, panels, the ledger, the review and the plan are typed too.
+- **Live research** uses Claude's server-side web search and fetch; citations become an evidence ledger (`F-01`, `S-01`, ...) that every later seat cites. Numbers with no finding are flagged as assumptions and picked up by the validation plan.
+- **Streaming from the first token**, with the model's reasoning summaries as working notes and real progress lines during research.
+- **Persist first, stream second.** Every event is written to the database before it is sent; the stream replays from any sequence number, so refresh, reconnect, resume, sharing and history all work.
+- **Models per seat**: Claude Fable 5.1 on the judgment seats, Claude Sonnet 5 on framing, ledger extraction and the customer FAQ, Claude Opus 5 as the Bar Raiser and as the automatic fallback. All configurable per seat.
 
-### Multi-Agent Orchestration Engine
+## Run it
 
-Core innovation in the orchestration layer managing:
+Requirements: Python 3.11+, `uv`, Node 22. An Anthropic API key with 30-day data retention on the workspace (required by Claude Fable 5.1), or `LLM_PROVIDER=fake` for an offline demo.
 
-- **Stateful workflow progression** with dependency management between steps
-- **Context propagation** ensuring each agent has relevant prior outputs
-- **Error recovery mechanisms** with graceful degradation and retry logic
-- **Progress streaming** via Server-Sent Events for real-time UI updates
-
-```python
-class LLMProcessor:
-    def process_all_steps(self, product_idea, progress_callback=None, request_id=None):
-        # Orchestrates 10-step Working Backwards process
-        # Manages state, dependencies, and error recovery
-        
-def _handle_press_release_with_research_and_validation(self, product_idea, step_data, progress_callback, request_id):
-    # Example: Step 3 requires both market research AND problem validation
-    # System automatically provides context from steps 1 and 2
+```bash
+make setup                          # backend venv + frontend node_modules
+cp backend/.env.example backend/.env  # add ANTHROPIC_API_KEY (or LLM_PROVIDER=fake)
+make dev                            # backend on :8000, frontend on :5173
+make dev-fake                       # the same, fully offline with a streaming fake council
 ```
 
-### Real-Time Research Integration
+Then open http://localhost:5173. `/demo` replays a recorded run without a backend.
 
-Unlike static knowledge models, the system performs live market research:
+Checks: `make test` runs the backend suite and the frontend typecheck, unit tests and build. `make live-check` sends one cheap real request to validate the key and request shape. `make evals` runs the twelve seed ideas through the council and grades them with an LLM judge.
 
-- **Web-enabled research agents** accessing current competitive intelligence
-- **Source citation tracking** with automatic reference formatting
-- **Market data synthesis** combining multiple real-time sources into coherent analysis
+Production: `docker build -f deploy/Dockerfile -t chatprfaq .` produces one image that serves the built frontend from the backend; `deploy/docker-compose.yml` adds Postgres. Set `DATABASE_URL`, `ANTHROPIC_API_KEY`, `OWNER_TOKEN` (protects run creation and history) and `RUN_COST_CEILING_USD`. A `.replit` is included for Replit deployments.
 
-### Prompt Engineering at Scale
+## Layout
 
-Each agent operates with carefully crafted prompts embedding:
+```
+backend/app/
+  council/charter.py      the frozen system prompt: methodology + roster
+  council/seats/          one module per seat: task, output schema, model tier, effort
+  council/dossier.py      append-only dossier with cache markers
+  council/graph.py        dependency graph (5 ‖ 6; Bar Raiser gates the plan)
+  council/runner.py       asyncio runner: framing gate, fan-out, retries, resume, cost
+  llm/                    Anthropic provider, fake provider, cost, citations
+  schemas/                the typed document model and the RunEvent union
+  db/                     SQLAlchemy models and the Store
+  api/                    runs, SSE with replay, export, snapshot
+  export/                 markdown, redline, json
+  evals/                  seed ideas, LLM judge, regression runner
+web/                      the React frontend (see web/README.md)
+docs/refresh/             the proposal and design brief
+deploy/                   Dockerfile, docker-compose
+```
 
-- **Role-specific expertise patterns** derived from actual Amazon reviews
-- **Output format specifications** ensuring consistency across the 10-step process
-- **Quality control mechanisms** validating output against expected patterns
-- **Context-aware templating** adapting based on previous step outputs
+## API
 
-### Modern Frontend Architecture
+`POST /api/runs` · `GET /api/runs/{id}` · `GET /api/runs/{id}/events` (SSE, `Last-Event-ID`) · `POST /api/runs/{id}/framing/refine` · `POST /api/runs/{id}/framing/confirm` · `POST /api/runs/{id}/cancel` · `POST /api/runs/{id}/resume` · `GET /api/runs` · `GET /api/share/{token}` · `GET /api/runs/{id}/export?format=md|plan|redline|json` · `GET /api/roster` · `GET /api/seats` · `GET /api/health`. The OpenAPI document is generated into `web/openapi.json` (`make types`).
 
-Built with React + TypeScript + Tailwind, featuring:
+## Legacy
 
-- **Real-time progress visualization** with step-by-step status updates
-- **Document evolution tracking** showing PR refinements across iterations
-- **Research artifact management** with collapsible views of supporting analysis
-- **Export capabilities** including formatted Word documents for executive sharing
-
-## Technical Stack
-
-**Backend Infrastructure:**
-- Python 3.11+ with Flask web framework
-- Multi-threaded processing with queue-based progress streaming
-- Environment-based configuration for API key management
-- Structured logging with request ID tracking
-
-**AI Integration:**
-- Model-agnostic design supporting multiple LLM providers
-- Specialized processors for research vs. reasoning tasks
-- Intelligent API routing based on task requirements
-- Token optimization and cost management
-
-**Frontend Experience:**
-- React 18 with TypeScript for type safety
-- Tailwind CSS for responsive, modern UI design
-- Server-Sent Events for real-time progress updates
-- Local state management with React hooks
-
-**Development & Deployment:**
-- Modern Python packaging with pyproject.toml
-- Environment variable configuration for secrets management
-- Cross-platform compatibility (tested on Replit, local development)
-- Comprehensive error handling and user feedback systems
-
-## Key Technical Challenges Solved
-
-### 1. Context Window Management
-Managing context across 10 sequential steps while staying within model limits required careful prompt engineering and selective context inclusion.
-
-### 2. Real-Time Progress Streaming
-Implementing SSE with proper error handling, timeouts, and recovery mechanisms for long-running AI operations.
-
-### 3. Multi-Model Orchestration
-Building abstractions that allow swapping between different LLM providers while maintaining consistent output quality.
-
-### 4. State Management Complexity
-Tracking interdependencies between steps, managing partial failures, and enabling graceful recovery without losing progress.
-
-## Quality Assurance
-
-The system includes multiple quality control layers:
-
-- **Content processing pipelines** that clean and normalize AI outputs
-- **Insight extraction mechanisms** that identify key learnings from each step
-- **Progress validation** ensuring each step produces expected outputs before proceeding
-- **Graceful error handling** with detailed logging for debugging and optimization
-
-## Usage
-
-Designed for product managers, entrepreneurs, and innovation teams needing rapid product concept development using Amazon's proven methodology.
-
-Describe your product idea—the system orchestrates the complete Working Backwards process, producing:
-- Comprehensive market research with real-time competitive analysis
-- Customer problem validation with simulated user interviews
-- Executive-ready press release with iterative refinements
-- Internal/external FAQs addressing strategic and tactical concerns
-- Synthesized PRFAQ document ready for leadership review
-- Minimum Lovable Product plan with prioritized feature roadmap
-
-## Development Philosophy
-
-This project demonstrates that AI automation doesn't require sacrificing quality or rigor. By encoding Amazon's product development best practices into sophisticated AI orchestration, it maintains the iterative, multi-perspective approach that makes Working Backwards effective while dramatically reducing time investment.
-
-The code reflects production-quality practices: comprehensive error handling, structured logging, type safety, responsive design, and clear separation of concerns—because tools enhancing high-stakes decision-making must themselves be built to high standards.
-
----
-
-*This project serves as both a functional product development tool and a demonstration of sophisticated AI system design, multi-agent orchestration, and modern full-stack development practices.*
+The 2025 implementation (Flask, `processors/`, `frontend/`) is still present at the repository root for reference and is not used by anything in `backend/` or `web/`. It can be removed with `git rm -r app.py routes.py config.py main.py deploy.py run_dev.py build-for-deployment.sh processors utils templates static tests attached_assets replit.md DEVELOPMENT.md REPORTING.md package.json package-lock.json pyproject.toml uv.lock frontend "=0.40.0" "=1.0.0"`.

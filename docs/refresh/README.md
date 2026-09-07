@@ -32,3 +32,13 @@ This set of documents proposes rebuilding it on the current Claude platform so t
 ## Decisions needed before building
 
 See `05-project-outline.md` §8 (eight engineering decisions) and `03-design-brief.md` §8 (ten design decisions). The three that shape everything: structured per-section edits (yes), the model mix (Fable 5.1 on judgment seats), and hosting with a real database (Docker + managed Postgres).
+
+## Implementation status (September 2026)
+
+The proposal has been executed on branch `claude/critical-project-frontier-refresh-87z5r1`:
+
+- `backend/` — the council runtime described in doc 02: charter + dossier context system, thirteen seats with structured outputs, Anthropic provider with fallbacks and refusal handling, fake provider, dependency-graph runner with the framing gate, parallel 5‖6, Bar Raiser loop, resume and cost accounting, persisted replayable SSE, exports, eval harness, tests.
+- `web/` — the frontend built from doc 03 (council progression, document evolution with per-slot provenance, research ledger, exports, history, share links, demo replay).
+- `deploy/`, `Makefile`, `.github/workflows/ci.yml`, `.replit` — deployment and CI.
+
+Not done in this environment: a live run against the API (no key was available; `make live-check` validates the request shape with one cheap call), the eval baseline on real models (`make evals`), and removal of the legacy tree at the repo root (see README "Legacy").
